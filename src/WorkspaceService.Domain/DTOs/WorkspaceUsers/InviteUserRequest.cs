@@ -1,4 +1,8 @@
-﻿namespace WorkspaceService.Domain.DTOs.WorkspaceUsers;
+﻿using System.ComponentModel.DataAnnotations;
 
-public record class InviteUserRequest(string Id, string UserId,
-    string Email);
+namespace WorkspaceService.Domain.DTOs.WorkspaceUsers;
+
+public record class InviteUserRequest(
+    [Display(Name="Идентификатор рабочего пространства")] string Id, 
+    [Display(Name="Идентификатор пользователя")] string UserId,
+    [Display(Name="Эл. почта")] string Email);

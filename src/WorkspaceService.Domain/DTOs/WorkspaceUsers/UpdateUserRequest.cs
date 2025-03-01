@@ -1,4 +1,9 @@
-﻿namespace WorkspaceService.Domain.DTOs.WorkspaceUsers;
+﻿using System.ComponentModel.DataAnnotations;
 
-public record class UpdateUserRequest(string WorkspaceId,
-    string UserId, string? RoleId, string? PositionId);
+namespace WorkspaceService.Domain.DTOs.WorkspaceUsers;
+
+public record class UpdateUserRequest(
+    [Display(Name="Идентификатор рабочего пространства")] string WorkspaceId,
+    [Display(Name="Идентификатор пользователя")] string UserId, 
+    [Display(Name="Идентификатор роли")]string? RoleId, 
+    [Display(Name="Идентификатор должности")] string? PositionId);

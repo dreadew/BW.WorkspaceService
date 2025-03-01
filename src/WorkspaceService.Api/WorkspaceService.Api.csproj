@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\WorkspaceService.Application\WorkspaceService.Application.csproj" />
     <ProjectReference Include="..\WorkspaceService.Infrastructure\WorkspaceService.Infrastructure.csproj" />
+    <ProjectReference Include="..\WorkspaceService.Grpc\WorkspaceService.Grpc.csproj" />
   </ItemGroup>
 
   <ItemGroup>

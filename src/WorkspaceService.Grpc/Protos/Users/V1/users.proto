@@ -1,0 +1,58 @@
+﻿syntax = "proto3";
+
+package users_v1;
+
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "IdentityService.Grpc.Protos";
+
+service UsersService {
+  rpc GetById(GetByIdRequest) returns (GetByIdResponse);
+  rpc GetByEmail(GetByEmailRequest) returns (GetByEmailResponse);
+  rpc GetFromIdArray(GetFromIdArrayRequest) returns (GetFromIdArrayResponse);
+  rpc Verify(VerifyRequest) returns (VerifyResponse);
+}
+
+message VerifyRequest {
+  string access_token = 1;
+}
+
+message VerifyResponse {
+  bool is_valid = 1;
+}
+
+message User {
+  string id = 1;
+  string username = 2;
+  string email = 3;
+  string phoneNumber = 4;
+  bool isVerified = 5;
+  bool isSuspended = 6;
+  string photoPath = 7;
+  google.protobuf.Timestamp createdAt = 8;
+  google.protobuf.Timestamp updatedAt = 9;
+}
+
+message GetByIdRequest {
+  string id = 1;
+}
+
+message GetByIdResponse {
+  User user = 1;
+}
+
+message GetByEmailRequest {
+  string email = 1;
+}
+
+message GetByEmailResponse {
+  User user = 1;
+}
+
+message GetFromIdArrayRequest {
+  repeated string ids = 1;
+}
+
+message GetFromIdArrayResponse {
+  repeated User users = 1;  
+}

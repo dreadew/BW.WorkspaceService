@@ -1,4 +1,8 @@
-﻿namespace WorkspaceService.Domain.DTOs.WorkspacePositions;
+﻿using System.ComponentModel.DataAnnotations;
 
-public record class UpdatePositionRequest(string Id,
-    string Name, string WorkspaceId);
+namespace WorkspaceService.Domain.DTOs.WorkspacePositions;
+
+public record class UpdatePositionRequest(
+    [Display(Name="Идентификатор должности")] string Id,
+    [Display(Name="Название")] string Name, 
+    [Display(Name="Идентификатор рабочего пространства")] string WorkspaceId);

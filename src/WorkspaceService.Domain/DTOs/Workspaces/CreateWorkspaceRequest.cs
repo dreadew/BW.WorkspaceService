@@ -1,4 +1,7 @@
-﻿namespace WorkspaceService.Domain.DTOs.Workspaces;
+﻿using System.ComponentModel.DataAnnotations;
 
-public record class CreateWorkspaceRequest(string UserId,
-    string Name);
+namespace WorkspaceService.Domain.DTOs.Workspaces;
+
+public record class CreateWorkspaceRequest(
+    [Display(Name="Идентификатор пользователя")] string UserId,
+    [Display(Name="Название")] string Name);

@@ -1,4 +1,7 @@
-﻿namespace WorkspaceService.Domain.DTOs.WorkspaceDirectory;
+﻿using System.ComponentModel.DataAnnotations;
 
-public record class CreateDirectoryRequest(string Name,
-    string WorkspaceId);
+namespace WorkspaceService.Domain.DTOs.WorkspaceDirectory;
+
+public record class CreateDirectoryRequest(
+    [Display(Name="Название")] string Name,
+    [Display(Name="Идентификатор рабочего пространства")] string WorkspaceId);

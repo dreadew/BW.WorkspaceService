@@ -1,4 +1,7 @@
-﻿namespace WorkspaceService.Domain.DTOs.WorkspaceDirectory;
+﻿using System.ComponentModel.DataAnnotations;
 
-public record class UpdateDirectoryRequest(string Id,
-    string? Name);
+namespace WorkspaceService.Domain.DTOs.WorkspaceDirectory;
+
+public record class UpdateDirectoryRequest(
+    [Display(Name="Идентификатор папки")] string Id,
+    [Display(Name="Название")] string? Name);

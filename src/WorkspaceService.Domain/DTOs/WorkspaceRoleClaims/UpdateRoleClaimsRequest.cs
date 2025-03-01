@@ -1,4 +1,7 @@
-﻿namespace WorkspaceService.Domain.DTOs.WorkspaceRoleClaims;
+﻿using System.ComponentModel.DataAnnotations;
 
-public record class UpdateRoleClaimsRequest(string Id,
-    string? Value);
+namespace WorkspaceService.Domain.DTOs.WorkspaceRoleClaims;
+
+public record class UpdateRoleClaimsRequest(
+    [Display(Name="Идентификатор")] string Id,
+    [Display(Name="Название")] string? Value);

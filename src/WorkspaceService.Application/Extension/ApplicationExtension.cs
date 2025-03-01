@@ -1,5 +1,6 @@
 ﻿
 
+using System.Globalization;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using WorkspaceService.Application.Mapping;
@@ -15,6 +16,7 @@ using WorkspaceService.Domain.DTOs.WorkspaceRoles;
 using WorkspaceService.Domain.DTOs.Workspaces;
 using WorkspaceService.Domain.DTOs.WorkspaceUsers;
 using WorkspaceService.Domain.Services;
+using WorkspaceService.Domain.Utils;
 
 namespace WorkspaceService.Application.Extension;
 
@@ -49,6 +51,9 @@ public static class ApplicationExtension
     /// <param name="services"></param>
     private static void InitValidators(this IServiceCollection services)
     {
+        ValidatorOptions.Global.LanguageManager.Culture = new CultureInfo("ru");
+        ValidatorOptions.Global.DisplayNameResolver = (type, memberInfo, expression) =>
+            memberInfo != null ? ValidationHelper.GetDisplayName(type, memberInfo.Name) : null;
         services.AddScoped<IValidator<CreateDirectoryRequest>, CreateDirectoryRequestValidator>();
         services.AddScoped<IValidator<UpdateDirectoryRequest>, UpdateDirectoryRequestValidator>();
         services.AddScoped<IValidator<CreatePositionRequest>, CreatePositionRequestValidator>();

@@ -1,4 +1,7 @@
-﻿namespace WorkspaceService.Domain.DTOs.WorkspaceRoleClaims;
+﻿using System.ComponentModel.DataAnnotations;
 
-public record class CreateRoleClaimsRequest(string Value,
-    string RoleId);
+namespace WorkspaceService.Domain.DTOs.WorkspaceRoleClaims;
+
+public record class CreateRoleClaimsRequest(
+    [Display(Name="Значение")] string Value,
+    [Display(Name="Идентификатор роли")] string RoleId);
