@@ -1,0 +1,92 @@
+﻿using AutoMapper;
+using Microsoft.Extensions.Logging;
+using WorkspaceService.Domain.DTOs;
+using WorkspaceService.Domain.DTOs.WorkspaceRoles;
+using WorkspaceService.Domain.Entities;
+using WorkspaceService.Domain.Excpetions;
+using WorkspaceService.Domain.Interfaces;
+using WorkspaceService.Domain.Services;
+
+namespace WorkspaceService.Application.Services;
+
+public class WorkspaceRolesService : IWorkspaceRolesService
+{
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly ILogger<WorkspaceRolesService> _logger;
+    private readonly IMapper _mapper;
+
+    public WorkspaceRolesService(IUnitOfWork unitOfWork,
+        ILogger<WorkspaceRolesService> logger,
+        IMapper mapper)
+    {
+        _unitOfWork = unitOfWork;
+        _logger = logger;
+        _mapper = mapper;
+    }
+
+    public async Task CreateAsync(CreateRoleRequest dto,
+        CancellationToken cancellationToken = default)
+    {
+        var workspaceRolesRepository = _unitOfWork.Repository<WorkspaceRoles>();
+        var entity = _mapper.Map<WorkspaceRoles>(dto);
+        entity.Id = Guid.NewGuid().ToString();
+        await workspaceRolesRepository.CreateAsync(entity, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task UpdateAsync(UpdateRoleRequest dto,
+        CancellationToken cancellationToken = default)
+    {
+        var workspaceRolesRepository = _unitOfWork.Repository<WorkspaceRoles>();
+        var role = await workspaceRolesRepository.GetByIdAsync(dto.Id, cancellationToken);
+        if (role == null)
+        {
+            throw new NotFoundException("Роль не найдена");
+        }
+        
+        _mapper.Map(dto, role);
+        await workspaceRolesRepository.UpdateAsync(role, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task DeleteAsync(string id, CancellationToken cancellationToken = default)
+    {
+        var workspaceRolesRepository = _unitOfWork.Repository<WorkspaceRoles>();
+        var role = await workspaceRolesRepository.GetByIdAsync(id, cancellationToken);
+        if (role == null)
+        {
+            throw new NotFoundException("Роль не найдена");
+        }
+        
+        await workspaceRolesRepository.DeleteAsync(x => x.Id == id, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<RoleDto> GetByIdAsync(string id, CancellationToken cancellationToken = default)
+    {
+        var workspaceRolesRepository = _unitOfWork.Repository<WorkspaceRoles>();
+        var role = await workspaceRolesRepository.GetByIdAsync(id, cancellationToken);
+        if (role == null)
+        {
+            throw new NotFoundException("Роль не найдена");
+        }
+        
+        return _mapper.Map<RoleDto>(role);
+    }
+    
+    public async Task<IEnumerable<RoleDto>> ListAsync(ListRequest dto,
+        string workspaceId, CancellationToken cancellationToken = default)
+    {
+        var workspaceRolesRepository = _unitOfWork.Repository<WorkspaceRoles>();
+        var roles = await workspaceRolesRepository.FindManyAsync(
+            x => x.WorkspaceId == workspaceId, cancellationToken);
+        if (roles == null)
+        {
+            throw new NotFoundException("Роли не найдены");
+        }
+        
+        return _mapper.Map<IEnumerable<RoleDto>>(roles
+            .Take(dto.Limit)
+            .Skip(dto.Offset));
+    }
+}

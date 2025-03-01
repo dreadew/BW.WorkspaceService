@@ -14,11 +14,7 @@ public class WorkspaceRoleClaimsConfiguration : IEntityTypeConfiguration<Workspa
         builder.Property(rc => rc.Id)
             .IsRequired();
 
-        builder.Property(rc => rc.ClaimType)
-            .IsRequired()
-            .HasMaxLength(256);
-
-        builder.Property(rc => rc.ClaimValue)
+        builder.Property(rc => rc.Value)
             .IsRequired()
             .HasMaxLength(256);
 

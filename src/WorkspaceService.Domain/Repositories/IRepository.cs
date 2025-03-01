@@ -10,6 +10,9 @@ public interface IRepository<T>
         T entity,
         CancellationToken cancellationToken = default);
 
+    Task CreateManyAsync(IEnumerable<T> entities,
+        CancellationToken cancellationToken = default);
+
     Task DeleteAsync(
         Expression<Func<T, bool>> predicate,
         CancellationToken cancellationToken = default);

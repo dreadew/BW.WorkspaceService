@@ -23,6 +23,13 @@ public class Repository<TEntity> : IRepository<TEntity>
         await _dbContext.Set<TEntity>()
             .AddAsync(entity, cancellationToken);
     }
+    
+    public async Task CreateManyAsync(IEnumerable<TEntity> entities, 
+        CancellationToken cancellationToken = default)
+    {
+        await _dbContext.Set<TEntity>()
+            .AddRangeAsync(entities, cancellationToken);
+    }
 
     public async Task DeleteAsync(Expression<Func<TEntity, bool>> predicate, 
         CancellationToken cancellationToken = default)

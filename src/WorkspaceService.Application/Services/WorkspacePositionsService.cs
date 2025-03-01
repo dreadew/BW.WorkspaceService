@@ -1,0 +1,98 @@
+﻿using AutoMapper;
+using Microsoft.Extensions.Logging;
+using WorkspaceService.Domain.DTOs;
+using WorkspaceService.Domain.DTOs.WorkspacePositions;
+using WorkspaceService.Domain.Entities;
+using WorkspaceService.Domain.Excpetions;
+using WorkspaceService.Domain.Interfaces;
+using WorkspaceService.Domain.Services;
+
+namespace WorkspaceService.Application.Services;
+
+public class WorkspacePositionsService : IWorkspacePositionsService
+{
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly ILogger<WorkspacePositionsService> _logger;
+    private readonly IMapper _mapper;
+
+    public WorkspacePositionsService(IUnitOfWork unitOfWork,
+        ILogger<WorkspacePositionsService> logger,
+        IMapper mapper)
+    {
+        _unitOfWork = unitOfWork;
+        _logger = logger;
+        _mapper = mapper;
+    }
+
+    public async Task CreateAsync(CreatePositionRequest dto,
+        CancellationToken cancellationToken = default)
+    {
+        var workspacePositionsRepository = _unitOfWork.Repository<WorkspacePositions>();
+        var position = _mapper.Map<WorkspacePositions>(dto);
+        position.Id = Guid.NewGuid().ToString();
+        await workspacePositionsRepository.CreateAsync(position, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task UpdateAsync(UpdatePositionRequest dto,
+        CancellationToken cancellationToken = default)
+    {
+        var workspacePositionsRepository = _unitOfWork.Repository<WorkspacePositions>();
+        var position = await workspacePositionsRepository.GetByIdAsync(dto.Id, 
+            cancellationToken);
+        if (position == null)
+        {
+            throw new NotFoundException("Должность не найдена");
+        }
+        
+        _mapper.Map(dto, position);
+        await workspacePositionsRepository.UpdateAsync(position, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task DeleteAsync(string id, CancellationToken cancellationToken = default)
+    {
+        var workspacePositionsRepository = _unitOfWork.Repository<WorkspacePositions>();
+        var position = await workspacePositionsRepository.GetByIdAsync(id, 
+            cancellationToken);
+        if (position == null)
+        {
+            throw new NotFoundException("Должность не найдена");
+        }
+        
+        await workspacePositionsRepository.DeleteAsync(x => x.Id == id,
+            cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<PositionDto> GetByIdAsync(string id,
+        CancellationToken cancellationToken = default)
+    {
+        var workspacePositionsRepository = _unitOfWork.Repository<WorkspacePositions>();
+        var position = await workspacePositionsRepository.GetByIdAsync(id, 
+            cancellationToken);
+        if (position == null)
+        {
+            throw new NotFoundException("Должность не найдена");
+        }
+        
+        return _mapper.Map<PositionDto>(position);
+    }
+    
+    public async Task<IEnumerable<PositionDto>> ListAsync(ListRequest dto, string workspaceId,
+        CancellationToken cancellationToken = default)
+    {
+        var workspacePositionsRepository = _unitOfWork.Repository<WorkspacePositions>();
+        var positions = await workspacePositionsRepository.FindManyAsync(
+            x => x.WorkspaceId == workspaceId, 
+            cancellationToken);
+        if (positions == null)
+        {
+            throw new NotFoundException("Должности не найдены");
+        }
+        
+        return _mapper.Map<IEnumerable<PositionDto>>(positions
+            .Take(dto.Limit)
+            .Skip(dto.Offset));
+    }
+}

@@ -1,6 +1,20 @@
 ﻿
 
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using WorkspaceService.Application.Mapping;
+using WorkspaceService.Application.Services;
+using WorkspaceService.Application.Validators.WorkspaceDirectory;
+using WorkspaceService.Application.Validators.WorkspacePositions;
+using WorkspaceService.Application.Validators.WorkspaceRoles;
+using WorkspaceService.Application.Validators.Workspaces;
+using WorkspaceService.Application.Validators.WorkspaceUsers;
+using WorkspaceService.Domain.DTOs.WorkspaceDirectory;
+using WorkspaceService.Domain.DTOs.WorkspacePositions;
+using WorkspaceService.Domain.DTOs.WorkspaceRoles;
+using WorkspaceService.Domain.DTOs.Workspaces;
+using WorkspaceService.Domain.DTOs.WorkspaceUsers;
+using WorkspaceService.Domain.Services;
 
 namespace WorkspaceService.Application.Extension;
 
@@ -23,6 +37,10 @@ public static class ApplicationExtension
     /// <param name="services"></param>
     private static void InitMappers(this IServiceCollection services)
     {
+        services.AddAutoMapper(typeof(WorkspacesProfile));
+        services.AddAutoMapper(typeof(WorkspacePositionsProfile));
+        services.AddAutoMapper(typeof(WorkspaceRolesProfile));
+        services.AddAutoMapper(typeof(WorkspaceDirectoryProfile));
     }
 
     /// <summary>
@@ -31,6 +49,17 @@ public static class ApplicationExtension
     /// <param name="services"></param>
     private static void InitValidators(this IServiceCollection services)
     {
+        services.AddScoped<IValidator<CreateDirectoryRequest>, CreateDirectoryRequestValidator>();
+        services.AddScoped<IValidator<UpdateDirectoryRequest>, UpdateDirectoryRequestValidator>();
+        services.AddScoped<IValidator<CreatePositionRequest>, CreatePositionRequestValidator>();
+        services.AddScoped<IValidator<UpdatePositionRequest>, UpdatePositionRequestValidator>();
+        services.AddScoped<IValidator<CreateRoleRequest>, CreateRoleRequestValidator>();
+        services.AddScoped<IValidator<UpdateRoleRequest>, UpdateRoleRequestValidator>();
+        services.AddScoped<IValidator<CreateWorkspaceRequest>, CreateWorkspaceRequestValidator>();
+        services.AddScoped<IValidator<UpdateWorkspaceRequest>, UpdateWorkspaceRequestValidator>();
+        services.AddScoped<IValidator<DeleteUserRequest>, DeleteUserRequestValidator>();
+        services.AddScoped<IValidator<InviteUserRequest>, InviteUserRequestValidator>();
+        services.AddScoped<IValidator<UpdateUserRequest>, UpdateUserRequestValidator>();
     }
 
     /// <summary>
@@ -39,5 +68,9 @@ public static class ApplicationExtension
     /// <param name="services"></param>
     private static void InitServices(this IServiceCollection services)
     {
+        services.AddScoped<IWorkspaceService, WorkspacesService>();
+        services.AddScoped<IWorkspacePositionsService, WorkspacePositionsService>();
+        services.AddScoped<IWorkspaceRolesService, WorkspaceRolesService>();
+        services.AddScoped<IWorkspaceDirectoryService, WorkspaceDirectoryService>();
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
 using Serilog;
 using WorkspaceService.Api.Config;
+using WorkspaceService.Api.Middlewares;
 using WorkspaceService.Application.Extension;
 using WorkspaceService.Domain.Excpetions;
 using WorkspaceService.Infrastructure.Data;
@@ -35,12 +36,9 @@ builder.Services.AddRateLimiter();
 
 var app = builder.Build();
 
-app.MapGet("/", () => "Hello World!");
-
 app.Services.MigrateUp();
 
-app.UseExceptionHandler();
-app.UseStatusCodePages();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.MapControllers();
 

@@ -8,6 +8,7 @@ public class WorkspaceRoles : IEntity<string>, IAuditable
     public string Name { get; set; } = string.Empty;
     public string WorkspaceId { get; set; } = string.Empty;
     public Workspaces Workspace { get; set; }
+    public List<WorkspaceRoleClaims> RoleClaims { get; set; } = new List<WorkspaceRoleClaims>();
     public DateTime CreatedAt { get; set; } = DateTime.Now;
     public DateTime? ModifiedAt { get; set; }
 }
