@@ -3,5 +3,5 @@
 namespace WorkspaceService.Domain.DTOs.WorkspaceRoleClaims;
 
 public record class UpdateRoleClaimsRequest(
-    [Display(Name="Идентификатор")] string Id,
-    [Display(Name="Название")] string? Value);
+    [property: Display(Name="Идентификатор")] string Id,
+    [property: Display(Name="Название")] string? Value);

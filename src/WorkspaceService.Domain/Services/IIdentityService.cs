@@ -1,6 +1,6 @@
 ﻿namespace WorkspaceService.Domain.Services;
 
-public class IIdentityService
+public interface IIdentityService
 {
     Task<bool> VerifyAsync(string accessToken);
 }

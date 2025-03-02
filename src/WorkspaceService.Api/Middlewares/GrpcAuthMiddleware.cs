@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using WorkspaceService.Domain.Services;
 using WorkspaceService.Grpc.Services;
 
 namespace WorkspaceService.Api.Middlewares;
@@ -6,13 +7,13 @@ namespace WorkspaceService.Api.Middlewares;
 public class GrpcAuthMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly GrpcIdentityServiceClient _grpcIdentityServiceClient;
+    private readonly IIdentityService _identityService;
     private readonly ILogger<GrpcAuthMiddleware> _logger;
 
-    public GrpcAuthMiddleware(RequestDelegate next, GrpcIdentityServiceClient grpcIdentityServiceClient, ILogger<GrpcAuthMiddleware> logger)
+    public GrpcAuthMiddleware(RequestDelegate next, IIdentityService identityService, ILogger<GrpcAuthMiddleware> logger)
     {
         _next = next;
-        _grpcIdentityServiceClient = grpcIdentityServiceClient;
+        _identityService = identityService;
         _logger = logger;
     }
 
@@ -32,7 +33,7 @@ public class GrpcAuthMiddleware
             return;
         }
         
-        bool isValid = await _grpcIdentityServiceClient.VerifyTokenAsync(token);
+        bool isValid = await _identityService.VerifyAsync(token);
 
         if (!isValid)
         {

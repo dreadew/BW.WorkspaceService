@@ -3,5 +3,5 @@
 namespace WorkspaceService.Domain.DTOs.WorkspaceRoleClaims;
 
 public record class CreateRoleClaimsRequest(
-    [Display(Name="Значение")] string Value,
-    [Display(Name="Идентификатор роли")] string RoleId);
+    [property: Display(Name="Значение")] string Value,
+    [property: Display(Name="Идентификатор роли")] string RoleId);

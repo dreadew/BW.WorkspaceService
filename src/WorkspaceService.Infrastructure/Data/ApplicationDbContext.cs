@@ -12,6 +12,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<WorkspacePositions> Positions { get; set; } = null!;
     public DbSet<WorkspaceUsers> Users { get; set; } = null!;
     public DbSet<WorkspaceDirectory> Directories { get; set; } = null!;
+    public DbSet<WorkspaceDirectoryNesting> Nestings { get; set; } = null!;
     public DbSet<WorkspaceDirectoryArtifact> Artifacts { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -22,6 +23,7 @@ public class ApplicationDbContext : DbContext
         modelBuilder.ApplyConfiguration(new WorkspaceRoleClaimsConfiguration());
         modelBuilder.ApplyConfiguration(new WorkspacePositionsConfiguration());
         modelBuilder.ApplyConfiguration(new WorkspaceDirectoryConfiguration());
+        modelBuilder.ApplyConfiguration(new WorkspaceDirectoryNestingConfiguration());
         modelBuilder.ApplyConfiguration(new WorkspaceDirectoryArtifactConfiguration());
         base.OnModelCreating(modelBuilder);
     }

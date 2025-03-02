@@ -18,8 +18,13 @@ public static class InfrastructureExtension
         InitSecrets(services);
         InitDb(services);
         InitRepositories(services);
+        InitServices(services);
     }
     
+    private static void InitServices(this IServiceCollection services)
+    {
+        services.AddScoped<IFileService, FileService>();
+    }
 
     private static void InitDb(this IServiceCollection services)
     {

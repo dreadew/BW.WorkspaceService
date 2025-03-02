@@ -16,7 +16,7 @@ public class GrpcIdentityServiceClient : IIdentityService
         _logger = logger;
     }
     
-    public async Task<bool> VerifyTokenAsync(string accessToken)
+    public async Task<bool> VerifyAsync(string accessToken)
     {
         try
         {

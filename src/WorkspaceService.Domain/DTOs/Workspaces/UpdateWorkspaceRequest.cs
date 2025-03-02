@@ -3,5 +3,5 @@
 namespace WorkspaceService.Domain.DTOs.Workspaces;
 
 public record class UpdateWorkspaceRequest(
-    [Display(Name="Идентификатор")] string Id,
-    [Display(Name="Название")] string Name);
+    [property: Display(Name="Идентификатор")] string Id,
+    [property: Display(Name="Название")] string Name);
