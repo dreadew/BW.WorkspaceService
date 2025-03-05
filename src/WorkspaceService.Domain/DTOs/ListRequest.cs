@@ -1,7 +1,3 @@
 ﻿namespace WorkspaceService.Domain.DTOs;
 
-public class ListRequest
-{
-    public int Limit { get; set; } = 20;
-    public int Offset { get; set; }
-}
+public record class ListRequest(int Limit = 20, int Offset = 0);

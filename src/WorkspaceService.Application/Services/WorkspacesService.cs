@@ -189,7 +189,7 @@ public class WorkspacesService : IWorkspaceService
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
     
-    public async Task InviteAsync(InviteUserRequest dto,
+    public async Task InviteUserAsync(InviteUserRequest dto,
         CancellationToken cancellationToken = default)
     {
         var workspaceRepository = _unitOfWork.Repository<Workspaces>();
@@ -228,7 +228,7 @@ public class WorkspacesService : IWorkspaceService
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task UpdateAsync(UpdateUserRequest dto,
+    public async Task UpdateUserAsync(UpdateUserRequest dto,
         CancellationToken cancellationToken = default)
     {
         var workspaceRepository = _unitOfWork.Repository<Workspaces>();

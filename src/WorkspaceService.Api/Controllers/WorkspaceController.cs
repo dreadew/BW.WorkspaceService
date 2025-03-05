@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WorkspaceService.Domain.DTOs;
 using WorkspaceService.Domain.DTOs.Workspaces;
+using WorkspaceService.Domain.DTOs.WorkspaceUsers;
 using WorkspaceService.Domain.Services;
 
 namespace WorkspaceService.Api.Controllers;
@@ -57,6 +59,66 @@ public class WorkspaceController : ControllerBase
         var result = await _workspaceService.GetByIdAsync(id, cancellationToken);
         return Ok(result);
     }
+
+    [HttpGet("list")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<IEnumerable<WorkspaceDto>>> ListAsync(
+        [FromQuery] ListRequest dto,
+        CancellationToken cancellationToken = default)
+    {
+        var userId = HttpContext.Request.Headers["UserId"].FirstOrDefault();
+        if (string.IsNullOrEmpty(userId) || !Guid.TryParse(userId, out _))
+        {
+            return StatusCode(StatusCodes.Status400BadRequest, ModelState);
+        }
+        
+        var result = await _workspaceService.ListAsync(dto, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult> DeleteAsync(
+        string id,
+        CancellationToken cancellationToken = default)
+    {
+        var userId = HttpContext.Request.Headers["UserId"].FirstOrDefault();
+        if (string.IsNullOrEmpty(userId) || !Guid.TryParse(userId, out _))
+        {
+            return StatusCode(StatusCodes.Status400BadRequest, ModelState);
+        }
+        
+        await _workspaceService.DeleteAsync(id, cancellationToken);
+        return Ok();
+    }
+
+    [HttpPost("invite-user")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult> InviteToWorkspaceAsync(
+        InviteUserRequest dto,
+        CancellationToken cancellationToken = default)
+    {
+        await _workspaceService.InviteUserAsync(dto, cancellationToken);
+        return Ok();
+    }
     
-    [HttpGet]
+    [HttpPatch("update-user")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult> UpdateUserAsync(
+        UpdateUserRequest dto,
+        CancellationToken cancellationToken = default)
+    {
+        await _workspaceService.UpdateUserAsync(dto, cancellationToken);
+        return Ok();
+    }
+    
+    [HttpPost("delete-user")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult> DeleteFromWorkspaceAsync(
+        DeleteUserRequest dto,
+        CancellationToken cancellationToken = default)
+    {
+        await _workspaceService.DeleteUserAsync(dto, cancellationToken);
+        return Ok();
+    }
 }

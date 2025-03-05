@@ -39,7 +39,7 @@ var app = builder.Build();
 app.Services.MigrateUp();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
-app.UseMiddleware<GrpcAuthMiddleware>();
+//app.UseMiddleware<GrpcAuthMiddleware>();
 
 app.MapControllers();
 

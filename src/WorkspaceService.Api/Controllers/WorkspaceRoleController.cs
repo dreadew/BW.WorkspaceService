@@ -1,0 +1,85 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using WorkspaceService.Domain.DTOs;
+using WorkspaceService.Domain.DTOs.WorkspaceRoles;
+using WorkspaceService.Domain.Services;
+
+namespace WorkspaceService.Api.Controllers;
+
+[ApiController]
+[Route("[controller]")]
+public class WorkspaceRoleController : ControllerBase
+{
+    private readonly IWorkspaceRolesService _workspaceRolesService;
+    private readonly ILogger<WorkspaceRoleController> _logger;
+
+    public WorkspaceRoleController(IWorkspaceRolesService workspaceRolesService,
+        ILogger<WorkspaceRoleController> logger)
+    {
+        _workspaceRolesService = workspaceRolesService;
+        _logger = logger;
+    }
+    
+    [HttpGet("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<RoleDto>> GetAsync(string id,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await _workspaceRolesService.GetByIdAsync(id, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpGet("list")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<IEnumerable<RoleDto>>> GetListAsync(
+        [FromQuery] ListRequest dto,
+        CancellationToken cancellationToken = default)
+    {
+        var workspaceId = HttpContext.Request.Headers["WorkspaceId"].FirstOrDefault();
+        if (string.IsNullOrEmpty(workspaceId) || !Guid.TryParse(workspaceId, out _))
+        {
+            return StatusCode(StatusCodes.Status400BadRequest, ModelState);
+        }
+        
+        var result = await _workspaceRolesService.ListAsync(dto, workspaceId, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult> CreateAsync(
+        CreateRoleRequest dto,
+        CancellationToken cancellationToken = default)
+    {
+        if (!ModelState.IsValid)
+        {
+            return StatusCode(StatusCodes.Status400BadRequest, ModelState);
+        }
+
+        await _workspaceRolesService.CreateAsync(dto, cancellationToken);
+        return Ok();
+    }
+
+    [HttpPatch]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult> UpdateAsync(
+        UpdateRoleRequest dto,
+        CancellationToken cancellationToken = default)
+    {
+        if (!ModelState.IsValid)
+        {
+            return StatusCode(StatusCodes.Status400BadRequest, ModelState);
+        }
+        
+        await _workspaceRolesService.UpdateAsync(dto, cancellationToken);
+        return Ok();
+    }
+
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult> DeleteAsync(string id,
+        CancellationToken cancellationToken = default)
+    {
+        await _workspaceRolesService.DeleteAsync(id, cancellationToken);
+        return Ok();
+    }
+}

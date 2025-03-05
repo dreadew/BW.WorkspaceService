@@ -21,10 +21,10 @@ public interface IWorkspaceService
     Task DeleteAsync(string id,
         CancellationToken cancellationToken = default);
 
-    Task InviteAsync(InviteUserRequest dto,
+    Task InviteUserAsync(InviteUserRequest dto,
         CancellationToken cancellationToken = default);
 
-    Task UpdateAsync(UpdateUserRequest dto,
+    Task UpdateUserAsync(UpdateUserRequest dto,
         CancellationToken cancellationToken = default);
 
     Task DeleteUserAsync(DeleteUserRequest dto,
