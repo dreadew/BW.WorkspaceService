@@ -11,11 +11,11 @@ public class WorkspaceDirectoryNestingConfiguration : IEntityTypeConfiguration<W
         builder.HasKey(dn => new { dn.ParentDirectoryId, dn.ChildDirectoryId });
 
         builder.HasOne(dn => dn.ParentDirectoryNavigation)
-            .WithMany(d => d.ChildNestings)
+            .WithMany(d => d.ChildNesting)
             .HasForeignKey(dn => dn.ParentDirectoryId);
 
         builder.HasOne(dn => dn.ChildDirectoryNavigation)
-            .WithMany(d => d.ParentNestings)
+            .WithMany(d => d.ParentNesting)
             .HasForeignKey(dn => dn.ChildDirectoryId);
     }
 }

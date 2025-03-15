@@ -93,7 +93,7 @@ namespace WorkspaceService.Infrastructure.Migrations
 
                     b.HasIndex("ChildDirectoryId");
 
-                    b.ToTable("Nestings");
+                    b.ToTable("Nesting");
                 });
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspacePositions", b =>
@@ -252,13 +252,13 @@ namespace WorkspaceService.Infrastructure.Migrations
             modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceDirectoryNesting", b =>
                 {
                     b.HasOne("WorkspaceService.Domain.Entities.WorkspaceDirectory", "ChildDirectoryNavigation")
-                        .WithMany("ParentNestings")
+                        .WithMany("ParentNesting")
                         .HasForeignKey("ChildDirectoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("WorkspaceService.Domain.Entities.WorkspaceDirectory", "ParentDirectoryNavigation")
-                        .WithMany("ChildNestings")
+                        .WithMany("ChildNesting")
                         .HasForeignKey("ParentDirectoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -330,9 +330,9 @@ namespace WorkspaceService.Infrastructure.Migrations
                 {
                     b.Navigation("Artifacts");
 
-                    b.Navigation("ChildNestings");
+                    b.Navigation("ChildNesting");
 
-                    b.Navigation("ParentNestings");
+                    b.Navigation("ParentNesting");
                 });
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceRoles", b =>

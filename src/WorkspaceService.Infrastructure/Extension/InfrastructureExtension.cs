@@ -36,7 +36,8 @@ public static class InfrastructureExtension
                 DBConstants.DefaultConnectionString,
                 "dev");
             options.UseNpgsql(connectionString)
-                .AddInterceptors(new UpdateAuditableInterceptor());
+                .AddInterceptors(new UpdateAuditableInterceptor())
+                .UseLazyLoadingProxies();
         });
     }
 

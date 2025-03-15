@@ -100,7 +100,7 @@ namespace WorkspaceService.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Nestings",
+                name: "Nesting",
                 columns: table => new
                 {
                     ParentDirectoryId = table.Column<string>(type: "text", nullable: false),
@@ -108,16 +108,16 @@ namespace WorkspaceService.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Nestings", x => new { x.ParentDirectoryId, x.ChildDirectoryId });
+                    table.PrimaryKey("PK_Nesting", x => new { x.ParentDirectoryId, x.ChildDirectoryId });
                     table.ForeignKey(
-                        name: "FK_Nestings_WorkspaceDirectory_ChildDirectoryId",
+                        name: "FK_Nesting_WorkspaceDirectory_ChildDirectoryId",
                         column: x => x.ChildDirectoryId,
                         principalSchema: "workspace",
                         principalTable: "WorkspaceDirectory",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Nestings_WorkspaceDirectory_ParentDirectoryId",
+                        name: "FK_Nesting_WorkspaceDirectory_ParentDirectoryId",
                         column: x => x.ParentDirectoryId,
                         principalSchema: "workspace",
                         principalTable: "WorkspaceDirectory",
@@ -214,8 +214,8 @@ namespace WorkspaceService.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Nestings_ChildDirectoryId",
-                table: "Nestings",
+                name: "IX_Nesting_ChildDirectoryId",
+                table: "Nesting",
                 column: "ChildDirectoryId");
 
             migrationBuilder.CreateIndex(
@@ -271,7 +271,7 @@ namespace WorkspaceService.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Nestings");
+                name: "Nesting");
 
             migrationBuilder.DropTable(
                 name: "WorkspaceDirectoryArtifact",

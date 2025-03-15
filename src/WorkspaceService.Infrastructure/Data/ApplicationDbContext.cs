@@ -12,7 +12,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<WorkspacePositions> Positions { get; set; } = null!;
     public DbSet<WorkspaceUsers> Users { get; set; } = null!;
     public DbSet<WorkspaceDirectory> Directories { get; set; } = null!;
-    public DbSet<WorkspaceDirectoryNesting> Nestings { get; set; } = null!;
+    public DbSet<WorkspaceDirectoryNesting> Nesting { get; set; } = null!;
     public DbSet<WorkspaceDirectoryArtifact> Artifacts { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
