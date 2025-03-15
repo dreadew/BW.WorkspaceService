@@ -1,7 +1,10 @@
-﻿namespace WorkspaceService.Domain.DTOs.WorkspaceDirectory;
+﻿using WorkspaceService.Domain.DTOs.WorkspaceDirectoryArtifact;
+
+namespace WorkspaceService.Domain.DTOs.WorkspaceDirectory;
 
 public record class DirectoryDto(string Id,
     string Name,
-    string WorkspaceId,
+    List<DirectoryDto> Children,
+    List<ArtifactDto>  Artifacts,
     DateTime CreatedAt,
     DateTime? ModifiedAt);

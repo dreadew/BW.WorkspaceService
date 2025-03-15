@@ -1,5 +1,6 @@
 ﻿using IdentityService.Grpc.Protos;
 using Microsoft.Extensions.Logging;
+using WorkspaceService.Domain.DTOs.Identity;
 using WorkspaceService.Domain.Services;
 
 namespace WorkspaceService.Grpc.Services;
@@ -16,7 +17,8 @@ public class GrpcIdentityServiceClient : IIdentityService
         _logger = logger;
     }
     
-    public async Task<bool> VerifyAsync(string accessToken)
+    public async Task<bool> VerifyAsync(string accessToken, 
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -28,6 +30,50 @@ public class GrpcIdentityServiceClient : IIdentityService
         {
             _logger.LogError(ex, "Ошибка при вызове gRPC Verify");
             return false;
+        }
+    }
+
+    public async Task<UserDto?> GetByIdAsync(string id, 
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var request = new GetByIdRequest() { Id = id };
+            var user = (await _client.GetByIdAsync(request)).User;
+
+            var userDto = new UserDto(user.Id, user.Username, user.Email, 
+                user.PhoneNumber, user.PhotoPath, user.CreatedAt.ToDateTime(), null);
+            return userDto;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка при вызове gRPC Verify");
+            return null;
+        }
+    }
+
+    public async Task<List<UserDto>> GetFromArrayAsync(List<string> userIds,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var request = new GetFromIdArrayRequest() { Ids = { userIds } };
+            var response = (await _client.GetFromIdArrayAsync(request)).Users;
+            var users = new List<UserDto>();
+
+            foreach (var user in response)
+            {
+                var userDto = new UserDto(user.Id, user.Username, user.Email, 
+                    user.PhoneNumber, user.PhotoPath, user.CreatedAt.ToDateTime(), null);
+                users.Add(userDto);
+            }
+            
+            return users;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка при вызове gRPC Verify");
+            return null;
         }
     }
 }

@@ -2,5 +2,6 @@
 
 public record class ArtifactDto(string Id,
     string Name,
+    string Url,
     DateTime CreatedAt,
     DateTime? ModifiedAt);

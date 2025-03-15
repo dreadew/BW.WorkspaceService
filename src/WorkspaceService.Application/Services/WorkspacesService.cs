@@ -13,14 +13,17 @@ namespace WorkspaceService.Application.Services;
 public class WorkspacesService : IWorkspaceService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IIdentityService _identityService;
     private readonly ILogger<WorkspacesService> _logger;
     private readonly IMapper _mapper;
 
     public WorkspacesService(IUnitOfWork unitOfWork,
+        IIdentityService identityService,
         ILogger<WorkspacesService> logger,
         IMapper mapper)
     {
         _unitOfWork = unitOfWork;
+        _identityService = identityService;
         _logger = logger;
         _mapper = mapper;
     }
@@ -157,21 +160,40 @@ public class WorkspacesService : IWorkspaceService
             throw new NotFoundException("Рабочее пространство не найдено");
         }
         
-        return _mapper.Map<WorkspaceDto>(workspace);
+        var users = await _identityService.GetFromArrayAsync(
+            workspace.Users.Select(x => x.UserId).ToList(), cancellationToken);
+        var workspaceDto = _mapper.Map<WorkspaceDto>(workspace);
+        foreach (var user in workspaceDto.Users)
+        {
+            user.User = users.FirstOrDefault(x => x.Id == user.UserId);
+        }
+        
+        return workspaceDto;
     }
 
     public async Task<IEnumerable<WorkspaceDto>> ListAsync(ListRequest dto,
         CancellationToken cancellationToken = default)
     {
         var workspaceRepository = _unitOfWork.Repository<Workspaces>();
-        var workspace = await workspaceRepository.ListAsync(dto,
+        var workspaces = await workspaceRepository.ListAsync(dto,
             cancellationToken);
-        if (workspace == null)
+        if (workspaces == null)
         {
-            throw new NotFoundException("Рабочие пространство не найдено");
+            throw new NotFoundException("Рабочее пространство не найдено");
         }
         
-        return _mapper.Map<IEnumerable<WorkspaceDto>>(workspace);
+        var workspacesDto = _mapper.Map<List<WorkspaceDto>>(workspaces);
+        foreach (var workspace in workspacesDto)
+        {
+            var users = await _identityService.GetFromArrayAsync(
+                workspace.Users.Select(x => x.UserId).ToList(), cancellationToken);
+            foreach (var user in workspace.Users)
+            {
+                user.User = users.FirstOrDefault(x => x.Id == user.UserId);
+            }
+        }
+        
+        return workspacesDto;
     }
 
     public async Task DeleteAsync(string id,

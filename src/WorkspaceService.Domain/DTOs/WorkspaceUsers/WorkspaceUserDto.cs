@@ -1,4 +1,13 @@
-﻿namespace WorkspaceService.Domain.DTOs.WorkspaceUsers;
+﻿using WorkspaceService.Domain.DTOs.Identity;
+using WorkspaceService.Domain.DTOs.WorkspacePositions;
+using WorkspaceService.Domain.DTOs.WorkspaceRoles;
 
-public record class WorkspaceUserDto(string WorkspaceId,
-    string UserId, string RoleId, string PositionId);
+namespace WorkspaceService.Domain.DTOs.WorkspaceUsers;
+
+public record class WorkspaceUserDto(
+    string UserId,
+    RoleDto Role,
+    PositionDto Position)
+{
+    public UserDto? User { get; set; }
+};
