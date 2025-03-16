@@ -13,9 +13,9 @@ public static class SwaggerExtensions
         {
             c.SwaggerDoc("v1", new OpenApiInfo()
             {
-                Title = "Users Service API",
+                Title = "Workspace Service API",
                 Version = "v1",
-                Description = "Users Service API"
+                Description = "Workspace Service API"
             });
             
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
