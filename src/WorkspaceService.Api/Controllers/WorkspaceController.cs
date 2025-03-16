@@ -7,7 +7,7 @@ using WorkspaceService.Domain.Services;
 namespace WorkspaceService.Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class WorkspaceController : ControllerBase
 {
     private readonly IWorkspaceService _workspaceService;
@@ -35,9 +35,10 @@ public class WorkspaceController : ControllerBase
         return Ok();
     }
     
-    [HttpPatch]
+    [HttpPatch("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> UpdateAsync(
+        string id,
         [FromBody] UpdateWorkspaceRequest dto,
         CancellationToken cancellationToken = default)
     {
@@ -92,30 +93,40 @@ public class WorkspaceController : ControllerBase
         return Ok();
     }
 
-    [HttpPost("invite-user")]
+    [HttpPost("{id:guid}/{userId:guid}/invite")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> InviteToWorkspaceAsync(
-        InviteUserRequest dto,
+        [FromBody] InviteUserRequest dto,
         CancellationToken cancellationToken = default)
     {
+        if (!ModelState.IsValid)
+        {
+            return StatusCode(StatusCodes.Status400BadRequest, ModelState);
+        }
+        
         await _workspaceService.InviteUserAsync(dto, cancellationToken);
         return Ok();
     }
     
-    [HttpPatch("update-user")]
+    [HttpPatch("{id:guid}/{userId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> UpdateUserAsync(
-        UpdateUserRequest dto,
+        [FromBody] UpdateUserRequest dto,
         CancellationToken cancellationToken = default)
     {
+        if (!ModelState.IsValid)
+        {
+            return StatusCode(StatusCodes.Status400BadRequest, ModelState);
+        }
+        
         await _workspaceService.UpdateUserAsync(dto, cancellationToken);
         return Ok();
     }
     
-    [HttpPost("delete-user")]
+    [HttpDelete("{id:guid}/{userId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> DeleteFromWorkspaceAsync(
-        DeleteUserRequest dto,
+        [FromRoute] DeleteUserRequest dto,
         CancellationToken cancellationToken = default)
     {
         await _workspaceService.DeleteUserAsync(dto, cancellationToken);

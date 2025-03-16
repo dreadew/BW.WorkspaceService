@@ -14,7 +14,7 @@ public class CreateRoleClaimsRequestValidator : AbstractValidator<CreateRoleClai
             .Matches(RegexConstants.Guid);
         RuleFor(x => x.Value)
             .NotEmpty()
-            .Matches(RegexConstants.EnglishLettersAndNumbers)
+            .Matches(RegexConstants.EnglishLettersAndDot)
             .MinimumLength(3);
     }
 }

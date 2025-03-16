@@ -7,7 +7,7 @@ using WorkspaceService.Domain.Services;
 namespace WorkspaceService.Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class WorkspaceDirectoryController : ControllerBase
 {
     private readonly IWorkspaceDirectoryService _workspaceDirectoryService;

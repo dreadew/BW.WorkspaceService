@@ -6,7 +6,7 @@ using WorkspaceService.Domain.Services;
 namespace WorkspaceService.Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class WorkspaceRoleController : ControllerBase
 {
     private readonly IWorkspaceRolesService _workspaceRolesService;

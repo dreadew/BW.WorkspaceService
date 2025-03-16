@@ -7,7 +7,7 @@ using WorkspaceService.Domain.Services;
 namespace WorkspaceService.Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class WorkspacePositionController : ControllerBase
 {
     private readonly IWorkspacePositionsService _workspacePositionsService;

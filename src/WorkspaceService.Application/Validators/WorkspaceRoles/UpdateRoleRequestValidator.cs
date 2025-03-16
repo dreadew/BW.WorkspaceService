@@ -11,9 +11,6 @@ public class UpdateRoleRequestValidator : AbstractValidator<UpdateRoleRequest>
         RuleFor(x => x.Id)
             .NotEmpty()
             .Matches(RegexConstants.Guid);
-        RuleFor(x => x.WorkspaceId)
-            .NotEmpty()
-            .Matches(RegexConstants.Guid);
         RuleFor(x => x.Name)
             .MinimumLength(3)
             .Matches(RegexConstants.EnglishLettersAndNumbers)
