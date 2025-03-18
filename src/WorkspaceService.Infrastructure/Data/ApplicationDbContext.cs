@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Reflection;
+using Microsoft.EntityFrameworkCore;
 using WorkspaceService.Domain.Entities;
 using WorkspaceService.Infrastructure.Data.Configuration;
 
@@ -17,14 +18,7 @@ public class ApplicationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfiguration(new WorkspacesConfiguration());
-        modelBuilder.ApplyConfiguration(new WorkspaceUsersConfiguration());
-        modelBuilder.ApplyConfiguration(new WorkspaceRolesConfiguration());
-        modelBuilder.ApplyConfiguration(new WorkspaceRoleClaimsConfiguration());
-        modelBuilder.ApplyConfiguration(new WorkspacePositionsConfiguration());
-        modelBuilder.ApplyConfiguration(new WorkspaceDirectoryConfiguration());
-        modelBuilder.ApplyConfiguration(new WorkspaceDirectoryNestingConfiguration());
-        modelBuilder.ApplyConfiguration(new WorkspaceDirectoryArtifactConfiguration());
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         base.OnModelCreating(modelBuilder);
     }
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
