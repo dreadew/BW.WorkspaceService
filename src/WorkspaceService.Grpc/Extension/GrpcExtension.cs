@@ -3,7 +3,7 @@ using IdentityService.Grpc.Protos;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using WorkspaceService.Domain.Services;
-using WorkspaceService.Grpc.Services;
+using WorkspaceService.Grpc.Clients;
 
 namespace WorkspaceService.Grpc.Extension;
 
@@ -18,6 +18,6 @@ public static class GrpcExtension
             var channel = provider.GetRequiredService<GrpcChannel>();
             return new UsersService.UsersServiceClient(channel);
         });
-        services.AddSingleton<IIdentityService, GrpcIdentityServiceClient>();
+        services.AddSingleton<IIdentityServiceClient, IdentityServiceClient>();
     }
 }

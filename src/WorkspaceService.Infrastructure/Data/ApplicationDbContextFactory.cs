@@ -2,9 +2,7 @@
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using WorkspaceService.Domain.Constants;
-using WorkspaceService.Domain.Excpetions;
-using WorkspaceService.Domain.Interfaces;
-using WorkspaceService.Infrastructure.Services;
+using WorkspaceService.Infrastructure.Configuration;
 
 namespace WorkspaceService.Infrastructure.Data;
 
@@ -18,21 +16,15 @@ public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<Applicati
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile(ConfigurationConstants.SettingsFileName)
             .Build();
-        
-        ISecretsProvider secretsProvider = new InfiscalSecretsProvider(configuration);
-        
-        string? connectionString = secretsProvider.GetSecret(
-            DBConstants.DefaultConnectionString,
-            "dev");
 
-        if (string.IsNullOrEmpty(connectionString))
-        {
-            throw new VariableNotFoundException("Ошибка при создании клиента БД",
-                nameof(connectionString),
-                nameof(ApplicationDbContextFactory));
-        }
+        var extendedConfiguration = new ConfigurationBuilder()
+            .AddVaultConfiguration(options =>
+            {
+                configuration.GetSection(VaultConstants.VaultSection).Bind(options);
+            })
+            .Build();
         
-        optionsBuilder.UseNpgsql(connectionString);
+        optionsBuilder.UseNpgsql(extendedConfiguration[DBConstants.DefaultConnectionString]);
         return new ApplicationDbContext(optionsBuilder.Options);
     }
 }

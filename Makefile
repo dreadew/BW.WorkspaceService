@@ -1,4 +1,4 @@
-﻿MIGRATIONS_DIR ?= ./src/ProjectService.Infrastructure/Migrations
+﻿MIGRATIONS_DIR ?= ./src/WorkspaceService.Infrastructure/Migrations
 
 migration-add:
 	@current_date=$$(date +%Y%m%d); \
@@ -8,6 +8,6 @@ migration-add:
     name="$${prefix}$${version}"; \
     echo "Создается миграция: $$name"; \
     dotnet ef migrations add $$name \
-    	--project ./src/ProjectService.Infrastructure \
-    	--startup-project ./src/ProjectService.Api \
+    	--project ./src/WorkspaceService.Infrastructure \
+    	--startup-project ./src/WorkspaceService.Api \
     	--output-dir $(MIGRATIONS_DIR)

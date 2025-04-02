@@ -38,7 +38,6 @@ public class WorkspaceController : ControllerBase
     [HttpPatch("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> UpdateAsync(
-        string id,
         [FromBody] UpdateWorkspaceRequest dto,
         CancellationToken cancellationToken = default)
     {
@@ -80,7 +79,7 @@ public class WorkspaceController : ControllerBase
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> DeleteAsync(
-        string id,
+        DeleteWorkspaceRequest dto,
         CancellationToken cancellationToken = default)
     {
         var userId = HttpContext.Request.Headers["UserId"].FirstOrDefault();
@@ -89,7 +88,7 @@ public class WorkspaceController : ControllerBase
             return StatusCode(StatusCodes.Status400BadRequest, ModelState);
         }
         
-        await _workspaceService.DeleteAsync(id, cancellationToken);
+        await _workspaceService.DeleteAsync(dto, cancellationToken);
         return Ok();
     }
 

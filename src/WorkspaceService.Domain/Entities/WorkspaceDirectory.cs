@@ -9,8 +9,10 @@ public class WorkspaceDirectory : IEntity<string>, IAuditable
     public virtual List<WorkspaceDirectoryNesting> ChildNesting { get; set; } = new List<WorkspaceDirectoryNesting>();
     public virtual List<WorkspaceDirectoryNesting> ParentNesting { get; set; } = new List<WorkspaceDirectoryNesting>();
     public virtual List<WorkspaceDirectoryArtifact> Artifacts { get; set; } = new List<WorkspaceDirectoryArtifact>();
+    public bool IsDeleted { get; set; }
     public string WorkspaceId { get; set; } = string.Empty;
     public virtual Workspaces Workspace { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.Now;
     public DateTime? ModifiedAt { get; set; }
+    public string? ChangedBy { get; set; }
 }

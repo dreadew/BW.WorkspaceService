@@ -5,5 +5,7 @@ public class WorkspaceUsers
     public string WorkspaceId { get; set; }
     public string UserId { get; set; }
     public string RoleId { get; set; }
+    public virtual WorkspaceRoles Role { get; set; }
     public string PositionId { get; set; }
+    public virtual WorkspacePositions Position { get; set; }
 }

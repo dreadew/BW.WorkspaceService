@@ -21,10 +21,15 @@ public class WorkspaceRolesConfiguration : IEntityTypeConfiguration<WorkspaceRol
         builder.Property(r => r.WorkspaceId)
             .IsRequired();
 
+        builder.Property(r => r.IsDeleted)
+            .HasDefaultValue(false);
+
         builder.Property(r => r.CreatedAt)
             .IsRequired();
 
         builder.Property(r => r.ModifiedAt);
+
+        builder.Property(r => r.ChangedBy);
 
         builder.HasOne(r => r.Workspace)
             .WithMany(w => w.Roles)

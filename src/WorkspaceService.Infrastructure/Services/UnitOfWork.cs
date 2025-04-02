@@ -11,6 +11,7 @@ public class UnitOfWork : IUnitOfWork
 {
     private readonly ApplicationDbContext _dbContext;
     private IDbContextTransaction? _transaction;
+    private readonly Dictionary<Type, object> _repositories = new();
 
     public UnitOfWork(ApplicationDbContext dbContext)
     {
@@ -19,7 +20,13 @@ public class UnitOfWork : IUnitOfWork
 
     public IRepository<TEntity> Repository<TEntity>() where TEntity : class, IEntity<string>
     {
-        return new Repository<TEntity>(_dbContext);
+        var type = typeof(TEntity);
+        if (!_repositories.ContainsKey(type))
+        {
+            _repositories.Add(type, new Repository<TEntity>(_dbContext));
+        }
+        
+        return (IRepository<TEntity>)_repositories[type];
     }
 
     public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
@@ -34,10 +41,16 @@ public class UnitOfWork : IUnitOfWork
         if (_transaction == null)
             throw new InvalidOperationException("Транзакция не была начата");
 
-        await _dbContext.SaveChangesAsync(cancellationToken);
-        await _transaction.CommitAsync(cancellationToken);
-        await _transaction.DisposeAsync();
-        _transaction = null;
+        try
+        {
+            await _dbContext.SaveChangesAsync(cancellationToken);
+            await _transaction.CommitAsync(cancellationToken);
+        }
+        finally
+        {
+            await _transaction.DisposeAsync();
+            _transaction = null; 
+        }
     }
 
     public async Task RollbackTransactionAsync(CancellationToken cancellationToken = default)
@@ -55,6 +68,23 @@ public class UnitOfWork : IUnitOfWork
 
     public void Dispose()
     {
+        if (_transaction != null)
+        {
+            _transaction.Rollback();
+            _transaction.Dispose();
+            _transaction = null;
+        }
         _dbContext.Dispose();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_transaction != null)
+        {
+            await _transaction.RollbackAsync();
+            await _transaction.DisposeAsync();
+            _transaction = null;
+        }
+        await _dbContext.DisposeAsync(); 
     }
 }

@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using WorkspaceService.Domain.DTOs;
 using WorkspaceService.Domain.DTOs.WorkspaceRoles;
 using WorkspaceService.Domain.Entities;
-using WorkspaceService.Domain.Excpetions;
+using WorkspaceService.Domain.Exceptions;
 using WorkspaceService.Domain.Interfaces;
 using WorkspaceService.Domain.Services;
 
@@ -58,7 +58,9 @@ public class WorkspaceRolesService : IWorkspaceRolesService
             throw new NotFoundException("Роль не найдена");
         }
         
-        await workspaceRolesRepository.DeleteAsync(x => x.Id == id, cancellationToken);
+        role.IsDeleted = true;
+        //await workspaceRolesRepository.DeleteAsync(x => x.Id == id, cancellationToken);
+        await workspaceRolesRepository.UpdateAsync(role, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 

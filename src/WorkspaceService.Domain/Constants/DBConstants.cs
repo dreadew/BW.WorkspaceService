@@ -2,5 +2,6 @@
 
 public static class DBConstants
 {
-    public const string DefaultConnectionString = "DefaultConnection";
+    public const string Section = "ConnectionStrings";
+    public const string DefaultConnectionString = $"{Section}:PostgresConnection";
 }

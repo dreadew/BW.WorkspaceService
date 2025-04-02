@@ -11,6 +11,9 @@ public class Workspaces : IEntity<string>, IAuditable
     public virtual List<WorkspacePositions> Positions { get; set; } = new List<WorkspacePositions>();
     public virtual List<WorkspaceUsers> Users { get; set; } = new List<WorkspaceUsers>();
     public virtual List<WorkspaceDirectory> Directories { get; set; } = new List<WorkspaceDirectory>();
+    public bool IsDeleted { get; set; } = false;
     public DateTime CreatedAt { get; set; } = DateTime.Now;
     public DateTime? ModifiedAt { get; set; }
+    public string? ChangedBy { get; set; }
+    public string? CreatedBy { get; set; }
 }

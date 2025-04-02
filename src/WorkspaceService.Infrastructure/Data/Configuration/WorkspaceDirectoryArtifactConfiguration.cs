@@ -30,6 +30,8 @@ public class WorkspaceDirectoryArtifactConfiguration : IEntityTypeConfiguration<
 
         builder.Property(a => a.ModifiedAt);
 
+        builder.Property(a => a.ChangedBy);
+
         builder.HasOne(a => a.Directory)
             .WithMany(d => d.Artifacts)
             .HasForeignKey(a => a.DirectoryId)

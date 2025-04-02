@@ -7,30 +7,19 @@ namespace WorkspaceService.Api.Config;
 
 public class ConfigureRateLimiterOptions : IConfigureOptions<RateLimiterOptions>
 {
-    private readonly ISecretsProvider _secretsProvider;
-
-    public ConfigureRateLimiterOptions(ISecretsProvider secretsProvider)
+    private readonly IOptions<Domain.Options.RateLimiterOptions>  _options;
+    public ConfigureRateLimiterOptions(IOptions<Domain.Options.RateLimiterOptions> options)
     {
-        _secretsProvider = secretsProvider;
+        _options = options;
     }
 
-    public void Configure(string? name, RateLimiterOptions options)
+    private void Configure(string? name, RateLimiterOptions options)
     {
-        var windowString = _secretsProvider.GetSecret(
-            RateLimiterConstants.RateLimiterWindow, 
-            "dev") ?? "5";
-        var permitLimitString = _secretsProvider.GetSecret(
-            RateLimiterConstants.RateLimiterPermitLimit,
-            "Development") ?? "2";
-        var queueLimitString = _secretsProvider.GetSecret(
-            RateLimiterConstants.RateLimiterQueueLimit, 
-            "Development") ?? "2";
-        
         options.AddFixedWindowLimiter("Fixed", limiterOptions =>
         {
-            limiterOptions.Window = TimeSpan.FromSeconds(int.Parse(windowString));
-            limiterOptions.PermitLimit = int.Parse(permitLimitString);
-            limiterOptions.QueueLimit = int.Parse(queueLimitString);
+            limiterOptions.Window = TimeSpan.FromSeconds(_options.Value.Window);
+            limiterOptions.PermitLimit = _options.Value.PermitLimit;
+            limiterOptions.QueueLimit = _options.Value.QueueLimit;
         });
     }
 

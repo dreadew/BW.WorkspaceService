@@ -77,5 +77,6 @@ public static class ApplicationExtension
         services.AddScoped<IWorkspacePositionsService, WorkspacePositionsService>();
         services.AddScoped<IWorkspaceRolesService, WorkspaceRolesService>();
         services.AddScoped<IWorkspaceDirectoryService, WorkspaceDirectoryService>();
+        services.AddScoped<IClaimsService, ClaimsService>();
     }
 }

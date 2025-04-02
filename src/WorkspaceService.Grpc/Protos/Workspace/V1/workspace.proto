@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package users_v1;
+
+option csharp_namespace = "WorkspaceService.Grpc.Protos";
+
+service WorkspaceService {
+  rpc GetClaimsByUser(GetClaimsByUserRequest) returns (GetClaimsByUserResponse);
+}
+
+message GetClaimsByUserRequest {
+  string UserId = 1;
+  string WorkspaceId = 2;
+}
+
+message GetClaimsByUserResponse {
+  repeated RoleClaim Claims = 1;
+}
+
+message RoleClaim {
+  string Name = 1;
+}

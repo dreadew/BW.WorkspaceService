@@ -25,6 +25,9 @@ public class WorkspacesConfiguration : IEntityTypeConfiguration<Workspaces>
             .IsRequired();
 
         builder.Property(w => w.ModifiedAt);
+
+        builder.Property(w => w.IsDeleted)
+            .HasDefaultValue(false);
         
         builder.HasMany(w => w.Roles)
             .WithOne(r => r.Workspace)

@@ -10,6 +10,8 @@ public class WorkspaceRoles : IEntity<string>, IAuditable
     public virtual Workspaces Workspace { get; set; }
     
     public virtual List<WorkspaceRoleClaims> RoleClaims { get; set; } = new List<WorkspaceRoleClaims>();
+    public bool IsDeleted { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.Now;
     public DateTime? ModifiedAt { get; set; }
+    public string? ChangedBy { get; set; }
 }

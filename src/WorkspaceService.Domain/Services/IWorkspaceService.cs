@@ -18,7 +18,7 @@ public interface IWorkspaceService
     Task<IEnumerable<WorkspaceDto>> ListAsync(ListRequest dto,
         CancellationToken cancellationToken = default);
 
-    Task DeleteAsync(string id,
+    Task DeleteAsync(DeleteWorkspaceRequest dto,
         CancellationToken cancellationToken = default);
 
     Task InviteUserAsync(InviteUserRequest dto,

@@ -7,16 +7,15 @@ namespace WorkspaceService.Api.Extensions;
 
 public static class ObservabilityExtensions
 {
-    public static IServiceCollection AddObservability(this IServiceCollection services, IConfiguration configuration, string serviceName = "UsersService")
+    public static IServiceCollection AddObservability(this IServiceCollection services,
+        IConfiguration configuration, IWebHostEnvironment environment)
     {
         services.AddOpenTelemetry()
+            .ConfigureResource(resource => resource.AddService(environment.ApplicationName))
             .WithTracing(providerBuilder =>
             {
                 providerBuilder
                     .AddAspNetCoreInstrumentation()
-                    .AddSource(serviceName)
-                    .SetResourceBuilder(ResourceBuilder.CreateDefault()
-                        .AddService(serviceName, "1.0"))
                     .AddJaegerExporter(opts =>
                     {
                         opts.AgentHost = configuration["Jaeger:AgentHost"] ?? "localhost";
@@ -24,8 +23,6 @@ public static class ObservabilityExtensions
                     });
             });
             
-        services.AddSingleton(new ActivitySource(serviceName));
-        
         return services;
     }
     

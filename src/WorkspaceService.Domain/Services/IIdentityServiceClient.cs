@@ -2,9 +2,9 @@
 
 namespace WorkspaceService.Domain.Services;
 
-public interface IIdentityService
+public interface IIdentityServiceClient
 {
-    Task<bool> VerifyAsync(string accessToken,
+    Task<(bool, string?)> VerifyAsync(string accessToken,
         CancellationToken cancellationToken = default);
 
     Task<UserDto?> GetByIdAsync(string id,

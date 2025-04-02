@@ -7,13 +7,15 @@ namespace WorkspaceService.Api.Middlewares;
 public class GrpcAuthMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly IIdentityService _identityService;
+    private readonly IIdentityServiceClient _identityServiceClient;
     private readonly ILogger<GrpcAuthMiddleware> _logger;
 
-    public GrpcAuthMiddleware(RequestDelegate next, IIdentityService identityService, ILogger<GrpcAuthMiddleware> logger)
+    public GrpcAuthMiddleware(RequestDelegate next, IIdentityServiceClient 
+            identityServiceClient,
+        ILogger<GrpcAuthMiddleware> logger)
     {
         _next = next;
-        _identityService = identityService;
+        _identityServiceClient = identityServiceClient;
         _logger = logger;
     }
 
@@ -32,8 +34,8 @@ public class GrpcAuthMiddleware
             await context.Response.WriteAsync("Unauthorized: AccessToken is missing");
             return;
         }
-        
-        bool isValid = await _identityService.VerifyAsync(token);
+
+        var (isValid, userId) = await _identityServiceClient.VerifyAsync(token);
 
         if (!isValid)
         {
@@ -42,6 +44,8 @@ public class GrpcAuthMiddleware
             await context.Response.WriteAsync("Unauthorized: Invalid AccessToken");
             return;
         }
+        
+        context.Items["FromId"] = userId;
         
         await _next(context);
     }

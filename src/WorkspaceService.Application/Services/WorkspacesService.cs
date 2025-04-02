@@ -1,10 +1,13 @@
-﻿using AutoMapper;
+﻿using System.Text.Json;
+using AutoMapper;
 using Microsoft.Extensions.Logging;
 using WorkspaceService.Domain.DTOs;
+using WorkspaceService.Domain.DTOs.Messaging;
 using WorkspaceService.Domain.DTOs.Workspaces;
 using WorkspaceService.Domain.DTOs.WorkspaceUsers;
 using WorkspaceService.Domain.Entities;
-using WorkspaceService.Domain.Excpetions;
+using WorkspaceService.Domain.Enums;
+using WorkspaceService.Domain.Exceptions;
 using WorkspaceService.Domain.Interfaces;
 using WorkspaceService.Domain.Services;
 
@@ -13,19 +16,25 @@ namespace WorkspaceService.Application.Services;
 public class WorkspacesService : IWorkspaceService
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IIdentityService _identityService;
+    private readonly IIdentityServiceClient _identityService;
+    private readonly IKafkaProducerService _kafkaProducerService;
     private readonly ILogger<WorkspacesService> _logger;
     private readonly IMapper _mapper;
+    private readonly IClaimsService _claimsService;
 
     public WorkspacesService(IUnitOfWork unitOfWork,
-        IIdentityService identityService,
+        IIdentityServiceClient identityService,
+        IKafkaProducerService kafkaProducerService,
         ILogger<WorkspacesService> logger,
-        IMapper mapper)
+        IMapper mapper,
+        IClaimsService claimsService)
     {
         _unitOfWork = unitOfWork;
         _identityService = identityService;
+        _kafkaProducerService = kafkaProducerService;
         _logger = logger;
         _mapper = mapper;
+        _claimsService = claimsService;
     }
 
     public async Task CreateAsync(CreateWorkspaceRequest dto,
@@ -42,6 +51,7 @@ public class WorkspacesService : IWorkspaceService
         {
             var workspace = _mapper.Map<Workspaces>(dto);
             workspace.Id = Guid.NewGuid().ToString();
+            workspace.CreatedBy = dto.UserId;
             
             var positions = new List<WorkspacePositions>(2)
             {
@@ -95,6 +105,12 @@ public class WorkspacesService : IWorkspaceService
                         Value = "Workspace.View",
                         RoleId = roles[0].Id
                     },
+                    new()
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Value = "Project.Create",
+                        RoleId = roles[0].Id
+                    },
                     new() 
                     {
                         Id = Guid.NewGuid().ToString(),
@@ -135,6 +151,8 @@ public class WorkspacesService : IWorkspaceService
     public async Task UpdateAsync(UpdateWorkspaceRequest dto,
         CancellationToken cancellationToken = default)
     {
+        await _claimsService.CheckUserClaim(dto.Id, dto.FromId, "Workspace.Edit", cancellationToken);
+        var eventsRepository = _unitOfWork.Repository<Events>();
         var workspaceRepository = _unitOfWork.Repository<Workspaces>();
         var workspace = await workspaceRepository.GetByIdAsync(dto.Id,
             cancellationToken);
@@ -144,9 +162,35 @@ public class WorkspacesService : IWorkspaceService
         }
 
         _mapper.Map(dto, workspace);
-        
-        await workspaceRepository.UpdateAsync(workspace, cancellationToken);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.BeginTransactionAsync(cancellationToken);
+        try
+        {
+            await workspaceRepository.UpdateAsync(workspace, cancellationToken);
+            if (dto.IsDeleted != null)
+            {
+                var actualityDto = new WorkspaceChangedActualityDto(workspace.Id, workspace.IsDeleted);
+                var serializedDto = JsonSerializer.Serialize(actualityDto);
+                var newEvent = new Events()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    EventType = KafkaTopic.WorkspaceChangedActuality,
+                    Payload = serializedDto,
+                    IsSent = false
+                };
+
+                await eventsRepository.CreateAsync(newEvent, cancellationToken);
+                await HandleWorkspaceRoles(workspace.Id, workspace.IsDeleted, cancellationToken);
+                await HandleWorkspacePositions(workspace.Id, workspace.IsDeleted, cancellationToken);
+                await HandleWorkspaceDirectories(workspace.Id, workspace.IsDeleted, cancellationToken);
+                //await _kafkaProducerService.PublishAsync(KafkaConstants.WorkspaceChangedActualityTopic, actualityDto);
+            }
+
+            await _unitOfWork.CommitTransactionAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+        }
     }
 
     public async Task<WorkspaceDto> GetByIdAsync(string id,
@@ -196,24 +240,52 @@ public class WorkspacesService : IWorkspaceService
         return workspacesDto;
     }
 
-    public async Task DeleteAsync(string id,
+    public async Task DeleteAsync(DeleteWorkspaceRequest dto,
         CancellationToken cancellationToken = default)
     {
+        await _claimsService.CheckUserClaim(dto.WorkspaceId, dto.FromId, "Workspace.Edit", 
+            cancellationToken);
+        var eventsRepository = _unitOfWork.Repository<Events>();
         var workspaceRepository = _unitOfWork.Repository<Workspaces>();
-        var workspace = await workspaceRepository.GetByIdAsync(id,
+        var workspace = await workspaceRepository.GetByIdAsync(dto.WorkspaceId,
             cancellationToken);
         if (workspace == null)
         {
-            throw new NotFoundException("Рабочие пространство не найдено");
+            throw new NotFoundException("Рабочее пространство не найдено");
         }
-
-        await workspaceRepository.DeleteAsync(x => x.Id == id, cancellationToken);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        
+        workspace.IsDeleted = true;
+        var actualityDto = new WorkspaceChangedActualityDto(workspace.Id, workspace.IsDeleted);
+        var serializedDto = JsonSerializer.Serialize(actualityDto);
+        var newEvent = new Events()
+        {
+            Id = Guid.NewGuid().ToString(),
+            EventType = KafkaTopic.WorkspaceChangedActuality,
+            Payload = serializedDto,
+            IsSent = false
+        };
+        try
+        {
+            await _unitOfWork.BeginTransactionAsync(cancellationToken);
+            //await workspaceRepository.DeleteAsync(x => x.Id == id, cancellationToken);
+            await eventsRepository.CreateAsync(newEvent, cancellationToken);
+            await workspaceRepository.UpdateAsync(workspace, cancellationToken);
+            await HandleWorkspaceRoles(workspace.Id, workspace.IsDeleted, cancellationToken);
+            await HandleWorkspacePositions(workspace.Id, workspace.IsDeleted, cancellationToken);
+            await HandleWorkspaceDirectories(workspace.Id, workspace.IsDeleted, cancellationToken);
+            //await _kafkaProducerService.PublishAsync(KafkaConstants.WorkspaceChangedActualityTopic, actualityDto);
+            await _unitOfWork.CommitTransactionAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+        }
     }
     
     public async Task InviteUserAsync(InviteUserRequest dto,
         CancellationToken cancellationToken = default)
     {
+        await _claimsService.CheckUserClaim(dto.Id, dto.FromId, "Workspace.Edit", cancellationToken);
         var workspaceRepository = _unitOfWork.Repository<Workspaces>();
         var workspacePositionsRepository = _unitOfWork.Repository<WorkspacePositions>();
         var workspaceRolesRepository = _unitOfWork.Repository<WorkspaceRoles>();
@@ -253,6 +325,8 @@ public class WorkspacesService : IWorkspaceService
     public async Task UpdateUserAsync(UpdateUserRequest dto,
         CancellationToken cancellationToken = default)
     {
+        await _claimsService.CheckUserClaim(dto.WorkspaceId, dto.FromId, "Workspace.Edit", 
+            cancellationToken);
         var workspaceRepository = _unitOfWork.Repository<Workspaces>();
         var workspacePositionsRepository = _unitOfWork.Repository<WorkspacePositions>();
         var workspaceRolesRepository = _unitOfWork.Repository<WorkspaceRoles>();
@@ -292,6 +366,8 @@ public class WorkspacesService : IWorkspaceService
     public async Task DeleteUserAsync(DeleteUserRequest dto,
         CancellationToken cancellationToken = default)
     {
+        await _claimsService.CheckUserClaim(dto.WorkspaceId, dto.FromId, "Workspace.Edit", 
+            cancellationToken);
         var workspaceRepository = _unitOfWork.Repository<Workspaces>();
         var workspace = await workspaceRepository.FindAsync(x => x.Id == dto.UserId, 
             cancellationToken);
@@ -308,5 +384,43 @@ public class WorkspacesService : IWorkspaceService
         
         workspace.Users.Remove(user);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    private async Task HandleWorkspaceRoles(string workspaceId, bool actuality, CancellationToken cancellationToken = default)
+    {
+        var workspaceRolesRepository = _unitOfWork.Repository<WorkspaceRoles>();
+        var roles = await workspaceRolesRepository
+            .FindManyAsync(x => x.WorkspaceId == workspaceId, cancellationToken);
+        foreach (var role in roles)
+        {
+            role.IsDeleted = actuality;
+            await workspaceRolesRepository.UpdateAsync(role, cancellationToken);
+        }
+    }
+
+    private async Task HandleWorkspacePositions(string workspaceId, bool actuality,
+        CancellationToken cancellationToken = default)
+    {
+        var workspacePositionsRepository = _unitOfWork.Repository<WorkspacePositions>();
+        var positions = await workspacePositionsRepository
+            .FindManyAsync(x => x.WorkspaceId == workspaceId, cancellationToken);
+        foreach (var position in positions)
+        {
+            position.IsDeleted = actuality;
+            await workspacePositionsRepository.UpdateAsync(position, cancellationToken);
+        }
+    }
+
+    private async Task HandleWorkspaceDirectories(string workspaceId, bool actuality,
+        CancellationToken cancellationToken = default)
+    {
+        var workspaceDirectoriesRepository = _unitOfWork.Repository<WorkspaceDirectory>();
+        var directories = await  workspaceDirectoriesRepository
+            .FindManyAsync(x => x.WorkspaceId == workspaceId, cancellationToken);
+        foreach (var directory in directories)
+        {
+            directory.IsDeleted = actuality;
+            await workspaceDirectoriesRepository.UpdateAsync(directory, cancellationToken);
+        }
     }
 }

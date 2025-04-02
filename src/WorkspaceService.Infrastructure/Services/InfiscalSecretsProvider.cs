@@ -1,7 +1,7 @@
 ﻿using Infisical.Sdk;
 using Microsoft.Extensions.Configuration;
 using WorkspaceService.Domain.Constants;
-using WorkspaceService.Domain.Excpetions;
+using WorkspaceService.Domain.Exceptions;
 using WorkspaceService.Domain.Interfaces;
 
 namespace WorkspaceService.Infrastructure.Services;

@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using WorkspaceService.Domain.DTOs;
 using WorkspaceService.Domain.DTOs.WorkspaceDirectory;
 using WorkspaceService.Domain.Entities;
-using WorkspaceService.Domain.Excpetions;
+using WorkspaceService.Domain.Exceptions;
 using WorkspaceService.Domain.Interfaces;
 using WorkspaceService.Domain.Services;
 
@@ -60,7 +60,10 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
         {
             throw new NotFoundException("Не удалось найти директорию");
         }
-        await workspaceDirectoryRepository.DeleteAsync(x => x.Id == id, cancellationToken);
+        
+        directory.IsDeleted = true;
+        //await workspaceDirectoryRepository.DeleteAsync(x => x.Id == id, cancellationToken);
+        await workspaceDirectoryRepository.UpdateAsync(directory, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
     

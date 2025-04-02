@@ -11,4 +11,5 @@ public class WorkspaceDirectoryArtifact : IEntity<string>, IAuditable
     public virtual WorkspaceDirectory Directory { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.Now;
     public DateTime? ModifiedAt { get; set; }
+    public string? ChangedBy { get; set; }
 }

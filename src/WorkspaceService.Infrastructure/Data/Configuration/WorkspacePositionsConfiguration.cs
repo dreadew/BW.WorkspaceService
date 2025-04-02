@@ -21,10 +21,15 @@ public class WorkspacePositionsConfiguration : IEntityTypeConfiguration<Workspac
         builder.Property(p => p.WorkspaceId)
             .IsRequired();
 
+        builder.Property(p => p.IsDeleted)
+            .HasDefaultValue(false);
+
         builder.Property(p => p.CreatedAt)
             .IsRequired();
 
         builder.Property(p => p.ModifiedAt);
+
+        builder.Property(p => p.ChangedBy);
 
         builder.HasOne(p => p.Workspace)
             .WithMany(w => w.Positions)

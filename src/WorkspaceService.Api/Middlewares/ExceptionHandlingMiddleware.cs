@@ -1,6 +1,6 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
-using WorkspaceService.Domain.Excpetions;
+using WorkspaceService.Domain.Exceptions;
 
 namespace WorkspaceService.Api.Middlewares;
 

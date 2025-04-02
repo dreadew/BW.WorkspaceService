@@ -61,9 +61,10 @@ public class Repository<TEntity> : IRepository<TEntity>
         CancellationToken cancellationToken = default)
     {
         return await _dbContext.Set<TEntity>()
+            .OrderBy(x => x.Id)
             .Skip(listParams.Offset)
             .Take(listParams.Limit)
-            .ToArrayAsync(cancellationToken);
+            .ToListAsync(cancellationToken);
     }
 
     public async Task<TEntity?> GetByIdAsync(string id, 
@@ -86,6 +87,6 @@ public class Repository<TEntity> : IRepository<TEntity>
     {
         return await _dbContext.Set<TEntity>()
             .Where(predicate)
-            .ToArrayAsync(cancellationToken);
+            .ToListAsync(cancellationToken);
     }
 }

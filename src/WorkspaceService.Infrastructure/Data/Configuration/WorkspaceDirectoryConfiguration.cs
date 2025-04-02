@@ -21,10 +21,15 @@ public class WorkspaceDirectoryConfiguration : IEntityTypeConfiguration<Workspac
         builder.Property(d => d.WorkspaceId)
             .IsRequired();
 
+        builder.Property(d => d.IsDeleted)
+            .HasDefaultValue(false);
+
         builder.Property(d => d.CreatedAt)
             .IsRequired();
 
         builder.Property(d => d.ModifiedAt);
+
+        builder.Property(d => d.ChangedBy);
 
         builder.HasOne(d => d.Workspace)
             .WithMany(w => w.Directories)

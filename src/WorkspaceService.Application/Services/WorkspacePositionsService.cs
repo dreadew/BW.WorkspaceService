@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using WorkspaceService.Domain.DTOs;
 using WorkspaceService.Domain.DTOs.WorkspacePositions;
 using WorkspaceService.Domain.Entities;
-using WorkspaceService.Domain.Excpetions;
+using WorkspaceService.Domain.Exceptions;
 using WorkspaceService.Domain.Interfaces;
 using WorkspaceService.Domain.Services;
 
@@ -60,8 +60,9 @@ public class WorkspacePositionsService : IWorkspacePositionsService
             throw new NotFoundException("Должность не найдена");
         }
         
-        await workspacePositionsRepository.DeleteAsync(x => x.Id == id,
-            cancellationToken);
+        position.IsDeleted = true;
+        //await workspacePositionsRepository.DeleteAsync(x => x.Id == id, cancellationToken);
+        await workspacePositionsRepository.UpdateAsync(position, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 

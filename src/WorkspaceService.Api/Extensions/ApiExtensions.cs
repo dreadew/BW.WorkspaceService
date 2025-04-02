@@ -24,6 +24,7 @@ public static class ApiExtensions
         {
             options.Filters.Add<ApiExceptionFilterAttribute>();
             options.Filters.Add<RouteDataToModelFilter>();
+            options.Filters.Add<FromIdToDtoFilter>();
         });
         services.AddFluentValidationAutoValidation();
         services.AddSingleton<IConfigureOptions<RateLimiterOptions>, ConfigureRateLimiterOptions>();

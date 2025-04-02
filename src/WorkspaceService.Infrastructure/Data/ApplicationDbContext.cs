@@ -15,6 +15,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<WorkspaceDirectory> Directories { get; set; } = null!;
     public DbSet<WorkspaceDirectoryNesting> Nesting { get; set; } = null!;
     public DbSet<WorkspaceDirectoryArtifact> Artifacts { get; set; } = null!;
+    public DbSet<Events> Events { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

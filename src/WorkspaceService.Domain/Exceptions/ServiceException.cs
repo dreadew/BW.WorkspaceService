@@ -1,4 +1,4 @@
-﻿namespace WorkspaceService.Domain.Excpetions;
+﻿namespace WorkspaceService.Domain.Exceptions;
 
 /// <summary>
 /// Исключение, возникающее в сервисном слое.

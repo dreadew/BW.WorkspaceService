@@ -3,33 +3,33 @@ using Microsoft.Extensions.Logging;
 using WorkspaceService.Domain.DTOs.Identity;
 using WorkspaceService.Domain.Services;
 
-namespace WorkspaceService.Grpc.Services;
+namespace WorkspaceService.Grpc.Clients;
 
-public class GrpcIdentityServiceClient : IIdentityService
+public class IdentityServiceClient : IIdentityServiceClient
 {
     private readonly UsersService.UsersServiceClient _client;
-    private readonly ILogger<GrpcIdentityServiceClient> _logger;
+    private readonly ILogger<IdentityServiceClient> _logger;
 
-    public GrpcIdentityServiceClient(UsersService.UsersServiceClient client,
-        ILogger<GrpcIdentityServiceClient> logger)
+    public IdentityServiceClient(UsersService.UsersServiceClient client,
+        ILogger<IdentityServiceClient> logger)
     {
         _client = client;
         _logger = logger;
     }
     
-    public async Task<bool> VerifyAsync(string accessToken, 
+    public async Task<(bool, string?)> VerifyAsync(string accessToken, 
         CancellationToken cancellationToken = default)
     {
         try
         {
             var request = new VerifyRequest { AccessToken = accessToken };
             var response = await _client.VerifyAsync(request);
-            return response.IsValid;
+            return (response.IsValid, response.UserId);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Ошибка при вызове gRPC Verify");
-            return false;
+            return (false, null);
         }
     }
 
@@ -47,7 +47,7 @@ public class GrpcIdentityServiceClient : IIdentityService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Ошибка при вызове gRPC Verify");
+            _logger.LogError(ex, "Ошибка при вызове gRPC GetByIdAsync");
             return null;
         }
     }
@@ -72,7 +72,7 @@ public class GrpcIdentityServiceClient : IIdentityService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Ошибка при вызове gRPC Verify");
+            _logger.LogError(ex, "Ошибка при вызове gRPC GetFromArrayAsync");
             return null;
         }
     }
