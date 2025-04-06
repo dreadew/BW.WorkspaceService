@@ -2,7 +2,12 @@
 
 namespace WorkspaceService.Domain.DTOs.WorkspaceUsers;
 
-public record class DeleteUserRequest(
-    [property: Display(Name="Идентификатор пользователя")] string FromId,
-    [property: Display(Name="Идентификатор рабочего пространства")] string WorkspaceId,
-    [property: Display(Name="Идентификатор пользователя")] string UserId);
+public class DeleteUserRequest
+{
+    [Display(Name = "Идентификатор пользователя")]
+    public string FromId { get; set; }
+    [Display(Name = "Идентификатор рабочего пространства")]
+    public string WorkspaceId { get; set; }
+    [Display(Name = "Идентификатор пользователя")]
+    public string UserId { get; set; }
+}

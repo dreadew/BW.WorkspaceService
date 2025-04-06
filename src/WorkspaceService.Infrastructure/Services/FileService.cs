@@ -1,4 +1,5 @@
-﻿using Amazon.S3;
+﻿using System.Text;
+using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Util;
 using Microsoft.Extensions.Logging;
@@ -52,7 +53,18 @@ public class FileService : IFileService
         }
         
         var fileExt = Path.GetExtension(dto.FileName);
-        string objectName = $"{Guid.NewGuid().ToString()}{fileExt}";
+        var expectedCount = 36 + fileExt.Length + (dto.Paths?.Select(x => x.Length).Sum
+            () ?? 0);
+        var sb = new StringBuilder(expectedCount);
+        if (dto.Paths != null)
+        {
+            foreach (var path in dto.Paths)
+            {
+                sb.Append($"/{path}");
+            }
+        }
+        sb.Append($"{Guid.NewGuid().ToString()}{fileExt}");
+        var objectName = sb.ToString();
 
         using var stream = new MemoryStream(dto.Content);
         var putObjectRequest = new PutObjectRequest
@@ -67,9 +79,13 @@ public class FileService : IFileService
             .PutObjectAsync(putObjectRequest, 
                 cancellationToken);
 
-        string url = $"{_options.Value.Bucket}/{objectName}";
+        var url = $"{_options.Value.Bucket}/{objectName}";
         
-        return new UploadedFileResponse(objectName, url);
+        return new UploadedFileResponse()
+        {
+            FilePath = objectName,
+            Url = url
+        };
     }
 
     public async Task DeleteFileAsync(

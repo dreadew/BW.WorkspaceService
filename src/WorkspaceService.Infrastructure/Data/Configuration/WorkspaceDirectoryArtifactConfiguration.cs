@@ -18,7 +18,7 @@ public class WorkspaceDirectoryArtifactConfiguration : IEntityTypeConfiguration<
             .IsRequired()
             .HasMaxLength(256);
 
-        builder.Property(a => a.Url)
+        builder.Property(a => a.Path)
             .IsRequired()
             .HasMaxLength(1024);
 

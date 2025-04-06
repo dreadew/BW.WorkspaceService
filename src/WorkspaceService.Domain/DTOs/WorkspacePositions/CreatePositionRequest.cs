@@ -2,6 +2,10 @@
 
 namespace WorkspaceService.Domain.DTOs.WorkspacePositions;
 
-public record class CreatePositionRequest(
-    [property: Display(Name="Название")] string Name, 
-    [property: Display(Name="Идентификатор рабочего пространства")] string WorkspaceId);
+public class CreatePositionRequest{
+    [Display(Name="Название")] 
+    public string Name { get; set; }
+
+    [Display(Name = "Идентификатор рабочего пространства")]
+    public string WorkspaceId { get; set; }
+}

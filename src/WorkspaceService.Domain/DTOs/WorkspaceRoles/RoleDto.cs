@@ -2,8 +2,11 @@
 
 namespace WorkspaceService.Domain.DTOs.WorkspaceRoles;
 
-public record class RoleDto(string Id,
-    string Name,
-    List<RoleClaimsDto> Claims,
-    DateTime CreatedAt,
-    DateTime? ModifiedAt);
+public class RoleDto
+{
+    public string Id { get; set; }
+    public string Name { get; set; }
+    public List<RoleClaimsDto> Claims { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime? ModifiedAt { get; set; }
+}

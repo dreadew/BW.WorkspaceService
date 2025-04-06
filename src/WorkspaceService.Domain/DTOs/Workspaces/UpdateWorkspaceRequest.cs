@@ -2,8 +2,17 @@
 
 namespace WorkspaceService.Domain.DTOs.Workspaces;
 
-public record class UpdateWorkspaceRequest(
-    [property: Display(Name="Идентификатор пользователя")] string FromId,
-    [property: Display(Name="Идентификатор")] string Id,
-    [property: Display(Name="Название")] string Name,
-    [property: Display(Name="Признак актуальность")] bool? IsDeleted);
+public class UpdateWorkspaceRequest
+{
+    [Display(Name = "Идентификатор пользователя")]
+    public string FromId { get; set; }
+
+    [Display(Name = "Идентификатор")]
+    public string Id { get; set; }
+
+    [Display(Name = "Название")] 
+    public string Name { get; set; }
+
+    [Display(Name = "Признак актуальность")]
+    public bool? IsDeleted { get; set; }
+}

@@ -43,6 +43,7 @@ public static class ApplicationExtension
         services.AddAutoMapper(typeof(WorkspacePositionsProfile));
         services.AddAutoMapper(typeof(WorkspaceRolesProfile));
         services.AddAutoMapper(typeof(WorkspaceDirectoryProfile));
+        services.AddAutoMapper(typeof(FileProfile));
     }
 
     /// <summary>

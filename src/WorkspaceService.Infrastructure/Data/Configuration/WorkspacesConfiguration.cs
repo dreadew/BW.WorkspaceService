@@ -18,7 +18,7 @@ public class WorkspacesConfiguration : IEntityTypeConfiguration<Workspaces>
             .IsRequired()
             .HasMaxLength(256);
 
-        builder.Property(w => w.PictureUrl)
+        builder.Property(w => w.PicturePath)
             .HasMaxLength(512);
 
         builder.Property(w => w.CreatedAt)

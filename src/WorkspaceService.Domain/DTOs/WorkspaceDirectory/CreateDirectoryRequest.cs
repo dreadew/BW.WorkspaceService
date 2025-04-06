@@ -2,6 +2,11 @@
 
 namespace WorkspaceService.Domain.DTOs.WorkspaceDirectory;
 
-public record class CreateDirectoryRequest(
-    [property: Display(Name="Название")] string Name,
-    [property: Display(Name="Идентификатор рабочего пространства")] string WorkspaceId);
+public class CreateDirectoryRequest
+{
+    [Display(Name = "Название")]
+    public string Name { get; set; }
+
+    [Display(Name = "Идентификатор рабочего пространства")]
+    public string WorkspaceId { get; set; }
+}

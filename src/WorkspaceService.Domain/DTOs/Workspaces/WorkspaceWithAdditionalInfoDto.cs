@@ -5,11 +5,14 @@ using WorkspaceService.Domain.DTOs.WorkspaceUsers;
 
 namespace WorkspaceService.Domain.DTOs.Workspaces;
 
-public record class WorkspaceWithAdditionalInfoDto(string Id,
-    string Name,
-    List<DirectoryDto> Directories,
-    List<PositionDto> Positions,
-    List<RoleDto> Roles,
-    List<WorkspaceUserDto> Users,
-    DateTime CreatedAt,
-    DateTime? ModifiedAt);
+public class WorkspaceWithAdditionalInfoDto
+{
+    public string Id { get; set; }
+    public string Name { get; set; }
+    public List<DirectoryDto> Directories { get; set; }
+    public List<PositionDto> Positions { get; set; }
+    public List<RoleDto> Roles { get; set; }
+    public List<WorkspaceUserDto> Users { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime? ModifiedAt { get; set; }
+}

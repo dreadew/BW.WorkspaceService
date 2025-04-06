@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using WorkspaceService.Application.MappingActions;
 using WorkspaceService.Domain.DTOs.Workspaces;
 using WorkspaceService.Domain.Entities;
 
@@ -8,7 +9,8 @@ public class WorkspacesProfile : Profile
 {
     public WorkspacesProfile()
     {
-        CreateMap<Workspaces, WorkspaceDto>();
+        CreateMap<Workspaces, WorkspaceDto>()
+            .AfterMap<WorkspaceMappingAction>();
         CreateMap<CreateWorkspaceRequest, Workspaces>();
         CreateMap<UpdateWorkspaceRequest, Workspaces>();
     }

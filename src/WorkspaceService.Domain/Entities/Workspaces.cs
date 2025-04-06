@@ -6,7 +6,7 @@ public class Workspaces : IEntity<string>, IAuditable
 {
     public string Id { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
-    public string PictureUrl { get; set; } = string.Empty;
+    public string? PicturePath { get; set; }
     public virtual List<WorkspaceRoles> Roles { get; set; } = new List<WorkspaceRoles>();
     public virtual List<WorkspacePositions> Positions { get; set; } = new List<WorkspacePositions>();
     public virtual List<WorkspaceUsers> Users { get; set; } = new List<WorkspaceUsers>();

@@ -1,3 +1,6 @@
 ﻿namespace WorkspaceService.Domain.DTOs;
 
-public record class ListRequestWithUserId(string UserId) : ListRequest;
+public class ListRequestWithUserId : ListRequest
+{
+    public string UserId { get; set; }
+}
