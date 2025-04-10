@@ -8,7 +8,7 @@ public class WorkspaceRoleClaimsConfiguration : IEntityTypeConfiguration<Workspa
 {
     public void Configure(EntityTypeBuilder<WorkspaceRoleClaims> builder)
     {
-        builder.ToTable("WorkspaceRoleClaims", "workspace");
+        builder.ToTable("workspace_role_claim", "auth");
 
         builder.HasKey(rc => rc.Id);
         builder.Property(rc => rc.Id)

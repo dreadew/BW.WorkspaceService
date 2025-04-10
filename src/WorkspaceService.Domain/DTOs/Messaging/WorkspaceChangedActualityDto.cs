@@ -1,3 +1,6 @@
 namespace WorkspaceService.Domain.DTOs.Messaging;
 
-public record class WorkspaceChangedActualityDto(string WorkspaceId, bool Actuality);
+public class WorkspaceChangedActualityDto{
+    public string WorkspaceId { get; set; }
+    public bool Actuality { get; set; }
+}

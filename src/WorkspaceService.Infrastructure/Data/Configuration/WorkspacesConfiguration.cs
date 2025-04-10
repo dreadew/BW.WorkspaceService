@@ -8,7 +8,7 @@ public class WorkspacesConfiguration : IEntityTypeConfiguration<Workspaces>
 {
     public void Configure(EntityTypeBuilder<Workspaces> builder)
     {
-        builder.ToTable("Workspaces", "workspace");
+        builder.ToTable("workspace", "workspace");
 
         builder.HasKey(w => w.Id);
         builder.Property(w => w.Id)
@@ -17,8 +17,10 @@ public class WorkspacesConfiguration : IEntityTypeConfiguration<Workspaces>
         builder.Property(w => w.Name)
             .IsRequired()
             .HasMaxLength(256);
+        builder.HasIndex(w => w.Name)
+            .IsUnique();
 
-        builder.Property(w => w.PictureUrl)
+        builder.Property(w => w.PicturePath)
             .HasMaxLength(512);
 
         builder.Property(w => w.CreatedAt)

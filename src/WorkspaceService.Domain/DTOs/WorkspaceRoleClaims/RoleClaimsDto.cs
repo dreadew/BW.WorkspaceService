@@ -1,4 +1,7 @@
 ﻿namespace WorkspaceService.Domain.DTOs.WorkspaceRoleClaims;
 
-public record class RoleClaimsDto(string Id, 
-    string Value);
+public class RoleClaimsDto
+{
+    public string Id { get; set; }
+    public string Value { get; set; }
+} 

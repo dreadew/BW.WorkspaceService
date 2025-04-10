@@ -1,13 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
-namespace WorkspaceService.Domain.DTOs.WorkspaceUsers;
+namespace WorkspaceService.Domain.DTOs.Workspaces;
 
-public class DeleteUserRequest
+public class RestoreWorkspaceRequest
 {
     [Display(Name = "Идентификатор пользователя")]
     public string FromId { get; set; }
     [Display(Name = "Идентификатор рабочего пространства")]
     public string WorkspaceId { get; set; }
-    [Display(Name = "Идентификатор пользователя")]
-    public string UserId { get; set; }
 }

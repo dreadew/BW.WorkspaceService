@@ -92,6 +92,5 @@ public static class InfrastructureExtension
         services.Configure<VaultOptions>(
             configuration.GetSection(VaultConstants.VaultSection));
         services.AddSingleton<IVaultService, VaultService>();
-        //services.AddSingleton<ISecretsProvider, InfiscalSecretsProvider>();
     }
 }

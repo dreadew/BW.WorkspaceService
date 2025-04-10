@@ -1,4 +1,5 @@
 ﻿using WorkspaceService.Domain.DTOs;
+using WorkspaceService.Domain.DTOs.File;
 using WorkspaceService.Domain.DTOs.Workspaces;
 using WorkspaceService.Domain.DTOs.WorkspaceUsers;
 
@@ -21,6 +22,9 @@ public interface IWorkspaceService
     Task DeleteAsync(DeleteWorkspaceRequest dto,
         CancellationToken cancellationToken = default);
 
+    Task RestoreAsync(RestoreWorkspaceRequest dto,
+        CancellationToken cancellationToken = default);
+
     Task InviteUserAsync(InviteUserRequest dto,
         CancellationToken cancellationToken = default);
 
@@ -28,5 +32,13 @@ public interface IWorkspaceService
         CancellationToken cancellationToken = default);
 
     Task DeleteUserAsync(DeleteUserRequest dto,
+        CancellationToken cancellationToken = default);
+
+    Task UploadPictureAsync(string workspaceId,
+        FileUploadRequest dto,
+        CancellationToken cancellationToken = default);
+
+    Task DeletePictureAsync(string workspaceId,
+        FileDeleteRequest dto,
         CancellationToken cancellationToken = default);
 }

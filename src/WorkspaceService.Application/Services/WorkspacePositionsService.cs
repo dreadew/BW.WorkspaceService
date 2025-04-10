@@ -50,21 +50,11 @@ public class WorkspacePositionsService : IWorkspacePositionsService
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task DeleteAsync(string id, CancellationToken cancellationToken = default)
-    {
-        var workspacePositionsRepository = _unitOfWork.Repository<WorkspacePositions>();
-        var position = await workspacePositionsRepository.GetByIdAsync(id, 
-            cancellationToken);
-        if (position == null)
-        {
-            throw new NotFoundException("Должность не найдена");
-        }
-        
-        position.IsDeleted = true;
-        //await workspacePositionsRepository.DeleteAsync(x => x.Id == id, cancellationToken);
-        await workspacePositionsRepository.UpdateAsync(position, cancellationToken);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-    }
+    public async Task DeleteAsync(string id, CancellationToken cancellationToken = 
+            default) => await UpdateActualityInternal(id, false, cancellationToken);
+    
+    public async Task RestoreAsync(string id, CancellationToken cancellationToken = 
+        default) => await UpdateActualityInternal(id, true, cancellationToken);
 
     public async Task<PositionDto> GetByIdAsync(string id,
         CancellationToken cancellationToken = default)
@@ -95,5 +85,22 @@ public class WorkspacePositionsService : IWorkspacePositionsService
         return _mapper.Map<IEnumerable<PositionDto>>(positions
             .Take(dto.Limit)
             .Skip(dto.Offset));
+    }
+
+    private async Task UpdateActualityInternal(string id, bool isDeleted,
+        CancellationToken cancellationToken = default)
+    {
+        var workspacePositionsRepository = _unitOfWork.Repository<WorkspacePositions>();
+        var position = await workspacePositionsRepository.GetByIdAsync(id, 
+            cancellationToken);
+        if (position == null)
+        {
+            throw new NotFoundException("Должность не найдена");
+        }
+        
+        position.IsDeleted = isDeleted;
+        //await workspacePositionsRepository.DeleteAsync(x => x.Id == id, cancellationToken);
+        await workspacePositionsRepository.UpdateAsync(position, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken); 
     }
 }

@@ -43,6 +43,7 @@ public static class ApplicationExtension
         services.AddAutoMapper(typeof(WorkspacePositionsProfile));
         services.AddAutoMapper(typeof(WorkspaceRolesProfile));
         services.AddAutoMapper(typeof(WorkspaceDirectoryProfile));
+        services.AddAutoMapper(typeof(FileProfile));
     }
 
     /// <summary>
@@ -77,6 +78,7 @@ public static class ApplicationExtension
         services.AddScoped<IWorkspacePositionsService, WorkspacePositionsService>();
         services.AddScoped<IWorkspaceRolesService, WorkspaceRolesService>();
         services.AddScoped<IWorkspaceDirectoryService, WorkspaceDirectoryService>();
+        services.AddScoped<IWorkspaceRoleClaimsService, WorkspaceRoleClaimsService>();
         services.AddScoped<IClaimsService, ClaimsService>();
     }
 }

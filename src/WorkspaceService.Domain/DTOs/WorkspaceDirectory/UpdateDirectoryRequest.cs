@@ -2,6 +2,8 @@
 
 namespace WorkspaceService.Domain.DTOs.WorkspaceDirectory;
 
-public record class UpdateDirectoryRequest(
-    [property: Display(Name="Идентификатор папки")] string Id,
-    [property: Display(Name="Название")] string? Name);
+public class UpdateDirectoryRequest
+{
+    [Display(Name="Идентификатор папки")] public string Id { get; set; }
+    [Display(Name="Название")] public string? Name { get; set; }
+}

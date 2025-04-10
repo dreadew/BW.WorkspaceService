@@ -2,9 +2,16 @@
 
 namespace WorkspaceService.Domain.DTOs.WorkspaceUsers;
 
-public record class UpdateUserRequest(
-    [property: Display(Name="Идентификатор пользователя")] string FromId,
-    [property: Display(Name="Идентификатор рабочего пространства")] string WorkspaceId,
-    [property: Display(Name="Идентификатор пользователя")] string UserId, 
-    [property: Display(Name="Идентификатор роли")]string? RoleId, 
-    [property: Display(Name="Идентификатор должности")] string? PositionId);
+public class UpdateUserRequest
+{
+    [Display(Name = "Идентификатор пользователя")]
+    public string FromId { get; set; }
+    [Display(Name = "Идентификатор рабочего пространства")]
+    public string WorkspaceId { get; set; }
+    [Display(Name = "Идентификатор пользователя")]
+    public string UserId { get; set; }
+    [Display(Name = "Идентификатор роли")]
+    public string? RoleId { get; set; }
+    [Display(Name = "Идентификатор должности")]
+    public string? PositionId { get; set; }
+}

@@ -27,6 +27,11 @@ builder.Services.AddObservability(builder.Configuration, builder.Environment);
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 
+if (!Directory.Exists("logs"))
+{
+    Directory.CreateDirectory("logs");
+}
+
 Log.Information("Запуск: Workspace Service");
 SwaggerExtensions.LogSwaggerConfiguration(builder.Configuration);
 ApiExtensions.LogApiConfiguration(builder.Configuration);

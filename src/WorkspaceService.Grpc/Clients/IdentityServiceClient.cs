@@ -41,8 +41,17 @@ public class IdentityServiceClient : IIdentityServiceClient
             var request = new GetByIdRequest() { Id = id };
             var user = (await _client.GetByIdAsync(request)).User;
 
-            var userDto = new UserDto(user.Id, user.Username, user.Email, 
-                user.PhoneNumber, user.PhotoPath, user.CreatedAt.ToDateTime(), null);
+            var userDto = new UserDto()
+            {
+                Id = user.Id,
+                Username = user.Username,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                PhotoPath = user.PhotoPath,
+                CreatedAt = user.CreatedAt.ToDateTime(),
+                ModifiedAt = null
+            };
+            
             return userDto;
         }
         catch (Exception ex)
@@ -63,8 +72,17 @@ public class IdentityServiceClient : IIdentityServiceClient
 
             foreach (var user in response)
             {
-                var userDto = new UserDto(user.Id, user.Username, user.Email, 
-                    user.PhoneNumber, user.PhotoPath, user.CreatedAt.ToDateTime(), null);
+                var userDto = new UserDto()
+                {
+                    Id = user.Id,
+                    Username = user.Username,
+                    Email = user.Email,
+                    PhoneNumber = user.PhoneNumber,
+                    PhotoPath = user.PhotoPath,
+                    CreatedAt = user.CreatedAt.ToDateTime(),
+                    ModifiedAt = null
+                };
+                
                 users.Add(userDto);
             }
             

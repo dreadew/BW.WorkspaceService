@@ -10,16 +10,20 @@ public static class ObservabilityExtensions
     public static IServiceCollection AddObservability(this IServiceCollection services,
         IConfiguration configuration, IWebHostEnvironment environment)
     {
+        var agentHost = configuration.GetValue<string>("Jaeger:AgentHost");
+        var agentPort = configuration.GetValue<int>("Jaeger:AgentPort");
+        
         services.AddOpenTelemetry()
             .ConfigureResource(resource => resource.AddService(environment.ApplicationName))
             .WithTracing(providerBuilder =>
             {
                 providerBuilder
+                    .SetSampler(new AlwaysOnSampler())
                     .AddAspNetCoreInstrumentation()
                     .AddJaegerExporter(opts =>
                     {
-                        opts.AgentHost = configuration["Jaeger:AgentHost"] ?? "localhost";
-                        opts.AgentPort = int.Parse(configuration["Jaeger:AgentPort"] ?? "6831");
+                        opts.AgentHost = agentHost;
+                        opts.AgentPort = agentPort;
                     });
             });
             

@@ -1,5 +1,7 @@
 ﻿namespace WorkspaceService.Domain.DTOs.File;
 
-public record class UploadedFileResponse(
-    string FilePath,
-    string Url);
+public class UploadedFileResponse
+{
+    public string FilePath { get; set; }
+    public string Url { get; set; }
+}

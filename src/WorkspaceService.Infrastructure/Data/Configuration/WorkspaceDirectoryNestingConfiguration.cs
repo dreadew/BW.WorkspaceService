@@ -8,6 +8,7 @@ public class WorkspaceDirectoryNestingConfiguration : IEntityTypeConfiguration<W
 {
     public void Configure(EntityTypeBuilder<WorkspaceDirectoryNesting> builder)
     {
+        builder.ToTable("workspace_directory_nesting", "workspace");
         builder.HasKey(dn => new { dn.ParentDirectoryId, dn.ChildDirectoryId });
 
         builder.HasOne(dn => dn.ParentDirectoryNavigation)

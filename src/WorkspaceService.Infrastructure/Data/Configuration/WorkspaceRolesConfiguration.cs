@@ -8,7 +8,7 @@ public class WorkspaceRolesConfiguration : IEntityTypeConfiguration<WorkspaceRol
 {
     public void Configure(EntityTypeBuilder<WorkspaceRoles> builder)
     {
-        builder.ToTable("WorkspaceRoles", "workspace");
+        builder.ToTable("workspace_role", "auth");
 
         builder.HasKey(r => r.Id);
         builder.Property(r => r.Id)
@@ -17,6 +17,8 @@ public class WorkspaceRolesConfiguration : IEntityTypeConfiguration<WorkspaceRol
         builder.Property(r => r.Name)
             .IsRequired()
             .HasMaxLength(128);
+        builder.HasIndex(r => new { r.WorkspaceId, r.Name })
+            .IsUnique();
 
         builder.Property(r => r.WorkspaceId)
             .IsRequired();

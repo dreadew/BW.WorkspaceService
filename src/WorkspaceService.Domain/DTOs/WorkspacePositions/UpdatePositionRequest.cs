@@ -2,8 +2,14 @@
 
 namespace WorkspaceService.Domain.DTOs.WorkspacePositions;
 
-public record class UpdatePositionRequest(
-    [property: Display(Name="Идентификатор должности")] string Id,
-    [property: Display(Name="Название")] string Name, 
-    [property: Display(Name="Идентификатор рабочего пространства")] string WorkspaceId,
-    [property: Display(Name="Признак актуальность")] bool? IsDeleted);
+public class UpdatePositionRequest
+{
+    [Display(Name="Идентификатор должности")] 
+    public string Id { get; set; }
+    [Display(Name="Название")] 
+    public string Name { get; set; }
+    [Display(Name="Идентификатор рабочего пространства")] 
+    public string WorkspaceId { get; set; }
+    [Display(Name="Признак актуальность")] 
+    public bool? IsDeleted { get; set; }
+}

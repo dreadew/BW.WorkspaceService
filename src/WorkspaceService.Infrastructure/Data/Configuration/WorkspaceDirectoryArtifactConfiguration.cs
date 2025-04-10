@@ -8,7 +8,7 @@ public class WorkspaceDirectoryArtifactConfiguration : IEntityTypeConfiguration<
 {
     public void Configure(EntityTypeBuilder<WorkspaceDirectoryArtifact> builder)
     {
-        builder.ToTable("WorkspaceDirectoryArtifact", "workspace");
+        builder.ToTable("workspace_directory_artifact", "workspace");
 
         builder.HasKey(a => a.Id);
         builder.Property(a => a.Id)
@@ -18,7 +18,7 @@ public class WorkspaceDirectoryArtifactConfiguration : IEntityTypeConfiguration<
             .IsRequired()
             .HasMaxLength(256);
 
-        builder.Property(a => a.Url)
+        builder.Property(a => a.Path)
             .IsRequired()
             .HasMaxLength(1024);
 

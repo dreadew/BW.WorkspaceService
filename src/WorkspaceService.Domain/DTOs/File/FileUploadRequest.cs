@@ -1,10 +1,9 @@
-﻿namespace WorkspaceService.Domain.DTOs.File;
+namespace WorkspaceService.Domain.DTOs.File;
 
-public class FileUploadDto
+public class FileUploadRequest
 {
     public string FromId { get; set; }
     public byte[] Content { get; set; }
     public string FileName { get; set; }
     public string ContentType { get; set; }
-    public List<string>? Paths { get; set; }
 }

@@ -2,7 +2,12 @@
 
 namespace WorkspaceService.Domain.DTOs.WorkspaceRoles;
 
-public record class UpdateRoleRequest(
-    [property: Display(Name="Идентификатор роли")] string Id,
-    [property: Display(Name="Название")] string Name,
-    [property: Display(Name="Признак актуальность")] bool? IsDeleted);
+public class UpdateRoleRequest
+{
+    [Display(Name = "Идентификатор роли")]
+    public string Id { get; set; }
+    [Display(Name = "Название")] 
+    public string Name { get; set; }
+    [Display(Name = "Признак актуальность")]
+    public bool? IsDeleted { get; set; }
+}

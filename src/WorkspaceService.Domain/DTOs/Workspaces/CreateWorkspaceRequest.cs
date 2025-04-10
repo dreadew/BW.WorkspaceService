@@ -2,6 +2,10 @@
 
 namespace WorkspaceService.Domain.DTOs.Workspaces;
 
-public record class CreateWorkspaceRequest(
-    [property: Display(Name="Идентификатор пользователя")] string UserId,
-    [property: Display(Name="Название")] string Name);
+public class CreateWorkspaceRequest
+{
+    [Display(Name = "Идентификатор пользователя")]
+    public string UserId { get; set; }
+    [Display(Name = "Название")]
+    public string Name { get; set; }
+}

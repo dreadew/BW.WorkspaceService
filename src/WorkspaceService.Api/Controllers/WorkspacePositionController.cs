@@ -83,4 +83,13 @@ public class WorkspacePositionController : ControllerBase
         await _workspacePositionsService.DeleteAsync(id, cancellationToken);
         return Ok();
     }
+    
+    [HttpPost("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult> RestoreAsync(string id,
+        CancellationToken cancellationToken = default)
+    {
+        await _workspacePositionsService.RestoreAsync(id, cancellationToken);
+        return Ok();
+    }
 }
