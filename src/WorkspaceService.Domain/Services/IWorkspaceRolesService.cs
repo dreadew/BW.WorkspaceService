@@ -12,6 +12,8 @@ public interface IWorkspaceRolesService
         CancellationToken cancellationToken = default);
 
     Task DeleteAsync(string id, CancellationToken cancellationToken = default);
+
+    Task RestoreAsync(string id, CancellationToken cancellationToken = default);
     
     Task<RoleDto> GetByIdAsync(string id, CancellationToken cancellationToken = default);
 

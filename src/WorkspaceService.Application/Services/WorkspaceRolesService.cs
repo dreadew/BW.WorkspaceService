@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using WorkspaceService.Domain.DTOs;
 using WorkspaceService.Domain.DTOs.WorkspaceRoles;
@@ -49,20 +50,11 @@ public class WorkspaceRolesService : IWorkspaceRolesService
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task DeleteAsync(string id, CancellationToken cancellationToken = default)
-    {
-        var workspaceRolesRepository = _unitOfWork.Repository<WorkspaceRoles>();
-        var role = await workspaceRolesRepository.GetByIdAsync(id, cancellationToken);
-        if (role == null)
-        {
-            throw new NotFoundException("Роль не найдена");
-        }
-        
-        role.IsDeleted = true;
-        //await workspaceRolesRepository.DeleteAsync(x => x.Id == id, cancellationToken);
-        await workspaceRolesRepository.UpdateAsync(role, cancellationToken);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-    }
+    public async Task DeleteAsync(string id, CancellationToken cancellationToken =
+        default) => await UpdateActualityInternal(id, false, cancellationToken);
+    
+    public async Task RestoreAsync(string id, CancellationToken cancellationToken =
+        default) => await UpdateActualityInternal(id, true, cancellationToken);
 
     public async Task<RoleDto> GetByIdAsync(string id, CancellationToken cancellationToken = default)
     {
@@ -90,5 +82,21 @@ public class WorkspaceRolesService : IWorkspaceRolesService
         return _mapper.Map<IEnumerable<RoleDto>>(roles
             .Take(dto.Limit)
             .Skip(dto.Offset));
+    }
+
+    private async Task UpdateActualityInternal(string id, bool isDeleted,
+        CancellationToken cancellationToken = default)
+    {
+        var workspaceRolesRepository = _unitOfWork.Repository<WorkspaceRoles>();
+        var role = await workspaceRolesRepository.GetByIdAsync(id, cancellationToken);
+        if (role == null)
+        {
+            throw new NotFoundException("Роль не найдена");
+        }
+        
+        role.IsDeleted = isDeleted;
+        //await workspaceRolesRepository.DeleteAsync(x => x.Id == id, cancellationToken);
+        await workspaceRolesRepository.UpdateAsync(role, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken); 
     }
 }

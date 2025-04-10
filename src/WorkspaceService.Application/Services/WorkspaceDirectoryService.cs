@@ -53,23 +53,14 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
         await workspaceDirectoryRepository.UpdateAsync(directory, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
-    
+
     public async Task DeleteAsync(string id,
-        CancellationToken cancellationToken = default)
-    {
-        var workspaceDirectoryRepository = _unitOfWork.Repository<WorkspaceDirectory>();
-        var directory = await workspaceDirectoryRepository.FindAsync(x => x.Id == id,
-            cancellationToken);
-        if (directory == null)
-        {
-            throw new NotFoundException("Не удалось найти директорию");
-        }
-        
-        directory.IsDeleted = true;
-        //await workspaceDirectoryRepository.DeleteAsync(x => x.Id == id, cancellationToken);
-        await workspaceDirectoryRepository.UpdateAsync(directory, cancellationToken);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-    }
+        CancellationToken cancellationToken = default) => await UpdateActualityInternal
+        (id, false, cancellationToken);
+
+    public async Task RestoreAsync(string id,
+        CancellationToken cancellationToken = default) => await UpdateActualityInternal
+        (id, true, cancellationToken);
     
     public async Task<DirectoryDto> GetByIdAsync(string id,
         CancellationToken cancellationToken = default)
@@ -166,5 +157,22 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
         await workspaceDirectoryArtifactRepository.DeleteAsync(x => x.Id == dto
             .Id, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    private async Task UpdateActualityInternal(string id, bool isDeleted,
+        CancellationToken cancellationToken = default)
+    {
+        var workspaceDirectoryRepository = _unitOfWork.Repository<WorkspaceDirectory>();
+        var directory = await workspaceDirectoryRepository.FindAsync(x => x.Id == id,
+            cancellationToken);
+        if (directory == null)
+        {
+            throw new NotFoundException("Не удалось найти директорию");
+        }
+        
+        directory.IsDeleted = isDeleted;
+        //await workspaceDirectoryRepository.DeleteAsync(x => x.Id == id, cancellationToken);
+        await workspaceDirectoryRepository.UpdateAsync(directory, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken); 
     }
 }

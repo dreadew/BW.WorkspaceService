@@ -24,10 +24,12 @@ public class KafkaProducerService : IKafkaProducerService
         _producer = new ProducerBuilder<string, string>(config).Build();
     }
 
-    public async Task PublishAsync<T>(string topic, T message)
+    public async Task PublishWithSerializationAsync<T>(string topic, T message)
     {
         var serializedMessage = JsonSerializer.Serialize(message);
-        await _producer.ProduceAsync(topic, 
-            new Message<string, string> { Key = Guid.NewGuid().ToString(), Value = serializedMessage });
+        await PublishAsync(topic, serializedMessage);
     }
+
+    public async Task PublishAsync(string topic, string message) => await _producer.ProduceAsync(topic, 
+            new Message<string, string> { Key = Guid.NewGuid().ToString(), Value = message });
 }

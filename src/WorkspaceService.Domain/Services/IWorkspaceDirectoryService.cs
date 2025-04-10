@@ -12,6 +12,8 @@ public interface IWorkspaceDirectoryService
         CancellationToken cancellationToken = default);
     Task DeleteAsync(string id,
         CancellationToken cancellationToken = default);
+    Task RestoreAsync(string id,
+        CancellationToken cancellationToken = default);
     Task<DirectoryDto> GetByIdAsync(string id,
         CancellationToken cancellationToken = default);
     Task<IEnumerable<DirectoryDto>> ListAsync(ListRequest dto,

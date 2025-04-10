@@ -83,13 +83,17 @@ public class WorkspaceController : ControllerBase
         DeleteWorkspaceRequest dto,
         CancellationToken cancellationToken = default)
     {
-        var userId = HttpContext.Request.Headers["UserId"].FirstOrDefault();
-        if (string.IsNullOrEmpty(userId) || !Guid.TryParse(userId, out _))
-        {
-            return StatusCode(StatusCodes.Status400BadRequest, ModelState);
-        }
-
         await _workspaceService.DeleteAsync(dto, cancellationToken);
+        return Ok();
+    }
+    
+    [HttpPost("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult> RestoreAsync(
+        RestoreWorkspaceRequest dto,
+        CancellationToken cancellationToken = default)
+    {
+        await _workspaceService.RestoreAsync(dto, cancellationToken);
         return Ok();
     }
 

@@ -22,6 +22,9 @@ public interface IWorkspaceService
     Task DeleteAsync(DeleteWorkspaceRequest dto,
         CancellationToken cancellationToken = default);
 
+    Task RestoreAsync(RestoreWorkspaceRequest dto,
+        CancellationToken cancellationToken = default);
+
     Task InviteUserAsync(InviteUserRequest dto,
         CancellationToken cancellationToken = default);
 

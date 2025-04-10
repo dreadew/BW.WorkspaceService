@@ -84,6 +84,15 @@ public class WorkspaceDirectoryController : ControllerBase
         await _workspaceDirectoryService.DeleteAsync(id, cancellationToken);
         return Ok();
     }
+    
+    [HttpPost("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult> RestoreAsync(string id,
+        CancellationToken cancellationToken = default)
+    {
+        await _workspaceDirectoryService.RestoreAsync(id, cancellationToken);
+        return Ok();
+    }
 
     [HttpPost("{id:guid}/artifact")]
     [ProducesResponseType(StatusCodes.Status200OK)]

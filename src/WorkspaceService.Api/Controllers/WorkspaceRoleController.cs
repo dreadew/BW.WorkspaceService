@@ -82,4 +82,13 @@ public class WorkspaceRoleController : ControllerBase
         await _workspaceRolesService.DeleteAsync(id, cancellationToken);
         return Ok();
     }
+    
+    [HttpPost("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult> RestoreAsync(string id,
+        CancellationToken cancellationToken = default)
+    {
+        await _workspaceRolesService.RestoreAsync(id, cancellationToken);
+        return Ok();
+    }
 }

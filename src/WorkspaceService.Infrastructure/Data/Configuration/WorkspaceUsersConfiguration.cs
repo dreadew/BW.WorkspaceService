@@ -8,7 +8,7 @@ public class WorkspaceUsersConfiguration : IEntityTypeConfiguration<WorkspaceUse
 {
     public void Configure(EntityTypeBuilder<WorkspaceUsers> builder)
     {
-        builder.ToTable("WorkspaceUsers", "workspace");
+        builder.ToTable("workspace_user", "workspace");
         
         builder.HasKey(wu => new { wu.WorkspaceId, wu.UserId });
 

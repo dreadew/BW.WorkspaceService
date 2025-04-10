@@ -8,7 +8,7 @@ public class WorkspacePositionsConfiguration : IEntityTypeConfiguration<Workspac
 {
     public void Configure(EntityTypeBuilder<WorkspacePositions> builder)
     {
-        builder.ToTable("WorkspacePositions", "workspace");
+        builder.ToTable("workspace_position", "workspace");
 
         builder.HasKey(p => p.Id);
         builder.Property(p => p.Id)
@@ -17,6 +17,8 @@ public class WorkspacePositionsConfiguration : IEntityTypeConfiguration<Workspac
         builder.Property(p => p.Name)
             .IsRequired()
             .HasMaxLength(128);
+        builder.HasIndex(p => new { p.Name, p.WorkspaceId })
+            .IsUnique();
 
         builder.Property(p => p.WorkspaceId)
             .IsRequired();
