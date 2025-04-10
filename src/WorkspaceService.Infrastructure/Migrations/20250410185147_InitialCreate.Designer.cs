@@ -12,7 +12,7 @@ using WorkspaceService.Infrastructure.Data;
 namespace WorkspaceService.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250410184956_InitialCreate")]
+    [Migration("20250410185147_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -77,7 +77,10 @@ namespace WorkspaceService.Infrastructure.Migrations
 
                     b.HasIndex("WorkspaceId");
 
-                    b.ToTable("WorkspaceDirectory", "workspace");
+                    b.HasIndex("Name", "WorkspaceId")
+                        .IsUnique();
+
+                    b.ToTable("workspace_directory", "workspace");
                 });
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceDirectoryArtifact", b =>
@@ -103,7 +106,7 @@ namespace WorkspaceService.Infrastructure.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
-                    b.Property<string>("Url")
+                    b.Property<string>("Path")
                         .IsRequired()
                         .HasMaxLength(1024)
                         .HasColumnType("character varying(1024)");
@@ -112,7 +115,7 @@ namespace WorkspaceService.Infrastructure.Migrations
 
                     b.HasIndex("DirectoryId");
 
-                    b.ToTable("WorkspaceDirectoryArtifact", "workspace");
+                    b.ToTable("workspace_directory_artifact", "workspace");
                 });
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceDirectoryNesting", b =>
@@ -127,7 +130,7 @@ namespace WorkspaceService.Infrastructure.Migrations
 
                     b.HasIndex("ChildDirectoryId");
 
-                    b.ToTable("Nesting");
+                    b.ToTable("workspace_directory_nesting", "workspace");
                 });
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspacePositions", b =>
@@ -162,7 +165,10 @@ namespace WorkspaceService.Infrastructure.Migrations
 
                     b.HasIndex("WorkspaceId");
 
-                    b.ToTable("WorkspacePositions", "workspace");
+                    b.HasIndex("Name", "WorkspaceId")
+                        .IsUnique();
+
+                    b.ToTable("workspace_position", "workspace");
                 });
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceRoleClaims", b =>
@@ -188,7 +194,7 @@ namespace WorkspaceService.Infrastructure.Migrations
 
                     b.HasIndex("WorkspaceRolesId");
 
-                    b.ToTable("WorkspaceRoleClaims", "workspace");
+                    b.ToTable("workspace_role_claim", "auth");
                 });
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceRoles", b =>
@@ -221,9 +227,10 @@ namespace WorkspaceService.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("WorkspaceId");
+                    b.HasIndex("WorkspaceId", "Name")
+                        .IsUnique();
 
-                    b.ToTable("WorkspaceRoles", "workspace");
+                    b.ToTable("workspace_role", "auth");
                 });
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceUsers", b =>
@@ -260,7 +267,7 @@ namespace WorkspaceService.Infrastructure.Migrations
 
                     b.HasIndex("RoleId1");
 
-                    b.ToTable("WorkspaceUsers", "workspace");
+                    b.ToTable("workspace_user", "workspace");
                 });
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.Workspaces", b =>
@@ -290,14 +297,16 @@ namespace WorkspaceService.Infrastructure.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
-                    b.Property<string>("PictureUrl")
-                        .IsRequired()
+                    b.Property<string>("PicturePath")
                         .HasMaxLength(512)
                         .HasColumnType("character varying(512)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Workspaces", "workspace");
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("workspace", "workspace");
                 });
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceDirectory", b =>

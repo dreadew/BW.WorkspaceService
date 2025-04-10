@@ -74,7 +74,10 @@ namespace WorkspaceService.Infrastructure.Migrations
 
                     b.HasIndex("WorkspaceId");
 
-                    b.ToTable("WorkspaceDirectory", "workspace");
+                    b.HasIndex("Name", "WorkspaceId")
+                        .IsUnique();
+
+                    b.ToTable("workspace_directory", "workspace");
                 });
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceDirectoryArtifact", b =>
@@ -109,7 +112,7 @@ namespace WorkspaceService.Infrastructure.Migrations
 
                     b.HasIndex("DirectoryId");
 
-                    b.ToTable("WorkspaceDirectoryArtifact", "workspace");
+                    b.ToTable("workspace_directory_artifact", "workspace");
                 });
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceDirectoryNesting", b =>
@@ -124,7 +127,7 @@ namespace WorkspaceService.Infrastructure.Migrations
 
                     b.HasIndex("ChildDirectoryId");
 
-                    b.ToTable("Nesting");
+                    b.ToTable("workspace_directory_nesting", "workspace");
                 });
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspacePositions", b =>
@@ -159,7 +162,10 @@ namespace WorkspaceService.Infrastructure.Migrations
 
                     b.HasIndex("WorkspaceId");
 
-                    b.ToTable("WorkspacePositions", "workspace");
+                    b.HasIndex("Name", "WorkspaceId")
+                        .IsUnique();
+
+                    b.ToTable("workspace_position", "workspace");
                 });
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceRoleClaims", b =>
@@ -185,7 +191,7 @@ namespace WorkspaceService.Infrastructure.Migrations
 
                     b.HasIndex("WorkspaceRolesId");
 
-                    b.ToTable("WorkspaceRoleClaims", "workspace");
+                    b.ToTable("workspace_role_claim", "auth");
                 });
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceRoles", b =>
@@ -218,9 +224,10 @@ namespace WorkspaceService.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("WorkspaceId");
+                    b.HasIndex("WorkspaceId", "Name")
+                        .IsUnique();
 
-                    b.ToTable("WorkspaceRoles", "workspace");
+                    b.ToTable("workspace_role", "auth");
                 });
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceUsers", b =>
@@ -257,7 +264,7 @@ namespace WorkspaceService.Infrastructure.Migrations
 
                     b.HasIndex("RoleId1");
 
-                    b.ToTable("WorkspaceUsers", "workspace");
+                    b.ToTable("workspace_user", "workspace");
                 });
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.Workspaces", b =>
@@ -293,7 +300,10 @@ namespace WorkspaceService.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Workspaces", "workspace");
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("workspace", "workspace");
                 });
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceDirectory", b =>

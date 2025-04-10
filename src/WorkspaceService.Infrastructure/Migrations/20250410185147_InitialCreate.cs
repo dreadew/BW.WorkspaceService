@@ -14,6 +14,9 @@ namespace WorkspaceService.Infrastructure.Migrations
             migrationBuilder.EnsureSchema(
                 name: "workspace");
 
+            migrationBuilder.EnsureSchema(
+                name: "auth");
+
             migrationBuilder.CreateTable(
                 name: "Events",
                 columns: table => new
@@ -29,13 +32,13 @@ namespace WorkspaceService.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Workspaces",
+                name: "workspace",
                 schema: "workspace",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    PictureUrl = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
+                    PicturePath = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -44,11 +47,11 @@ namespace WorkspaceService.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Workspaces", x => x.Id);
+                    table.PrimaryKey("PK_workspace", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "WorkspaceDirectory",
+                name: "workspace_directory",
                 schema: "workspace",
                 columns: table => new
                 {
@@ -62,18 +65,18 @@ namespace WorkspaceService.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_WorkspaceDirectory", x => x.Id);
+                    table.PrimaryKey("PK_workspace_directory", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_WorkspaceDirectory_Workspaces_WorkspaceId",
+                        name: "FK_workspace_directory_workspace_WorkspaceId",
                         column: x => x.WorkspaceId,
                         principalSchema: "workspace",
-                        principalTable: "Workspaces",
+                        principalTable: "workspace",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "WorkspacePositions",
+                name: "workspace_position",
                 schema: "workspace",
                 columns: table => new
                 {
@@ -87,19 +90,19 @@ namespace WorkspaceService.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_WorkspacePositions", x => x.Id);
+                    table.PrimaryKey("PK_workspace_position", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_WorkspacePositions_Workspaces_WorkspaceId",
+                        name: "FK_workspace_position_workspace_WorkspaceId",
                         column: x => x.WorkspaceId,
                         principalSchema: "workspace",
-                        principalTable: "Workspaces",
+                        principalTable: "workspace",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "WorkspaceRoles",
-                schema: "workspace",
+                name: "workspace_role",
+                schema: "auth",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
@@ -112,50 +115,24 @@ namespace WorkspaceService.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_WorkspaceRoles", x => x.Id);
+                    table.PrimaryKey("PK_workspace_role", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_WorkspaceRoles_Workspaces_WorkspaceId",
+                        name: "FK_workspace_role_workspace_WorkspaceId",
                         column: x => x.WorkspaceId,
                         principalSchema: "workspace",
-                        principalTable: "Workspaces",
+                        principalTable: "workspace",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Nesting",
-                columns: table => new
-                {
-                    ParentDirectoryId = table.Column<string>(type: "text", nullable: false),
-                    ChildDirectoryId = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Nesting", x => new { x.ParentDirectoryId, x.ChildDirectoryId });
-                    table.ForeignKey(
-                        name: "FK_Nesting_WorkspaceDirectory_ChildDirectoryId",
-                        column: x => x.ChildDirectoryId,
-                        principalSchema: "workspace",
-                        principalTable: "WorkspaceDirectory",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Nesting_WorkspaceDirectory_ParentDirectoryId",
-                        column: x => x.ParentDirectoryId,
-                        principalSchema: "workspace",
-                        principalTable: "WorkspaceDirectory",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "WorkspaceDirectoryArtifact",
+                name: "workspace_directory_artifact",
                 schema: "workspace",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    Url = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: false),
+                    Path = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: false),
                     DirectoryId = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -163,19 +140,46 @@ namespace WorkspaceService.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_WorkspaceDirectoryArtifact", x => x.Id);
+                    table.PrimaryKey("PK_workspace_directory_artifact", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_WorkspaceDirectoryArtifact_WorkspaceDirectory_DirectoryId",
+                        name: "FK_workspace_directory_artifact_workspace_directory_DirectoryId",
                         column: x => x.DirectoryId,
                         principalSchema: "workspace",
-                        principalTable: "WorkspaceDirectory",
+                        principalTable: "workspace_directory",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "WorkspaceRoleClaims",
+                name: "workspace_directory_nesting",
                 schema: "workspace",
+                columns: table => new
+                {
+                    ParentDirectoryId = table.Column<string>(type: "text", nullable: false),
+                    ChildDirectoryId = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_workspace_directory_nesting", x => new { x.ParentDirectoryId, x.ChildDirectoryId });
+                    table.ForeignKey(
+                        name: "FK_workspace_directory_nesting_workspace_directory_ChildDirect~",
+                        column: x => x.ChildDirectoryId,
+                        principalSchema: "workspace",
+                        principalTable: "workspace_directory",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_workspace_directory_nesting_workspace_directory_ParentDirec~",
+                        column: x => x.ParentDirectoryId,
+                        principalSchema: "workspace",
+                        principalTable: "workspace_directory",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "workspace_role_claim",
+                schema: "auth",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
@@ -185,24 +189,24 @@ namespace WorkspaceService.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_WorkspaceRoleClaims", x => x.Id);
+                    table.PrimaryKey("PK_workspace_role_claim", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_WorkspaceRoleClaims_WorkspaceRoles_RoleId",
+                        name: "FK_workspace_role_claim_workspace_role_RoleId",
                         column: x => x.RoleId,
-                        principalSchema: "workspace",
-                        principalTable: "WorkspaceRoles",
+                        principalSchema: "auth",
+                        principalTable: "workspace_role",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_WorkspaceRoleClaims_WorkspaceRoles_WorkspaceRolesId",
+                        name: "FK_workspace_role_claim_workspace_role_WorkspaceRolesId",
                         column: x => x.WorkspaceRolesId,
-                        principalSchema: "workspace",
-                        principalTable: "WorkspaceRoles",
+                        principalSchema: "auth",
+                        principalTable: "workspace_role",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "WorkspaceUsers",
+                name: "workspace_user",
                 schema: "workspace",
                 columns: table => new
                 {
@@ -215,107 +219,130 @@ namespace WorkspaceService.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_WorkspaceUsers", x => new { x.WorkspaceId, x.UserId });
+                    table.PrimaryKey("PK_workspace_user", x => new { x.WorkspaceId, x.UserId });
                     table.ForeignKey(
-                        name: "FK_WorkspaceUsers_WorkspacePositions_PositionId",
-                        column: x => x.PositionId,
-                        principalSchema: "workspace",
-                        principalTable: "WorkspacePositions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_WorkspaceUsers_WorkspacePositions_PositionId1",
-                        column: x => x.PositionId1,
-                        principalSchema: "workspace",
-                        principalTable: "WorkspacePositions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_WorkspaceUsers_WorkspaceRoles_RoleId",
-                        column: x => x.RoleId,
-                        principalSchema: "workspace",
-                        principalTable: "WorkspaceRoles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_WorkspaceUsers_WorkspaceRoles_RoleId1",
-                        column: x => x.RoleId1,
-                        principalSchema: "workspace",
-                        principalTable: "WorkspaceRoles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_WorkspaceUsers_Workspaces_WorkspaceId",
+                        name: "FK_workspace_user_workspace_WorkspaceId",
                         column: x => x.WorkspaceId,
                         principalSchema: "workspace",
-                        principalTable: "Workspaces",
+                        principalTable: "workspace",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_workspace_user_workspace_position_PositionId",
+                        column: x => x.PositionId,
+                        principalSchema: "workspace",
+                        principalTable: "workspace_position",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_workspace_user_workspace_position_PositionId1",
+                        column: x => x.PositionId1,
+                        principalSchema: "workspace",
+                        principalTable: "workspace_position",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_workspace_user_workspace_role_RoleId",
+                        column: x => x.RoleId,
+                        principalSchema: "auth",
+                        principalTable: "workspace_role",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_workspace_user_workspace_role_RoleId1",
+                        column: x => x.RoleId1,
+                        principalSchema: "auth",
+                        principalTable: "workspace_role",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Nesting_ChildDirectoryId",
-                table: "Nesting",
-                column: "ChildDirectoryId");
+                name: "IX_workspace_Name",
+                schema: "workspace",
+                table: "workspace",
+                column: "Name",
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_WorkspaceDirectory_WorkspaceId",
+                name: "IX_workspace_directory_Name_WorkspaceId",
                 schema: "workspace",
-                table: "WorkspaceDirectory",
+                table: "workspace_directory",
+                columns: new[] { "Name", "WorkspaceId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_workspace_directory_WorkspaceId",
+                schema: "workspace",
+                table: "workspace_directory",
                 column: "WorkspaceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_WorkspaceDirectoryArtifact_DirectoryId",
+                name: "IX_workspace_directory_artifact_DirectoryId",
                 schema: "workspace",
-                table: "WorkspaceDirectoryArtifact",
+                table: "workspace_directory_artifact",
                 column: "DirectoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_WorkspacePositions_WorkspaceId",
+                name: "IX_workspace_directory_nesting_ChildDirectoryId",
                 schema: "workspace",
-                table: "WorkspacePositions",
+                table: "workspace_directory_nesting",
+                column: "ChildDirectoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_workspace_position_Name_WorkspaceId",
+                schema: "workspace",
+                table: "workspace_position",
+                columns: new[] { "Name", "WorkspaceId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_workspace_position_WorkspaceId",
+                schema: "workspace",
+                table: "workspace_position",
                 column: "WorkspaceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_WorkspaceRoleClaims_RoleId",
-                schema: "workspace",
-                table: "WorkspaceRoleClaims",
+                name: "IX_workspace_role_WorkspaceId_Name",
+                schema: "auth",
+                table: "workspace_role",
+                columns: new[] { "WorkspaceId", "Name" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_workspace_role_claim_RoleId",
+                schema: "auth",
+                table: "workspace_role_claim",
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_WorkspaceRoleClaims_WorkspaceRolesId",
-                schema: "workspace",
-                table: "WorkspaceRoleClaims",
+                name: "IX_workspace_role_claim_WorkspaceRolesId",
+                schema: "auth",
+                table: "workspace_role_claim",
                 column: "WorkspaceRolesId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_WorkspaceRoles_WorkspaceId",
+                name: "IX_workspace_user_PositionId",
                 schema: "workspace",
-                table: "WorkspaceRoles",
-                column: "WorkspaceId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_WorkspaceUsers_PositionId",
-                schema: "workspace",
-                table: "WorkspaceUsers",
+                table: "workspace_user",
                 column: "PositionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_WorkspaceUsers_PositionId1",
+                name: "IX_workspace_user_PositionId1",
                 schema: "workspace",
-                table: "WorkspaceUsers",
+                table: "workspace_user",
                 column: "PositionId1");
 
             migrationBuilder.CreateIndex(
-                name: "IX_WorkspaceUsers_RoleId",
+                name: "IX_workspace_user_RoleId",
                 schema: "workspace",
-                table: "WorkspaceUsers",
+                table: "workspace_user",
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_WorkspaceUsers_RoleId1",
+                name: "IX_workspace_user_RoleId1",
                 schema: "workspace",
-                table: "WorkspaceUsers",
+                table: "workspace_user",
                 column: "RoleId1");
         }
 
@@ -326,34 +353,35 @@ namespace WorkspaceService.Infrastructure.Migrations
                 name: "Events");
 
             migrationBuilder.DropTable(
-                name: "Nesting");
-
-            migrationBuilder.DropTable(
-                name: "WorkspaceDirectoryArtifact",
+                name: "workspace_directory_artifact",
                 schema: "workspace");
 
             migrationBuilder.DropTable(
-                name: "WorkspaceRoleClaims",
+                name: "workspace_directory_nesting",
                 schema: "workspace");
 
             migrationBuilder.DropTable(
-                name: "WorkspaceUsers",
+                name: "workspace_role_claim",
+                schema: "auth");
+
+            migrationBuilder.DropTable(
+                name: "workspace_user",
                 schema: "workspace");
 
             migrationBuilder.DropTable(
-                name: "WorkspaceDirectory",
+                name: "workspace_directory",
                 schema: "workspace");
 
             migrationBuilder.DropTable(
-                name: "WorkspacePositions",
+                name: "workspace_position",
                 schema: "workspace");
 
             migrationBuilder.DropTable(
-                name: "WorkspaceRoles",
-                schema: "workspace");
+                name: "workspace_role",
+                schema: "auth");
 
             migrationBuilder.DropTable(
-                name: "Workspaces",
+                name: "workspace",
                 schema: "workspace");
         }
     }
