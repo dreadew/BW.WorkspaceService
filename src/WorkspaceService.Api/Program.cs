@@ -32,7 +32,7 @@ if (!Directory.Exists("logs"))
     Directory.CreateDirectory("logs");
 }
 
-Log.Information("Запуск: Workspace Service");
+Log.Information("- Starting Workspace Service");
 SwaggerExtensions.LogSwaggerConfiguration(builder.Configuration);
 ApiExtensions.LogApiConfiguration(builder.Configuration);
 ObservabilityExtensions.LogObservabilityConfiguration(builder.Configuration);
