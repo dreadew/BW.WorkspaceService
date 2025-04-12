@@ -61,6 +61,7 @@ public class Repository<TEntity> : IRepository<TEntity>
         CancellationToken cancellationToken = default)
     {
         return await _dbContext.Set<TEntity>()
+            .AsNoTracking()
             .OrderBy(x => x.Id)
             .Skip(listParams.Offset)
             .Take(listParams.Limit)
@@ -71,6 +72,7 @@ public class Repository<TEntity> : IRepository<TEntity>
         CancellationToken cancellationToken = default)
     {
         return await _dbContext.Set<TEntity>()
+            .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == id, 
                 cancellationToken);
     }
@@ -79,6 +81,7 @@ public class Repository<TEntity> : IRepository<TEntity>
         CancellationToken cancellationToken = default)
     {
         return await _dbContext.Set<TEntity>()
+            .AsNoTracking()
             .FirstOrDefaultAsync(predicate, cancellationToken);
     }
     
@@ -86,7 +89,9 @@ public class Repository<TEntity> : IRepository<TEntity>
         CancellationToken cancellationToken = default)
     {
         return await _dbContext.Set<TEntity>()
+            .AsNoTracking()
             .Where(predicate)
+            .OrderBy(x => x.Id)
             .ToListAsync(cancellationToken);
     }
 }

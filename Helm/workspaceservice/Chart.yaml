@@ -1,0 +1,4 @@
+apiVersion: v2
+name: workspaceservice
+description: WorkspaceService Helm Chart
+version: 0.1.0

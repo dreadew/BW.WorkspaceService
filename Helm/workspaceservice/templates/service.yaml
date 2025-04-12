@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: workspaceservice
+spec:
+  selector:
+    app: workspaceservice
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80

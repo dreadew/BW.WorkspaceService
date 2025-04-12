@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: workspaceservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: workspaceservice
+  template:
+    metadata:
+      labels:
+        app: workspaceservice
+    spec:
+      containers:
+        - name: workspaceservice
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          envFrom:
+            - secretRef:
+                name: workspaceservice-secrets
