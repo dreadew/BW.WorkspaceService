@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using WorkspaceService.Domain.DTOs;
 using WorkspaceService.Domain.DTOs.File;
@@ -43,8 +44,9 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
         CancellationToken cancellationToken = default)
     {
         var workspaceDirectoryRepository = _unitOfWork.Repository<WorkspaceDirectory>();
-        var directory = await workspaceDirectoryRepository.FindAsync(x => x.Id == dto.Id,
-            cancellationToken);
+        var directory = await workspaceDirectoryRepository
+            .FindMany(x => x.Id == dto.Id)
+            .FirstOrDefaultAsync(cancellationToken);
         if (directory == null)
         {
             throw new NotFoundException("Не удалось найти директорию");
@@ -66,8 +68,12 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
         CancellationToken cancellationToken = default)
     {
         var workspaceDirectoryRepository = _unitOfWork.Repository<WorkspaceDirectory>();
-        var directory = await workspaceDirectoryRepository.FindAsync(x => x.Id == id,
-            cancellationToken);
+        var directory = await workspaceDirectoryRepository
+            .FindMany(x => x.Id == id)
+            .Include(x => x.ChildNesting)
+                .ThenInclude(x => x.ChildDirectoryNavigation)
+            .Include(x => x.Artifacts)
+            .FirstOrDefaultAsync(cancellationToken);
         if (directory == null)
         {
             throw new NotFoundException("Не удалось найти директорию");
@@ -79,8 +85,12 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
         string workspaceId, CancellationToken cancellationToken = default)
     {
         var workspaceDirectoryRepository = _unitOfWork.Repository<WorkspaceDirectory>();
-        var directories = await workspaceDirectoryRepository.FindManyAsync(
-            x => x.WorkspaceId == workspaceId, cancellationToken);
+        var directories = await workspaceDirectoryRepository
+            .FindMany(x => x.WorkspaceId == workspaceId)
+            .Include(x => x.ChildNesting)
+                .ThenInclude(x => x.ChildDirectoryNavigation)
+            .Include(x => x.Artifacts)
+            .ToListAsync(cancellationToken);
         if (directories == null)
         {
             throw new NotFoundException("Не удалось найти директории");
@@ -94,9 +104,9 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
     {
         var workspaceDirectoryArtifactRepository = _unitOfWork.Repository<WorkspaceDirectoryArtifact>();
         var workspaceDirectoryRepository = _unitOfWork.Repository<WorkspaceDirectory>();
-        var directory =
-            await workspaceDirectoryRepository.FindAsync(x => x.Id == directoryId,
-                cancellationToken);
+        var directory = await workspaceDirectoryRepository
+            .FindMany(x => x.Id == directoryId)
+            .FirstOrDefaultAsync(cancellationToken);
         if (directory == null)
         {
             throw new NotFoundException("Не найдена папка");
@@ -129,15 +139,17 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
     {
         var workspaceDirectoryArtifactRepository = _unitOfWork.Repository<WorkspaceDirectoryArtifact>();
         var workspaceDirectoryRepository = _unitOfWork.Repository<WorkspaceDirectory>();
-        var artifact = await workspaceDirectoryArtifactRepository.FindAsync(x => x.Id
-            == dto.Id);
+        var artifact = await workspaceDirectoryArtifactRepository
+            .FindMany(x => x.Id == dto.Id)
+            .FirstOrDefaultAsync(cancellationToken);
         if (artifact == null)
         {
             throw new NotFoundException("Артефакт не найден");
         }
         
-        var directory = await workspaceDirectoryRepository.FindAsync(x => x.Id
-            == directoryId, cancellationToken);
+        var directory = await workspaceDirectoryRepository
+            .FindMany(x => x.Id == directoryId)
+            .FirstOrDefaultAsync(cancellationToken);
         if (directory == null)
         {
             throw new NotFoundException("Не найдена папка");
@@ -163,8 +175,9 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
         CancellationToken cancellationToken = default)
     {
         var workspaceDirectoryRepository = _unitOfWork.Repository<WorkspaceDirectory>();
-        var directory = await workspaceDirectoryRepository.FindAsync(x => x.Id == id,
-            cancellationToken);
+        var directory = await workspaceDirectoryRepository
+            .FindMany(x => x.Id == id)
+            .FirstOrDefaultAsync(cancellationToken);
         if (directory == null)
         {
             throw new NotFoundException("Не удалось найти директорию");

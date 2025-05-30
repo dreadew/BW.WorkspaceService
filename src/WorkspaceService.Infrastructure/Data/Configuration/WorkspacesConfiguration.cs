@@ -4,9 +4,9 @@ using WorkspaceService.Domain.Entities;
 
 namespace WorkspaceService.Infrastructure.Data.Configuration;
 
-public class WorkspacesConfiguration : IEntityTypeConfiguration<Workspaces>
+public class WorkspacesConfiguration : IEntityTypeConfiguration<Workspace>
 {
-    public void Configure(EntityTypeBuilder<Workspaces> builder)
+    public void Configure(EntityTypeBuilder<Workspace> builder)
     {
         builder.ToTable("workspace", "workspace");
 

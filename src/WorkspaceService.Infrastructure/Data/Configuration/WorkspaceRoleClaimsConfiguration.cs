@@ -4,9 +4,9 @@ using WorkspaceService.Domain.Entities;
 
 namespace WorkspaceService.Infrastructure.Data.Configuration;
 
-public class WorkspaceRoleClaimsConfiguration : IEntityTypeConfiguration<WorkspaceRoleClaims>
+public class WorkspaceRoleClaimsConfiguration : IEntityTypeConfiguration<WorkspaceRoleClaim>
 {
-    public void Configure(EntityTypeBuilder<WorkspaceRoleClaims> builder)
+    public void Configure(EntityTypeBuilder<WorkspaceRoleClaim> builder)
     {
         builder.ToTable("workspace_role_claim", "auth");
 

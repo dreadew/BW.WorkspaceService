@@ -7,7 +7,7 @@ using WorkspaceService.Domain.Options;
 
 namespace WorkspaceService.Application.MappingActions;
 
-public class WorkspaceMappingAction : IMappingAction<Workspaces, WorkspaceDto>
+public class WorkspaceMappingAction : IMappingAction<Workspace, WorkspaceDto>
 {
     private readonly IOptions<S3Options>  _options;
 
@@ -16,7 +16,7 @@ public class WorkspaceMappingAction : IMappingAction<Workspaces, WorkspaceDto>
         _options = options;
     }
 
-    public void Process(Workspaces source, WorkspaceDto destination, ResolutionContext 
+    public void Process(Workspace source, WorkspaceDto destination, ResolutionContext 
             context)
     {
         var endpoint = _options.Value.Endpoint;

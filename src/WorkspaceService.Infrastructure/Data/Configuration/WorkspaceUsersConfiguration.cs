@@ -4,9 +4,9 @@ using WorkspaceService.Domain.Entities;
 
 namespace WorkspaceService.Infrastructure.Data.Configuration;
 
-public class WorkspaceUsersConfiguration : IEntityTypeConfiguration<WorkspaceUsers>
+public class WorkspaceUsersConfiguration : IEntityTypeConfiguration<WorkspaceUser>
 {
-    public void Configure(EntityTypeBuilder<WorkspaceUsers> builder)
+    public void Configure(EntityTypeBuilder<WorkspaceUser> builder)
     {
         builder.ToTable("workspace_user", "workspace");
         
@@ -24,12 +24,12 @@ public class WorkspaceUsersConfiguration : IEntityTypeConfiguration<WorkspaceUse
         builder.Property(wu => wu.PositionId)
             .IsRequired();
         
-        builder.HasOne<WorkspaceRoles>()
+        builder.HasOne<WorkspaceRole>()
             .WithMany()
             .HasForeignKey(wu => wu.RoleId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne<WorkspacePositions>()
+        builder.HasOne<WorkspacePosition>()
             .WithMany()
             .HasForeignKey(wu => wu.PositionId)
             .OnDelete(DeleteBehavior.Restrict);

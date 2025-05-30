@@ -3,7 +3,7 @@ using WorkspaceService.Domain.Enums;
 
 namespace WorkspaceService.Domain.Entities;
 
-public class Events : IEntity<string>
+public class Event : IEntity<string>
 {
     public string Id { get; set; }
     public KafkaTopic EventType { get; set; }

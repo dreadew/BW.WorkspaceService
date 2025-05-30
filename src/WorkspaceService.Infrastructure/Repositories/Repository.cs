@@ -43,9 +43,9 @@ public class Repository<TEntity> : IRepository<TEntity>
         CancellationToken cancellationToken = default)
     {
         var exists = await _dbContext.Set<TEntity>()
-            .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Id == entity.Id, 
-                cancellationToken)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == entity.Id, 
+                    cancellationToken)
             is not null;
 
         if (!exists)
@@ -57,41 +57,20 @@ public class Repository<TEntity> : IRepository<TEntity>
         return true;
     }
 
-    public async Task<IReadOnlyCollection<TEntity>> ListAsync(ListRequest listParams, 
-        CancellationToken cancellationToken = default)
+    public IQueryable<TEntity> Paging(ListRequest listParams)
     {
-        return await _dbContext.Set<TEntity>()
+        return _dbContext.Set<TEntity>()
             .AsNoTracking()
             .OrderBy(x => x.Id)
             .Skip(listParams.Offset)
-            .Take(listParams.Limit)
-            .ToListAsync(cancellationToken);
-    }
-
-    public async Task<TEntity?> GetByIdAsync(string id, 
-        CancellationToken cancellationToken = default)
-    {
-        return await _dbContext.Set<TEntity>()
-            .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Id == id, 
-                cancellationToken);
+            .Take(listParams.Limit);
     }
     
-    public async Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>> predicate, 
-        CancellationToken cancellationToken = default)
+    public IQueryable<TEntity> FindMany(Expression<Func<TEntity, bool>> predicate)
     {
-        return await _dbContext.Set<TEntity>()
-            .AsNoTracking()
-            .FirstOrDefaultAsync(predicate, cancellationToken);
-    }
-    
-    public async Task<IReadOnlyCollection<TEntity>> FindManyAsync(Expression<Func<TEntity, bool>> predicate, 
-        CancellationToken cancellationToken = default)
-    {
-        return await _dbContext.Set<TEntity>()
+        return _dbContext.Set<TEntity>()
             .AsNoTracking()
             .Where(predicate)
-            .OrderBy(x => x.Id)
-            .ToListAsync(cancellationToken);
+            .OrderBy(x => x.Id);
     }
 }

@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using WorkspaceService.Domain.DTOs;
 using WorkspaceService.Domain.DTOs.WorkspaceRoleClaims;
@@ -10,14 +11,14 @@ using WorkspaceService.Domain.Services;
 
 namespace WorkspaceService.Application.Services;
 
-public class WorkspaceRoleClaimsService : IWorkspaceRoleClaimsService
+public class WorkspaceRoleClaimService : IWorkspaceRoleClaimsService
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ILogger<WorkspaceRoleClaimsService> _logger;
+    private readonly ILogger<WorkspaceRoleClaimService> _logger;
     private readonly IMapper _mapper;
 
-    public WorkspaceRoleClaimsService(IUnitOfWork unitOfWork,
-        ILogger<WorkspaceRoleClaimsService> logger,
+    public WorkspaceRoleClaimService(IUnitOfWork unitOfWork,
+        ILogger<WorkspaceRoleClaimService> logger,
         IMapper mapper)
     {
         _unitOfWork = unitOfWork;
@@ -28,8 +29,8 @@ public class WorkspaceRoleClaimsService : IWorkspaceRoleClaimsService
     public async Task CreateAsync(CreateRoleClaimsRequest dto,
         CancellationToken cancellationToken = default)
     {
-        var workspaceRoleClaimsRepository = _unitOfWork.Repository<WorkspaceRoleClaims>();
-        var entity = _mapper.Map<WorkspaceRoleClaims>(dto);
+        var workspaceRoleClaimsRepository = _unitOfWork.Repository<WorkspaceRoleClaim>();
+        var entity = _mapper.Map<WorkspaceRoleClaim>(dto);
         entity.Id = Guid.NewGuid().ToString();
         await workspaceRoleClaimsRepository.CreateAsync(entity, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -38,9 +39,10 @@ public class WorkspaceRoleClaimsService : IWorkspaceRoleClaimsService
     public async Task UpdateAsync(UpdateRoleClaimsRequest dto,
         CancellationToken cancellationToken = default)
     {
-        var workspaceRoleClaimsRepository = _unitOfWork.Repository<WorkspaceRoleClaims>();
-        var role = await workspaceRoleClaimsRepository.GetByIdAsync(dto.Id, 
-            cancellationToken);
+        var workspaceRoleClaimsRepository = _unitOfWork.Repository<WorkspaceRoleClaim>();
+        var role = await workspaceRoleClaimsRepository
+            .FindMany(x => x.Id == dto.Id)
+            .FirstOrDefaultAsync(cancellationToken);
         if (role == null)
         {
             throw new NotFoundException("Клейм не найден");
@@ -53,9 +55,10 @@ public class WorkspaceRoleClaimsService : IWorkspaceRoleClaimsService
 
     public async Task DeleteAsync(string id, CancellationToken cancellationToken = default) 
     {
-        var workspaceRoleClaimsRepository = _unitOfWork.Repository<WorkspaceRoleClaims>();
-        var claim = await workspaceRoleClaimsRepository.GetByIdAsync(id, 
-            cancellationToken);
+        var workspaceRoleClaimsRepository = _unitOfWork.Repository<WorkspaceRoleClaim>();
+        var claim = await workspaceRoleClaimsRepository
+            .FindMany(x => x.Id == id)
+            .FirstOrDefaultAsync(cancellationToken);
         if (claim == null)
         {
             throw new NotFoundException("Клейм не найден");
@@ -68,9 +71,10 @@ public class WorkspaceRoleClaimsService : IWorkspaceRoleClaimsService
     public async Task<RoleClaimsDto> GetByIdAsync(string id, CancellationToken 
             cancellationToken = default)
     {
-        var workspaceRoleClaimsRepository = _unitOfWork.Repository<WorkspaceRoleClaims>();
-        var role = await workspaceRoleClaimsRepository.GetByIdAsync(id, 
-            cancellationToken);
+        var workspaceRoleClaimsRepository = _unitOfWork.Repository<WorkspaceRoleClaim>();
+        var role = await workspaceRoleClaimsRepository
+            .FindMany(x => x.Id == id)
+            .FirstOrDefaultAsync(cancellationToken);
         if (role == null)
         {
             throw new NotFoundException("Клейм не найден");
@@ -82,8 +86,10 @@ public class WorkspaceRoleClaimsService : IWorkspaceRoleClaimsService
     public async Task<IEnumerable<RoleClaimsDto>> ListAsync(ListRequest dto,
         string roleId, CancellationToken cancellationToken = default)
     {
-        var workspaceRoleClaimsRepository = _unitOfWork.Repository<WorkspaceRoleClaims>();
-        var roles = await workspaceRoleClaimsRepository.FindManyAsync(x => x.RoleId == roleId, cancellationToken);
+        var workspaceRoleClaimsRepository = _unitOfWork.Repository<WorkspaceRoleClaim>();
+        var roles = await workspaceRoleClaimsRepository
+            .FindMany(x => x.RoleId == roleId)
+            .ToListAsync(cancellationToken);
         if (roles == null)
         {
             throw new NotFoundException("Клеймы не найден");

@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using WorkspaceService.Domain.Entities;
 using WorkspaceService.Domain.Exceptions;
@@ -6,12 +7,12 @@ using WorkspaceService.Domain.Services;
 
 namespace WorkspaceService.Application.Services;
 
-public class ClaimsService : IClaimsService
+public class ClaimService : IClaimsService
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ILogger<ClaimsService> _logger;
+    private readonly ILogger<ClaimService> _logger;
 
-    public ClaimsService(ILogger<ClaimsService> logger, IUnitOfWork unitOfWork)
+    public ClaimService(ILogger<ClaimService> logger, IUnitOfWork unitOfWork)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -20,8 +21,10 @@ public class ClaimsService : IClaimsService
     public async Task<bool> CheckUserClaim(string workspaceId, string userId,
         string expectedClaim, CancellationToken token = default)
     {
-        var workspaceRepo = _unitOfWork.Repository<Workspaces>();
-        var workspace = await workspaceRepo.GetByIdAsync(workspaceId, token);
+        var workspaceRepo = _unitOfWork.Repository<Workspace>();
+        var workspace = await workspaceRepo
+            .FindMany(x => x.Id == workspaceId)
+            .FirstOrDefaultAsync(token);
         if (workspace == null)
         {
             throw new ForbiddenException(workspaceId, expectedClaim);

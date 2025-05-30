@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using WorkspaceService.Domain.DTOs;
 using WorkspaceService.Domain.DTOs.WorkspacePositions;
@@ -9,14 +10,14 @@ using WorkspaceService.Domain.Services;
 
 namespace WorkspaceService.Application.Services;
 
-public class WorkspacePositionsService : IWorkspacePositionsService
+public class WorkspacePositionService : IWorkspacePositionsService
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ILogger<WorkspacePositionsService> _logger;
+    private readonly ILogger<WorkspacePositionService> _logger;
     private readonly IMapper _mapper;
 
-    public WorkspacePositionsService(IUnitOfWork unitOfWork,
-        ILogger<WorkspacePositionsService> logger,
+    public WorkspacePositionService(IUnitOfWork unitOfWork,
+        ILogger<WorkspacePositionService> logger,
         IMapper mapper)
     {
         _unitOfWork = unitOfWork;
@@ -27,8 +28,8 @@ public class WorkspacePositionsService : IWorkspacePositionsService
     public async Task CreateAsync(CreatePositionRequest dto,
         CancellationToken cancellationToken = default)
     {
-        var workspacePositionsRepository = _unitOfWork.Repository<WorkspacePositions>();
-        var position = _mapper.Map<WorkspacePositions>(dto);
+        var workspacePositionsRepository = _unitOfWork.Repository<WorkspacePosition>();
+        var position = _mapper.Map<WorkspacePosition>(dto);
         position.Id = Guid.NewGuid().ToString();
         await workspacePositionsRepository.CreateAsync(position, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -37,9 +38,10 @@ public class WorkspacePositionsService : IWorkspacePositionsService
     public async Task UpdateAsync(UpdatePositionRequest dto,
         CancellationToken cancellationToken = default)
     {
-        var workspacePositionsRepository = _unitOfWork.Repository<WorkspacePositions>();
-        var position = await workspacePositionsRepository.GetByIdAsync(dto.Id, 
-            cancellationToken);
+        var workspacePositionsRepository = _unitOfWork.Repository<WorkspacePosition>();
+        var position = await workspacePositionsRepository
+            .FindMany(x => x.Id == dto.Id)
+            .FirstOrDefaultAsync(cancellationToken);
         if (position == null)
         {
             throw new NotFoundException("Должность не найдена");
@@ -59,9 +61,10 @@ public class WorkspacePositionsService : IWorkspacePositionsService
     public async Task<PositionDto> GetByIdAsync(string id,
         CancellationToken cancellationToken = default)
     {
-        var workspacePositionsRepository = _unitOfWork.Repository<WorkspacePositions>();
-        var position = await workspacePositionsRepository.GetByIdAsync(id, 
-            cancellationToken);
+        var workspacePositionsRepository = _unitOfWork.Repository<WorkspacePosition>();
+        var position = await workspacePositionsRepository
+            .FindMany(x => x.Id == id)
+            .FirstOrDefaultAsync(cancellationToken);
         if (position == null)
         {
             throw new NotFoundException("Должность не найдена");
@@ -73,10 +76,10 @@ public class WorkspacePositionsService : IWorkspacePositionsService
     public async Task<IEnumerable<PositionDto>> ListAsync(ListRequest dto, string workspaceId,
         CancellationToken cancellationToken = default)
     {
-        var workspacePositionsRepository = _unitOfWork.Repository<WorkspacePositions>();
-        var positions = await workspacePositionsRepository.FindManyAsync(
-            x => x.WorkspaceId == workspaceId, 
-            cancellationToken);
+        var workspacePositionsRepository = _unitOfWork.Repository<WorkspacePosition>();
+        var positions = await workspacePositionsRepository
+            .FindMany(x => x.WorkspaceId == workspaceId)
+            .ToListAsync(cancellationToken);
         if (positions == null)
         {
             throw new NotFoundException("Должности не найдены");
@@ -90,9 +93,10 @@ public class WorkspacePositionsService : IWorkspacePositionsService
     private async Task UpdateActualityInternal(string id, bool isDeleted,
         CancellationToken cancellationToken = default)
     {
-        var workspacePositionsRepository = _unitOfWork.Repository<WorkspacePositions>();
-        var position = await workspacePositionsRepository.GetByIdAsync(id, 
-            cancellationToken);
+        var workspacePositionsRepository = _unitOfWork.Repository<WorkspacePosition>();
+        var position = await workspacePositionsRepository
+            .FindMany(x => x.Id == id)
+            .FirstOrDefaultAsync(cancellationToken);
         if (position == null)
         {
             throw new NotFoundException("Должность не найдена");

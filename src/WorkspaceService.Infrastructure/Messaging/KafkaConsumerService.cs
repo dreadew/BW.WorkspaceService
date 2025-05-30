@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Confluent.Kafka;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -81,9 +82,10 @@ public class KafkaConsumerService : BackgroundService
         using var scope = _scopeFactory.CreateScope();
         var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
-        var workspaceRepo = unitOfWork.Repository<Workspaces>();
+        var workspaceRepo = unitOfWork.Repository<Workspace>();
         var workspacesToUpdate = await workspaceRepo
-            .FindManyAsync(x => x.CreatedBy == deserializedMessage.UserId, token);
+            .FindMany(x => x.CreatedBy == deserializedMessage.UserId)
+            .ToListAsync(token);
         await unitOfWork.BeginTransactionAsync(token);
         try
         {
@@ -106,42 +108,44 @@ public class KafkaConsumerService : BackgroundService
         }
     }
     
-    private async Task HandleWorkspaceRoles(IUnitOfWork unitOfWork, string workspaceId, bool actuality, CancellationToken cancellationToken = default)
+    private async Task HandleWorkspaceRoles(IUnitOfWork unitOfWork, string workspaceId, bool actuality, CancellationToken token = default)
     {
-        var workspaceRolesRepository = unitOfWork.Repository<WorkspaceRoles>();
+        var workspaceRolesRepository = unitOfWork.Repository<WorkspaceRole>();
         var roles = await workspaceRolesRepository
-            .FindManyAsync(x => x.WorkspaceId == workspaceId, cancellationToken);
+            .FindMany(x => x.WorkspaceId == workspaceId)
+            .ToListAsync(token);
         foreach (var role in roles)
         {
             role.IsDeleted = actuality;
-            await workspaceRolesRepository.UpdateAsync(role, cancellationToken);
+            await workspaceRolesRepository.UpdateAsync(role, token);
         }
     }
 
-    private async Task HandleWorkspacePositions(IUnitOfWork unitOfWork, string workspaceId, bool 
-            actuality,
-        CancellationToken cancellationToken = default)
+    private async Task HandleWorkspacePositions(IUnitOfWork unitOfWork, string workspaceId, 
+        bool actuality, CancellationToken token = default)
     {
-        var workspacePositionsRepository = unitOfWork.Repository<WorkspacePositions>();
+        var workspacePositionsRepository = unitOfWork.Repository<WorkspacePosition>();
         var positions = await workspacePositionsRepository
-            .FindManyAsync(x => x.WorkspaceId == workspaceId, cancellationToken);
+            .FindMany(x => x.WorkspaceId == workspaceId)
+            .ToListAsync(token);
         foreach (var position in positions)
         {
             position.IsDeleted = actuality;
-            await workspacePositionsRepository.UpdateAsync(position, cancellationToken);
+            await workspacePositionsRepository.UpdateAsync(position, token);
         }
     }
 
     private async Task HandleWorkspaceDirectories(IUnitOfWork unitOfWork, string workspaceId, bool actuality,
-        CancellationToken cancellationToken = default)
+        CancellationToken token = default)
     {
         var workspaceDirectoriesRepository = unitOfWork.Repository<WorkspaceDirectory>();
         var directories = await  workspaceDirectoriesRepository
-            .FindManyAsync(x => x.WorkspaceId == workspaceId, cancellationToken);
+            .FindMany(x => x.WorkspaceId == workspaceId)
+            .ToListAsync(token);
         foreach (var directory in directories)
         {
             directory.IsDeleted = actuality;
-            await workspaceDirectoriesRepository.UpdateAsync(directory, cancellationToken);
+            await workspaceDirectoriesRepository.UpdateAsync(directory, token);
         }
     }
 }

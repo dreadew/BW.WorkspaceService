@@ -47,8 +47,7 @@ public static class InfrastructureExtension
             var dbOptions = provider.GetRequiredService<IOptions<DBOptions>>().Value;
             
             options.UseNpgsql(dbOptions.PostgresConnection)
-                .AddInterceptors(new UpdateAuditableInterceptor())
-                .UseLazyLoadingProxies();
+                .AddInterceptors(new UpdateAuditableInterceptor());
         });
     }
 
@@ -58,7 +57,7 @@ public static class InfrastructureExtension
         services.Configure<KafkaOptions>(
             configuration.GetSection(KafkaConstants.Section));
         services.AddSingleton<IKafkaProducerService, KafkaProducerService>();
-        services.AddHostedService<KafkaConsumerService>();
+        //services.AddHostedService<KafkaConsumerService>();
     }
 
     private static void InitJobs(this IServiceCollection services)
@@ -79,10 +78,10 @@ public static class InfrastructureExtension
     private static void InitRepositories(this IServiceCollection services)
     {
         services.AddScoped<IUnitOfWork, UnitOfWork>();
-        services.AddScoped<IRepository<Workspaces>, Repository<Workspaces>>();
-        services.AddScoped<IRepository<WorkspaceRoles>, Repository<WorkspaceRoles>>();
-        services.AddScoped<IRepository<WorkspaceRoleClaims>, Repository<WorkspaceRoleClaims>>();
-        services.AddScoped<IRepository<WorkspacePositions>, Repository<WorkspacePositions>>();
+        services.AddScoped<IRepository<Workspace>, Repository<Workspace>>();
+        services.AddScoped<IRepository<WorkspaceRole>, Repository<WorkspaceRole>>();
+        services.AddScoped<IRepository<WorkspaceRoleClaim>, Repository<WorkspaceRoleClaim>>();
+        services.AddScoped<IRepository<WorkspacePosition>, Repository<WorkspacePosition>>();
         services.AddScoped<IRepository<WorkspaceDirectory>, Repository<WorkspaceDirectory>>();
         services.AddScoped<IRepository<WorkspaceDirectoryArtifact>, Repository<WorkspaceDirectoryArtifact>>();
     }

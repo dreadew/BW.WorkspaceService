@@ -3,13 +3,13 @@ using WorkspaceService.Domain.DTOs;
 
 namespace WorkspaceService.Domain.Repositories;
 
-public interface IRepository<T> 
+public interface  IRepository<T> 
     where T : class
 {
     Task CreateAsync(
         T entity,
         CancellationToken cancellationToken = default);
-
+    
     Task CreateManyAsync(IEnumerable<T> entities,
         CancellationToken cancellationToken = default);
 
@@ -21,19 +21,9 @@ public interface IRepository<T>
         T entity,
         CancellationToken cancellationToken = default);
     
-    Task<IReadOnlyCollection<T>> ListAsync(
-        ListRequest listParams,
-        CancellationToken cancellationToken = default);
-    
-    Task<T?> GetByIdAsync(
-        string id,
-        CancellationToken cancellationToken = default);
+    IQueryable<T> Paging(
+        ListRequest listParams);
 
-    Task<T?> FindAsync(
-        Expression<Func<T, bool>> predicate,
-        CancellationToken cancellationToken = default);
-
-    Task<IReadOnlyCollection<T>> FindManyAsync(
-        Expression<Func<T, bool>> predicate,
-        CancellationToken cancellationToken = default);
+    IQueryable<T> FindMany(
+        Expression<Func<T, bool>> predicate);
 }

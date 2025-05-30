@@ -39,9 +39,9 @@ public static class ApplicationExtension
     /// <param name="services"></param>
     private static void InitMappers(this IServiceCollection services)
     {
-        services.AddAutoMapper(typeof(WorkspacesProfile));
-        services.AddAutoMapper(typeof(WorkspacePositionsProfile));
-        services.AddAutoMapper(typeof(WorkspaceRolesProfile));
+        services.AddAutoMapper(typeof(WorkspaceProfile));
+        services.AddAutoMapper(typeof(WorkspacePositionProfile));
+        services.AddAutoMapper(typeof(WorkspaceRoleProfile));
         services.AddAutoMapper(typeof(WorkspaceDirectoryProfile));
         services.AddAutoMapper(typeof(FileProfile));
     }
@@ -74,11 +74,11 @@ public static class ApplicationExtension
     /// <param name="services"></param>
     private static void InitServices(this IServiceCollection services)
     {
-        services.AddScoped<IWorkspaceService, WorkspacesService>();
-        services.AddScoped<IWorkspacePositionsService, WorkspacePositionsService>();
-        services.AddScoped<IWorkspaceRolesService, WorkspaceRolesService>();
+        services.AddScoped<IWorkspaceService, Services.WorkspaceService>();
+        services.AddScoped<IWorkspacePositionsService, WorkspacePositionService>();
+        services.AddScoped<IWorkspaceRolesService, WorkspaceRoleService>();
         services.AddScoped<IWorkspaceDirectoryService, WorkspaceDirectoryService>();
-        services.AddScoped<IWorkspaceRoleClaimsService, WorkspaceRoleClaimsService>();
-        services.AddScoped<IClaimsService, ClaimsService>();
+        services.AddScoped<IWorkspaceRoleClaimsService, WorkspaceRoleClaimService>();
+        services.AddScoped<IClaimsService, ClaimService>();
     }
 }

@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Quartz;
 using WorkspaceService.Domain.Entities;
@@ -22,8 +23,9 @@ public class SendMessageJob : IJob
     
     public async Task Execute(IJobExecutionContext context)
     {
-        var eventsRepo = _unitOfWork.Repository<Events>();
-        var events = await eventsRepo.FindManyAsync(x => !x.IsSent);
+        var eventsRepo = _unitOfWork.Repository<Event>();
+        var events = await eventsRepo.FindMany(x => !x.IsSent)
+            .ToListAsync();
         foreach (var newEvent in events)
         {
             await _unitOfWork.BeginTransactionAsync();
