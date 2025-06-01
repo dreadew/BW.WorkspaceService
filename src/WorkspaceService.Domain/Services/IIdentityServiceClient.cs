@@ -4,6 +4,7 @@ namespace WorkspaceService.Domain.Services;
 
 public interface IIdentityServiceClient
 {
+    public static string? CurrentUserId;
     Task<(bool, string?)> VerifyAsync(string accessToken,
         CancellationToken cancellationToken = default);
 

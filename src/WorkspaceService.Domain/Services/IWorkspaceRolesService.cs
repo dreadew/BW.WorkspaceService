@@ -11,12 +11,12 @@ public interface IWorkspaceRolesService
     Task UpdateAsync(UpdateRoleRequest dto,
         CancellationToken cancellationToken = default);
 
-    Task DeleteAsync(string id, CancellationToken cancellationToken = default);
+    Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
 
-    Task RestoreAsync(string id, CancellationToken cancellationToken = default);
+    Task RestoreAsync(Guid id, CancellationToken cancellationToken = default);
     
-    Task<RoleDto> GetByIdAsync(string id, CancellationToken cancellationToken = default);
+    Task<RoleDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
     Task<IEnumerable<RoleDto>> ListAsync(ListRequest dto,
-        string workspaceId, CancellationToken cancellationToken = default);
+        Guid workspaceId, CancellationToken cancellationToken = default);
 }

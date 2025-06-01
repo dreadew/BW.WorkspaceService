@@ -2,6 +2,7 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using WorkspaceService.Domain.Context;
 using WorkspaceService.Domain.DTOs;
 using WorkspaceService.Domain.DTOs.File;
 using WorkspaceService.Domain.DTOs.Messaging;
@@ -55,86 +56,80 @@ public class WorkspaceService : IWorkspaceService
         try
         {
             var workspace = _mapper.Map<Workspace>(dto);
-            workspace.Id = Guid.NewGuid().ToString();
-            workspace.CreatedBy = dto.UserId;
+            workspace.Id = Guid.NewGuid();
+            workspace.CreatedBy = CurrentUserContext.CurrentUserId;
             
             var positions = new List<WorkspacePosition>(2)
             {
                 new()
                 {
-                    Id = Guid.NewGuid().ToString(),
                     Name = "Owner",
                     WorkspaceId = workspace.Id
                 },
                 new()
                 {
-                    Id = Guid.NewGuid().ToString(),
                     Name = "User",
                     WorkspaceId = workspace.Id
                 }
             };
-
+            var ownerPositionId = positions.First(x => x.Name == "Owner").Id;
+            
             var roles = new List<WorkspaceRole>(2)
             {
                 new()
                 {
-                    Id = Guid.NewGuid().ToString(),
                     WorkspaceId = workspace.Id,
                     Name = "Admin"
                 },
                 new()
                 {
-                    Id = Guid.NewGuid().ToString(),
                     WorkspaceId = workspace.Id,
                     Name = "User"
                 },
             };
+            var adminRoleId = roles.First(x => x.Name == "Admin").Id;
+            var userRoleId = roles.First(x => x.Name == "User").Id;
         
             var roleClaims = new List<WorkspaceRoleClaim>()
                 {
                     new() 
                     {
-                        Id = Guid.NewGuid().ToString(),
                         Value = "Workspace.Create",
-                        RoleId = roles[0].Id
+                        RoleId = adminRoleId
                     },
                     new()
                     {
-                        Id = Guid.NewGuid().ToString(),
                         Value = "Workspace.Edit",
-                        RoleId = roles[0].Id
+                        RoleId = adminRoleId
                     },
                     new() 
                     {
-                        Id = Guid.NewGuid().ToString(),
                         Value = "Workspace.View",
-                        RoleId = roles[0].Id
+                        RoleId = adminRoleId
                     },
                     new()
                     {
-                        Id = Guid.NewGuid().ToString(),
                         Value = "Project.Create",
-                        RoleId = roles[0].Id
+                        RoleId = adminRoleId
                     },
                     new() 
                     {
-                        Id = Guid.NewGuid().ToString(),
                         Value = "Workspace.View",
-                        RoleId = roles[1].Id
+                        RoleId = userRoleId
                     }
                 };
             
             var user = new WorkspaceUser()
             {
-                UserId = dto.UserId,
-                PositionId = positions[0].Id,
-                RoleId = roles[0].Id,
+                UserId = Guid.Parse(CurrentUserContext.CurrentUserId),
+                PositionId = positions.First(x => x.Id == ownerPositionId).Id,
+                RoleId = roles.First(x => x.Id == adminRoleId).Id,
+                WorkspaceId = workspace.Id
             };
             workspace.Users.Add(user);
 
             var mainDirectory = new WorkspaceDirectory()
             {
-                Id = Guid.NewGuid().ToString(),
                 Name = "home",
                 WorkspaceId = workspace.Id
             };
@@ -144,6 +139,7 @@ public class WorkspaceService : IWorkspaceService
             await roleRepository.CreateManyAsync(roles, cancellationToken);
             await roleClaimsRepository.CreateManyAsync(roleClaims, cancellationToken);
             await workspaceDirectoryRepository.CreateAsync(mainDirectory, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             await _unitOfWork.CommitTransactionAsync(cancellationToken);
         }
         catch (Exception ex)
@@ -156,11 +152,11 @@ public class WorkspaceService : IWorkspaceService
     public async Task UpdateAsync(UpdateWorkspaceRequest dto,
         CancellationToken cancellationToken = default)
     {
-        await _claimsService.CheckUserClaim(dto.Id, dto.FromId, "Workspace.Edit", cancellationToken);
+        await _claimsService.CheckUserClaim(dto.Id, CurrentUserContext.CurrentUserId, "Workspace.Edit", cancellationToken);
         var eventsRepository = _unitOfWork.Repository<Event>();
         var workspaceRepository = _unitOfWork.Repository<Workspace>();
         var workspace = await workspaceRepository
-            .FindMany(x => x.Id == dto.Id)
+            .FindMany(x => x.Id == Guid.Parse(dto.Id))
             .FirstOrDefaultAsync(cancellationToken);
         if (workspace == null)
         {
@@ -176,13 +172,12 @@ public class WorkspaceService : IWorkspaceService
             {
                 var actualityDto = new WorkspaceChangedActualityDto
                 {
-                    WorkspaceId = workspace.Id,
+                    WorkspaceId = workspace.Id.ToString(),
                     Actuality = workspace.IsDeleted
                 };
                 var serializedDto = JsonSerializer.Serialize(actualityDto);
                 var newEvent = new Event()
                 {
-                    Id = Guid.NewGuid().ToString(),
                     EventType = KafkaTopic.WorkspaceChangedActuality,
                     Payload = serializedDto,
                     IsSent = false
@@ -203,7 +198,7 @@ public class WorkspaceService : IWorkspaceService
         }
     }
 
-    public async Task<WorkspaceDto> GetByIdAsync(string id,
+    public async Task<WorkspaceDto> GetByIdAsync(Guid id,
         CancellationToken cancellationToken = default)
     {
         var workspaceRepository = _unitOfWork.Repository<Workspace>();
@@ -220,7 +215,7 @@ public class WorkspaceService : IWorkspaceService
         }
         
         var users = await _identityService.GetFromArrayAsync(
-            workspace.Users.Select(x => x.UserId).ToList(), cancellationToken);
+            workspace.Users.Select(x => x.UserId.ToString()).ToList(), cancellationToken);
         var workspaceDto = _mapper.Map<WorkspaceDto>(workspace);
         foreach (var user in workspaceDto.Users)
         {
@@ -262,22 +257,22 @@ public class WorkspaceService : IWorkspaceService
 
     public async Task DeleteAsync(DeleteWorkspaceRequest dto,
         CancellationToken cancellationToken = default) => await UpdateActualityInternal
-        (dto.WorkspaceId, dto.FromId, false, cancellationToken);
+        (dto.WorkspaceId, CurrentUserContext.CurrentUserId, false, cancellationToken);
     
     public async Task RestoreAsync(RestoreWorkspaceRequest dto,
         CancellationToken cancellationToken = default) => await UpdateActualityInternal
-        (dto.WorkspaceId, dto.FromId, true, cancellationToken);
+        (dto.WorkspaceId, CurrentUserContext.CurrentUserId, true, cancellationToken);
     
     public async Task InviteUserAsync(InviteUserRequest dto,
         CancellationToken cancellationToken = default)
     {
-        await _claimsService.CheckUserClaim(dto.Id, dto.FromId, "Workspace.Edit", cancellationToken);
+        await _claimsService.CheckUserClaim(dto.Id, CurrentUserContext.CurrentUserId, "Workspace.Edit", cancellationToken);
         var workspaceRepository = _unitOfWork.Repository<Workspace>();
         var workspacePositionsRepository = _unitOfWork.Repository<WorkspacePosition>();
         var workspaceRolesRepository = _unitOfWork.Repository<WorkspaceRole>();
 
         var workspace = await workspaceRepository
-            .FindMany(x => x.Id == dto.Id)
+            .FindMany(x => x.Id == Guid.Parse(dto.Id))
             .FirstOrDefaultAsync(cancellationToken);
         if (workspace == null)
         {
@@ -302,7 +297,7 @@ public class WorkspaceService : IWorkspaceService
         
         var entity = new WorkspaceUser()
         {
-            UserId = dto.UserId,
+            UserId = Guid.Parse(dto.UserId),
             WorkspaceId = workspace.Id,
             PositionId = defaultPosition.Id,
             RoleId = defaultRole.Id
@@ -314,13 +309,13 @@ public class WorkspaceService : IWorkspaceService
     public async Task UpdateUserAsync(UpdateUserRequest dto,
         CancellationToken cancellationToken = default)
     {
-        await _claimsService.CheckUserClaim(dto.WorkspaceId, dto.FromId, "Workspace.Edit", 
+        await _claimsService.CheckUserClaim(dto.WorkspaceId, CurrentUserContext.CurrentUserId, "Workspace.Edit", 
             cancellationToken);
         var workspaceRepository = _unitOfWork.Repository<Workspace>();
         var workspacePositionsRepository = _unitOfWork.Repository<WorkspacePosition>();
         var workspaceRolesRepository = _unitOfWork.Repository<WorkspaceRole>();
         var workspace = await workspaceRepository
-            .FindMany(x => x.Id == dto.WorkspaceId)
+            .FindMany(x => x.Id == Guid.Parse(dto.WorkspaceId))
             .FirstOrDefaultAsync(cancellationToken);
         if (workspace == null)
         {
@@ -328,7 +323,7 @@ public class WorkspaceService : IWorkspaceService
         }
         
         var position = await workspacePositionsRepository
-            .FindMany(x => x.Id == dto.PositionId)
+            .FindMany(x => x.Id == Guid.Parse(dto.PositionId))
             .FirstOrDefaultAsync(cancellationToken);
         if (position == null && dto.PositionId != null)
         {
@@ -336,14 +331,14 @@ public class WorkspaceService : IWorkspaceService
         }
 
         var role = await workspaceRolesRepository
-            .FindMany(x => x.Id == dto.RoleId)
+            .FindMany(x => x.Id == Guid.Parse(dto.RoleId))
             .FirstOrDefaultAsync(cancellationToken);
         if (role == null && dto.RoleId != null)
         {
             throw new NotFoundException("Не удалось найти роль пользователя");
         }
 
-        var user = workspace.Users.FirstOrDefault(x => x.UserId == dto.UserId && x.WorkspaceId == workspace.Id);
+        var user = workspace.Users.FirstOrDefault(x => x.UserId == Guid.Parse(dto.UserId) && x.WorkspaceId == workspace.Id);
         if (user == null)
         {
             throw new NotFoundException("Не удалось найти пользователя");
@@ -358,18 +353,18 @@ public class WorkspaceService : IWorkspaceService
     public async Task DeleteUserAsync(DeleteUserRequest dto,
         CancellationToken cancellationToken = default)
     {
-        await _claimsService.CheckUserClaim(dto.WorkspaceId, dto.FromId, "Workspace.Edit", 
+        await _claimsService.CheckUserClaim(dto.WorkspaceId, CurrentUserContext.CurrentUserId, "Workspace.Edit", 
             cancellationToken);
         var workspaceRepository = _unitOfWork.Repository<Workspace>();
         var workspace = await workspaceRepository
-            .FindMany(x => x.Id == dto.UserId)
+            .FindMany(x => x.Id == Guid.Parse(dto.UserId))
             .FirstOrDefaultAsync(cancellationToken);
         if (workspace == null)
         {
             throw new NotFoundException("Не удалось найти рабочее пространство");
         }
 
-        var user = workspace.Users.FirstOrDefault(x => x.UserId == dto.UserId);
+        var user = workspace.Users.FirstOrDefault(x => x.UserId == Guid.Parse(dto.UserId));
         if (user == null)
         {
             throw new NotFoundException("Не удалось найти пользователя");
@@ -379,7 +374,7 @@ public class WorkspaceService : IWorkspaceService
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task UploadPictureAsync(string workspaceId,
+    public async Task UploadPictureAsync(Guid workspaceId,
         FileUploadRequest dto,
         CancellationToken cancellationToken = default)
     {
@@ -392,7 +387,7 @@ public class WorkspaceService : IWorkspaceService
             throw new NotFoundException("Не удалось найти рабочее пространство");
         }
 
-        if (!workspace.Users.Any(x => x.UserId == dto.FromId))
+        if (!workspace.Users.Any(x => x.UserId == Guid.Parse(dto.FromId)))
         {
             throw new ServiceException("У вас нет доступа", true);
         }
@@ -407,7 +402,7 @@ public class WorkspaceService : IWorkspaceService
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task DeletePictureAsync(string workspaceId,
+    public async Task DeletePictureAsync(Guid workspaceId,
         FileDeleteRequest dto,
         CancellationToken cancellationToken = default)
     {
@@ -420,7 +415,7 @@ public class WorkspaceService : IWorkspaceService
             throw new NotFoundException("Рабочее пространство не найдено");
         }
 
-        if (!workspace.Users.Any(x => x.UserId == dto.FromId))
+        if (!workspace.Users.Any(x => x.UserId == Guid.Parse(dto.FromId)))
         {
             throw new ServiceException("У вас нет прав", true);
         }
@@ -441,7 +436,7 @@ public class WorkspaceService : IWorkspaceService
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
-    private async Task HandleWorkspaceRoles(string workspaceId, bool actuality, CancellationToken cancellationToken = default)
+    private async Task HandleWorkspaceRoles(Guid workspaceId, bool actuality, CancellationToken cancellationToken = default)
     {
         var workspaceRolesRepository = _unitOfWork.Repository<WorkspaceRole>();
         var roles = await workspaceRolesRepository
@@ -454,7 +449,7 @@ public class WorkspaceService : IWorkspaceService
         }
     }
 
-    private async Task HandleWorkspacePositions(string workspaceId, bool actuality,
+    private async Task HandleWorkspacePositions(Guid workspaceId, bool actuality,
         CancellationToken cancellationToken = default)
     {
         var workspacePositionsRepository = _unitOfWork.Repository<WorkspacePosition>();
@@ -468,7 +463,7 @@ public class WorkspaceService : IWorkspaceService
         }
     }
 
-    private async Task HandleWorkspaceDirectories(string workspaceId, bool actuality,
+    private async Task HandleWorkspaceDirectories(Guid workspaceId, bool actuality,
         CancellationToken cancellationToken = default)
     {
         var workspaceDirectoriesRepository = _unitOfWork.Repository<WorkspaceDirectory>();
@@ -490,7 +485,7 @@ public class WorkspaceService : IWorkspaceService
         var eventsRepository = _unitOfWork.Repository<Event>();
         var workspaceRepository = _unitOfWork.Repository<Workspace>();
         var workspace = await workspaceRepository
-            .FindMany(x => x.Id == id)
+            .FindMany(x => x.Id == Guid.Parse(id))
             .FirstOrDefaultAsync(cancellationToken);
         if (workspace == null)
         {
@@ -500,13 +495,12 @@ public class WorkspaceService : IWorkspaceService
         workspace.IsDeleted = isDeleted;
         var actualityDto = new WorkspaceChangedActualityDto()
         {
-            WorkspaceId = workspace.Id,
+            WorkspaceId = workspace.Id.ToString(),
             Actuality = workspace.IsDeleted
         };
         var serializedDto = JsonSerializer.Serialize(actualityDto);
         var newEvent = new Event()
         {
-            Id = Guid.NewGuid().ToString(),
             EventType = KafkaTopic.WorkspaceChangedActuality,
             Payload = serializedDto,
             IsSent = false

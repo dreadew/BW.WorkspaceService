@@ -54,7 +54,7 @@ public class WorkspaceController : ControllerBase
     [HttpGet("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<WorkspaceDto>> GetAsync(
-        string id,
+        Guid id,
         CancellationToken cancellationToken = default)
     {
         var result = await _workspaceService.GetByIdAsync(id, cancellationToken);
@@ -67,12 +67,6 @@ public class WorkspaceController : ControllerBase
         [FromQuery] ListRequest dto,
         CancellationToken cancellationToken = default)
     {
-        var userId = HttpContext.Request.Headers["UserId"].FirstOrDefault();
-        if (string.IsNullOrEmpty(userId) || !Guid.TryParse(userId, out _))
-        {
-            return StatusCode(StatusCodes.Status400BadRequest, ModelState);
-        }
-
         var result = await _workspaceService.ListAsync(dto, cancellationToken);
         return Ok(result);
     }
@@ -140,7 +134,7 @@ public class WorkspaceController : ControllerBase
     [HttpPost("{id:guid}/picture")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> UploadPictureAsync(
-        string id,
+        Guid id,
         [FromQuery] string fromId,
         IFormFile file,
         CancellationToken cancellationToken = default)
@@ -166,7 +160,7 @@ public class WorkspaceController : ControllerBase
     [HttpDelete("{id:guid}/picture")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> DeletePictureAsync(
-        string id,
+        Guid id,
         [FromQuery] FileDeleteRequest dto,
         CancellationToken cancellationToken = default)
     {

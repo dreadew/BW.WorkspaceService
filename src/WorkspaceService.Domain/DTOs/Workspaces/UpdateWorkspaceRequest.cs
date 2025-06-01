@@ -4,9 +4,6 @@ namespace WorkspaceService.Domain.DTOs.Workspaces;
 
 public class UpdateWorkspaceRequest
 {
-    [Display(Name = "Идентификатор пользователя")]
-    public string FromId { get; set; }
-
     [Display(Name = "Идентификатор")]
     public string Id { get; set; }
 

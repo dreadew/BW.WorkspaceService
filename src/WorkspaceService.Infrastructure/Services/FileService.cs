@@ -38,6 +38,8 @@ public class FileService : IFileService
         FileUploadDto dto,
         CancellationToken cancellationToken = default)
     {
+        await _s3Client.EnsureBucketExistsAsync(_options.Value.Bucket);
+        
         bool found = await AmazonS3Util
             .DoesS3BucketExistV2Async(_s3Client,
                 _options.Value.Bucket);
@@ -60,7 +62,7 @@ public class FileService : IFileService
         {
             foreach (var path in dto.Paths)
             {
-                sb.Append($"/{path}");
+                sb.Append($"{path}/");
             }
         }
         sb.Append($"{Guid.NewGuid().ToString()}{fileExt}");
@@ -92,6 +94,8 @@ public class FileService : IFileService
         FileDeleteDto dto,
         CancellationToken cancellationToken = default)
     {
+        await _s3Client.EnsureBucketExistsAsync(_options.Value.Bucket);
+        
         var deleteRequest = new DeleteObjectRequest
         {
             BucketName = _options.Value.Bucket,

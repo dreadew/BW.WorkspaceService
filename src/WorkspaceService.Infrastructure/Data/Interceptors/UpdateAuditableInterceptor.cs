@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using WorkspaceService.Domain.Context;
 
 namespace WorkspaceService.Infrastructure.Data.Interceptors;
 
@@ -29,21 +30,30 @@ public class UpdateAuditableInterceptor : SaveChangesInterceptor
         {
             if (entry.State == EntityState.Added)
             {
-                SetCurrentPropertyValue(
+                SetCurrentDatePropertyValue(
                     entry, nameof(IAuditable.CreatedAt), utcNow);
+                SetCurrentPropertyValue(
+                    entry, nameof(IAuditable.ChangedBy), CurrentUserContext.CurrentUserId);
             }
 
             if (entry.State == EntityState.Modified)
             {
-                SetCurrentPropertyValue(
+                SetCurrentDatePropertyValue(
                     entry, nameof(IAuditable.ModifiedAt), utcNow);
+                SetCurrentPropertyValue(
+                    entry, nameof(IAuditable.ChangedBy), CurrentUserContext.CurrentUserId);
             }
         }
     }
     
-    static void SetCurrentPropertyValue(
+    private static void SetCurrentDatePropertyValue(
         EntityEntry entry,
         string propertyName,
         DateTime utcNow) => entry.Property(propertyName)
         .CurrentValue = utcNow;
+    
+    private static void SetCurrentPropertyValue(
+        EntityEntry entry,
+        string propertyName,
+        string value) => entry.Property(propertyName).CurrentValue = value;
 }

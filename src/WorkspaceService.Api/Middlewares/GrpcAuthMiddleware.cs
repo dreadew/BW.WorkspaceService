@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using WorkspaceService.Domain.Context;
 using WorkspaceService.Domain.Services;
 using WorkspaceService.Grpc.Services;
 
@@ -27,24 +28,25 @@ public class GrpcAuthMiddleware
         {
             token = token.Substring("Bearer ".Length).Trim();
         }
-        else
-        {
-            _logger.LogWarning("Отсутствует заголовок Authorization");
-            context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-            await context.Response.WriteAsync("Unauthorized: AccessToken is missing");
-            return;
-        }
+        // else
+        // {
+        //     _logger.LogWarning("Отсутствует заголовок Authorization");
+        //     context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+        //     await context.Response.WriteAsync("Unauthorized: AccessToken is missing");
+        //     return;
+        // }
 
         var (isValid, userId) = await _identityServiceClient.VerifyAsync(token);
 
-        if (!isValid)
+        if (!isValid || string.IsNullOrEmpty(userId))
         {
             _logger.LogWarning("Неверный AccessToken");
             context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
             await context.Response.WriteAsync("Unauthorized: Invalid AccessToken");
             return;
         }
-        
+
+        CurrentUserContext.CurrentUserId = userId;
         context.Items["FromId"] = userId;
         
         await _next(context);

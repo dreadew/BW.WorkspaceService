@@ -8,7 +8,7 @@ using WorkspaceService.Infrastructure.Data;
 namespace WorkspaceService.Infrastructure.Repositories;
 
 public class Repository<TEntity> : IRepository<TEntity> 
-    where TEntity : class, IEntity<string>
+    where TEntity : class, IEntity<Guid>
 {
     private readonly ApplicationDbContext _dbContext;
 

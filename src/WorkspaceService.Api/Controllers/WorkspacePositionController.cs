@@ -22,25 +22,20 @@ public class WorkspacePositionController : ControllerBase
 
     [HttpGet("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<PositionDto>> GetAsync(string id,
+    public async Task<ActionResult<PositionDto>> GetAsync(Guid id,
         CancellationToken cancellationToken = default)
     {
         var result = await _workspacePositionsService.GetByIdAsync(id, cancellationToken);
         return Ok(result);
     }
 
-    [HttpGet("list")]
+    [HttpGet("{workspaceId:guid}/list")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<PositionDto>>> ListAsync(
+    public async Task<ActionResult<IEnumerable<PositionDto>>> ListAsync(    
+        Guid workspaceId,
         [FromQuery] ListRequest dto,
         CancellationToken cancellationToken = default)
     {
-        var workspaceId = HttpContext.Request.Headers["WorkspaceId"].FirstOrDefault();
-        if (string.IsNullOrEmpty(workspaceId) || !Guid.TryParse(workspaceId, out _))
-        {
-            return StatusCode(StatusCodes.Status400BadRequest, ModelState);
-        }
-        
         var result = await _workspacePositionsService.ListAsync(dto, workspaceId, cancellationToken);
         return Ok(result);
     }
@@ -77,7 +72,7 @@ public class WorkspacePositionController : ControllerBase
 
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult> DeleteAsync(string id,
+    public async Task<ActionResult> DeleteAsync(Guid id,
         CancellationToken cancellationToken = default)
     {
         await _workspacePositionsService.DeleteAsync(id, cancellationToken);
@@ -86,7 +81,7 @@ public class WorkspacePositionController : ControllerBase
     
     [HttpPost("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult> RestoreAsync(string id,
+    public async Task<ActionResult> RestoreAsync(Guid id,
         CancellationToken cancellationToken = default)
     {
         await _workspacePositionsService.RestoreAsync(id, cancellationToken);

@@ -12,14 +12,7 @@ public static class ApiExtensions
 {
     public static IServiceCollection AddApiServices(this IServiceCollection services)
     {
-        services.AddProblemDetails(options =>
-        {
-            options.CustomizeProblemDetails = ctx =>
-            {
-                ctx.ProblemDetails
-                    .Extensions.Add("traceId", Activity.Current?.Id ?? ctx.HttpContext.TraceIdentifier);
-            };
-        });
+        services.AddProblemDetails();
         services.AddControllers(options =>
         {
             options.Filters.Add<ApiExceptionFilterAttribute>();

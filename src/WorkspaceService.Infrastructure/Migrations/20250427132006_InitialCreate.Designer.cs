@@ -12,7 +12,7 @@ using WorkspaceService.Infrastructure.Data;
 namespace WorkspaceService.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250410185147_InitialCreate")]
+    [Migration("20250427132006_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -27,8 +27,9 @@ namespace WorkspaceService.Infrastructure.Migrations
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.Events", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
                     b.Property<int>("EventType")
                         .HasColumnType("integer");
@@ -47,8 +48,9 @@ namespace WorkspaceService.Infrastructure.Migrations
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceDirectory", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ChangedBy")
                         .HasColumnType("text");
@@ -69,9 +71,8 @@ namespace WorkspaceService.Infrastructure.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
-                    b.Property<string>("WorkspaceId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("WorkspaceId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -85,8 +86,9 @@ namespace WorkspaceService.Infrastructure.Migrations
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceDirectoryArtifact", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ChangedBy")
                         .HasColumnType("text");
@@ -94,9 +96,8 @@ namespace WorkspaceService.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("DirectoryId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("DirectoryId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("timestamp with time zone");
@@ -120,11 +121,11 @@ namespace WorkspaceService.Infrastructure.Migrations
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceDirectoryNesting", b =>
                 {
-                    b.Property<string>("ParentDirectoryId")
-                        .HasColumnType("text");
+                    b.Property<Guid>("ParentDirectoryId")
+                        .HasColumnType("uuid");
 
-                    b.Property<string>("ChildDirectoryId")
-                        .HasColumnType("text");
+                    b.Property<Guid>("ChildDirectoryId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("ParentDirectoryId", "ChildDirectoryId");
 
@@ -135,8 +136,9 @@ namespace WorkspaceService.Infrastructure.Migrations
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspacePositions", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ChangedBy")
                         .HasColumnType("text");
@@ -157,9 +159,8 @@ namespace WorkspaceService.Infrastructure.Migrations
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)");
 
-                    b.Property<string>("WorkspaceId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("WorkspaceId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -173,20 +174,20 @@ namespace WorkspaceService.Infrastructure.Migrations
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceRoleClaims", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
-                    b.Property<string>("RoleId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Value")
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
-                    b.Property<string>("WorkspaceRolesId")
-                        .HasColumnType("text");
+                    b.Property<Guid?>("WorkspaceRolesId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -199,8 +200,9 @@ namespace WorkspaceService.Infrastructure.Migrations
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceRoles", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ChangedBy")
                         .HasColumnType("text");
@@ -221,9 +223,8 @@ namespace WorkspaceService.Infrastructure.Migrations
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)");
 
-                    b.Property<string>("WorkspaceId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("WorkspaceId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -235,27 +236,23 @@ namespace WorkspaceService.Infrastructure.Migrations
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceUsers", b =>
                 {
-                    b.Property<string>("WorkspaceId")
-                        .HasColumnType("text");
+                    b.Property<Guid>("WorkspaceId")
+                        .HasColumnType("uuid");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("text");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
 
-                    b.Property<string>("PositionId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("PositionId")
+                        .HasColumnType("uuid");
 
-                    b.Property<string>("PositionId1")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("PositionId1")
+                        .HasColumnType("uuid");
 
-                    b.Property<string>("RoleId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid");
 
-                    b.Property<string>("RoleId1")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("RoleId1")
+                        .HasColumnType("uuid");
 
                     b.HasKey("WorkspaceId", "UserId");
 
@@ -272,8 +269,9 @@ namespace WorkspaceService.Infrastructure.Migrations
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.Workspaces", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ChangedBy")
                         .HasColumnType("text");

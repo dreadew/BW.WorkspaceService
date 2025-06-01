@@ -22,7 +22,7 @@ public class WorkspaceService : Protos.WorkspaceService.WorkspaceServiceBase
     public override async Task<GetClaimsByUserResponse> GetClaimsByUser(
         GetClaimsByUserRequest request, ServerCallContext context)
     {
-        var workspace = await _workspaceService.GetByIdAsync(request.WorkspaceId, context.CancellationToken);
+        var workspace = await _workspaceService.GetByIdAsync(Guid.Parse(request.WorkspaceId), context.CancellationToken);
         if (workspace == null)
         {
             throw new RpcException(new Status(StatusCode.NotFound, "Workspace not found"));

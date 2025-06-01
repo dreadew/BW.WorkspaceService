@@ -5,7 +5,7 @@ namespace WorkspaceService.Domain.Interfaces;
 
 public interface IUnitOfWork : IDisposable
 {
-    IRepository<TEntity> Repository<TEntity>() where TEntity : class, IEntity<string>;
+    IRepository<TEntity> Repository<TEntity>() where TEntity : class, IEntity<Guid>;
     Task BeginTransactionAsync(CancellationToken cancellationToken = default);
     Task CommitTransactionAsync(CancellationToken cancellationToken = default);
     Task RollbackTransactionAsync(CancellationToken cancellationToken = default);

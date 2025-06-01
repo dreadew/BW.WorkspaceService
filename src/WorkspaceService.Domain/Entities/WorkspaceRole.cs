@@ -2,11 +2,11 @@
 
 namespace WorkspaceService.Domain.Entities;
 
-public class WorkspaceRole : IEntity<string>, IAuditable
+public class WorkspaceRole : IEntity<Guid>, IAuditable
 {
-    public string Id { get; set; } = string.Empty;
+    public Guid Id { get; set; } = Guid.NewGuid();
     public string Name { get; set; } = string.Empty;
-    public string WorkspaceId { get; set; } = string.Empty;
+    public Guid WorkspaceId { get; set; } = Guid.Empty;
     public Workspace Workspace { get; set; }
     
     public List<WorkspaceRoleClaim> RoleClaims { get; set; } = new List<WorkspaceRoleClaim>();

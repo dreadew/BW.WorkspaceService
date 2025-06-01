@@ -32,13 +32,15 @@ public static class SwaggerExtensions
                 {
                     new OpenApiSecurityScheme
                     {
+                        Name = "Bearer",
+                        In = ParameterLocation.Header,
                         Reference = new OpenApiReference
                         {
                             Type = ReferenceType.SecurityScheme,
                             Id = "Bearer"
                         }
                     },
-                    Array.Empty<string>()
+                    new List<string>()
                 }
             });
             

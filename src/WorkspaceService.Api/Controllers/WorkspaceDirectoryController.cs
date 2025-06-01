@@ -24,25 +24,20 @@ public class WorkspaceDirectoryController : ControllerBase
 
     [HttpGet("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<DirectoryDto>> GetAsync(string id,
+    public async Task<ActionResult<DirectoryDto>> GetAsync(Guid id,
         CancellationToken cancellationToken = default)
     {
         var result = await _workspaceDirectoryService.GetByIdAsync(id, cancellationToken);
         return Ok(result);
     }
 
-    [HttpGet("list")]
+    [HttpGet("{workspaceId:guid}/list")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<DirectoryDto>>> ListAsync(
+        Guid workspaceId,
         [FromQuery] ListRequest dto,
         CancellationToken cancellationToken = default)
     {
-        var workspaceId = HttpContext.Request.Headers["WorkspaceId"].FirstOrDefault();
-        if (string.IsNullOrEmpty(workspaceId) || !Guid.TryParse(workspaceId, out _))
-        {
-            return StatusCode(StatusCodes.Status400BadRequest, ModelState);
-        }
-        
         var result = await _workspaceDirectoryService.ListAsync(dto, workspaceId,
             cancellationToken);
         return Ok(result);
@@ -78,7 +73,7 @@ public class WorkspaceDirectoryController : ControllerBase
 
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult> DeleteAsync(string id,
+    public async Task<ActionResult> DeleteAsync(Guid id,
         CancellationToken cancellationToken = default)
     {
         await _workspaceDirectoryService.DeleteAsync(id, cancellationToken);
@@ -87,7 +82,7 @@ public class WorkspaceDirectoryController : ControllerBase
     
     [HttpPost("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult> RestoreAsync(string id,
+    public async Task<ActionResult> RestoreAsync(Guid id,
         CancellationToken cancellationToken = default)
     {
         await _workspaceDirectoryService.RestoreAsync(id, cancellationToken);
@@ -97,7 +92,7 @@ public class WorkspaceDirectoryController : ControllerBase
     [HttpPost("{id:guid}/artifact")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> UploadArtifactAsync(
-        string id,
+        Guid id,
         [FromQuery] string fromId,
         IFormFile file,
         CancellationToken cancellationToken = default)
@@ -124,7 +119,7 @@ public class WorkspaceDirectoryController : ControllerBase
     [HttpDelete("{id:guid}/artifact")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> DeleteArtifactAsync(
-        string id,
+        Guid id,
         [FromQuery] FileDeleteRequest dto,
         CancellationToken cancellationToken = default)
     {

@@ -2,10 +2,10 @@
 
 namespace WorkspaceService.Domain.Entities;
 
-public class WorkspaceRoleClaim : IEntity<string>
+public class WorkspaceRoleClaim : IEntity<Guid>
 {
-    public string Id { get; set; }
+    public Guid Id { get; set; }
     public string Value { get; set; }
-    public string RoleId { get; set; }
+    public Guid RoleId { get; set; }
     public WorkspaceRole Role { get; set; }
 }

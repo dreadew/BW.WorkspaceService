@@ -8,9 +8,6 @@ public class CreateWorkspaceRequestValidator : AbstractValidator<CreateWorkspace
 {
     public CreateWorkspaceRequestValidator()
     {
-        RuleFor(x => x.UserId)
-            .NotEmpty()
-            .Matches(RegexConstants.Guid);
         RuleFor(x => x.Name)
             .NotEmpty()
             .MinimumLength(4)

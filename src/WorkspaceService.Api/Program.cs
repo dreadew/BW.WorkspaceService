@@ -20,6 +20,8 @@ builder.Configuration.AddVaultConfiguration(options =>
 {
     builder.Configuration.GetSection(VaultConstants.VaultSection).Bind(options);
 });
+builder.Services.AddHealthChecks();
+builder.Services.AddResponseCompression();
 builder.Services.AddSwaggerDocumentation();
 builder.Services.AddApiServices();
 builder.Services.AddGrpcServices(builder.Configuration);
@@ -49,4 +51,6 @@ app.MapGrpcService<WorkspaceService.Grpc.Services.WorkspaceService>();
 app.MapControllers();
 
 Log.Information("Сервис успешно запущен");
+app.UseHealthChecks("/health");
+app.UseResponseCompression();
 app.Run();

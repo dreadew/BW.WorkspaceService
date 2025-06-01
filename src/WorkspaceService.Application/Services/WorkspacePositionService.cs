@@ -30,7 +30,7 @@ public class WorkspacePositionService : IWorkspacePositionsService
     {
         var workspacePositionsRepository = _unitOfWork.Repository<WorkspacePosition>();
         var position = _mapper.Map<WorkspacePosition>(dto);
-        position.Id = Guid.NewGuid().ToString();
+        position.Id = Guid.NewGuid();
         await workspacePositionsRepository.CreateAsync(position, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
@@ -40,7 +40,7 @@ public class WorkspacePositionService : IWorkspacePositionsService
     {
         var workspacePositionsRepository = _unitOfWork.Repository<WorkspacePosition>();
         var position = await workspacePositionsRepository
-            .FindMany(x => x.Id == dto.Id)
+            .FindMany(x => x.Id == Guid.Parse(dto.Id))
             .FirstOrDefaultAsync(cancellationToken);
         if (position == null)
         {
@@ -52,13 +52,13 @@ public class WorkspacePositionService : IWorkspacePositionsService
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task DeleteAsync(string id, CancellationToken cancellationToken = 
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = 
             default) => await UpdateActualityInternal(id, false, cancellationToken);
     
-    public async Task RestoreAsync(string id, CancellationToken cancellationToken = 
+    public async Task RestoreAsync(Guid id, CancellationToken cancellationToken = 
         default) => await UpdateActualityInternal(id, true, cancellationToken);
 
-    public async Task<PositionDto> GetByIdAsync(string id,
+    public async Task<PositionDto> GetByIdAsync(Guid id,
         CancellationToken cancellationToken = default)
     {
         var workspacePositionsRepository = _unitOfWork.Repository<WorkspacePosition>();
@@ -73,7 +73,7 @@ public class WorkspacePositionService : IWorkspacePositionsService
         return _mapper.Map<PositionDto>(position);
     }
     
-    public async Task<IEnumerable<PositionDto>> ListAsync(ListRequest dto, string workspaceId,
+    public async Task<IEnumerable<PositionDto>> ListAsync(ListRequest dto, Guid workspaceId,
         CancellationToken cancellationToken = default)
     {
         var workspacePositionsRepository = _unitOfWork.Repository<WorkspacePosition>();
@@ -90,7 +90,7 @@ public class WorkspacePositionService : IWorkspacePositionsService
             .Skip(dto.Offset));
     }
 
-    private async Task UpdateActualityInternal(string id, bool isDeleted,
+    private async Task UpdateActualityInternal(Guid id, bool isDeleted,
         CancellationToken cancellationToken = default)
     {
         var workspacePositionsRepository = _unitOfWork.Repository<WorkspacePosition>();

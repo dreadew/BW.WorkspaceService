@@ -9,10 +9,10 @@ public interface IWorkspacePositionsService
         CancellationToken cancellationToken = default);
     Task UpdateAsync(UpdatePositionRequest dto,
         CancellationToken cancellationToken = default);
-    Task DeleteAsync(string id, CancellationToken cancellationToken = default);
-    Task RestoreAsync(string id, CancellationToken cancellationToken = default);
-    Task<PositionDto> GetByIdAsync(string id,
+    Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+    Task RestoreAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<PositionDto> GetByIdAsync(Guid id,
         CancellationToken cancellationToken = default);
-    Task<IEnumerable<PositionDto>> ListAsync(ListRequest dto, string workspaceId,
+    Task<IEnumerable<PositionDto>> ListAsync(ListRequest dto, Guid workspaceId,
         CancellationToken cancellationToken = default);
 }

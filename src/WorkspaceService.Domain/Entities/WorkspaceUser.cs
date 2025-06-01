@@ -2,10 +2,10 @@
 
 public class WorkspaceUser
 {
-    public string WorkspaceId { get; set; }
-    public string UserId { get; set; }
-    public string RoleId { get; set; }
-    public virtual WorkspaceRole Role { get; set; }
-    public string PositionId { get; set; }
-    public virtual WorkspacePosition Position { get; set; }
+    public Guid WorkspaceId { get; set; }
+    public Guid UserId { get; set; }
+    public Guid RoleId { get; set; }
+    public WorkspaceRole Role { get; set; }
+    public Guid PositionId { get; set; }
+    public WorkspacePosition Position { get; set; }
 }

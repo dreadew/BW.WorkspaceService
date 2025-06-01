@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using OpenTelemetry;
+using OpenTelemetry.Exporter;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Serilog;
@@ -10,11 +12,22 @@ public static class ObservabilityExtensions
     public static IServiceCollection AddObservability(this IServiceCollection services,
         IConfiguration configuration, IWebHostEnvironment environment)
     {
+        var enabled = configuration.GetValue<bool>("Jaeger:Enabled");
+        if (!enabled)
+        {
+            return services;
+        }
+        
         var agentHost = configuration.GetValue<string>("Jaeger:AgentHost");
         var agentPort = configuration.GetValue<int>("Jaeger:AgentPort");
+        var protocol = configuration.GetValue<JaegerExportProtocol>("Jaeger:Protocol");
+        var endpoint = configuration.GetValue<string>("Jaeger:Endpoint");
+        var processorType = configuration.GetValue<ExportProcessorType>("Jaeger:ProcessorType");
+        var maxPayloadSize = configuration.GetValue<int>("Jaeger:MaxPayloadSize");
+        var serviceName = configuration.GetValue<string>("Jaeger:ServiceName");
         
         services.AddOpenTelemetry()
-            .ConfigureResource(resource => resource.AddService(environment.ApplicationName))
+            .ConfigureResource(resource => resource.AddService(serviceName!).AddTelemetrySdk())
             .WithTracing(providerBuilder =>
             {
                 providerBuilder
@@ -24,6 +37,10 @@ public static class ObservabilityExtensions
                     {
                         opts.AgentHost = agentHost;
                         opts.AgentPort = agentPort;
+                        opts.Endpoint = new Uri(endpoint);
+                        opts.MaxPayloadSizeInBytes = maxPayloadSize;
+                        opts.Protocol = protocol; 
+                        opts.ExportProcessorType = processorType;
                     });
             });
             

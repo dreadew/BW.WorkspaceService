@@ -21,25 +21,20 @@ public class WorkspaceRoleController : ControllerBase
     
     [HttpGet("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<RoleDto>> GetAsync(string id,
+    public async Task<ActionResult<RoleDto>> GetAsync(Guid id,
         CancellationToken cancellationToken = default)
     {
         var result = await _workspaceRolesService.GetByIdAsync(id, cancellationToken);
         return Ok(result);
     }
 
-    [HttpGet("list")]
+    [HttpGet("{workspaceId:guid}/list")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<RoleDto>>> GetListAsync(
+        Guid workspaceId,
         [FromQuery] ListRequest dto,
         CancellationToken cancellationToken = default)
     {
-        var workspaceId = HttpContext.Request.Headers["WorkspaceId"].FirstOrDefault();
-        if (string.IsNullOrEmpty(workspaceId) || !Guid.TryParse(workspaceId, out _))
-        {
-            return StatusCode(StatusCodes.Status400BadRequest, ModelState);
-        }
-        
         var result = await _workspaceRolesService.ListAsync(dto, workspaceId, cancellationToken);
         return Ok(result);
     }
@@ -59,7 +54,7 @@ public class WorkspaceRoleController : ControllerBase
         return Ok();
     }
 
-    [HttpPatch]
+    [HttpPatch("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> UpdateAsync(
         UpdateRoleRequest dto,
@@ -76,7 +71,7 @@ public class WorkspaceRoleController : ControllerBase
 
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult> DeleteAsync(string id,
+    public async Task<ActionResult> DeleteAsync(Guid id,
         CancellationToken cancellationToken = default)
     {
         await _workspaceRolesService.DeleteAsync(id, cancellationToken);
@@ -85,7 +80,7 @@ public class WorkspaceRoleController : ControllerBase
     
     [HttpPost("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult> RestoreAsync(string id,
+    public async Task<ActionResult> RestoreAsync(Guid id,
         CancellationToken cancellationToken = default)
     {
         await _workspaceRolesService.RestoreAsync(id, cancellationToken);

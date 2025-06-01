@@ -31,7 +31,7 @@ public class WorkspaceRoleClaimService : IWorkspaceRoleClaimsService
     {
         var workspaceRoleClaimsRepository = _unitOfWork.Repository<WorkspaceRoleClaim>();
         var entity = _mapper.Map<WorkspaceRoleClaim>(dto);
-        entity.Id = Guid.NewGuid().ToString();
+        entity.Id = Guid.NewGuid();
         await workspaceRoleClaimsRepository.CreateAsync(entity, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
@@ -41,7 +41,7 @@ public class WorkspaceRoleClaimService : IWorkspaceRoleClaimsService
     {
         var workspaceRoleClaimsRepository = _unitOfWork.Repository<WorkspaceRoleClaim>();
         var role = await workspaceRoleClaimsRepository
-            .FindMany(x => x.Id == dto.Id)
+            .FindMany(x => x.Id == Guid.Parse(dto.Id))
             .FirstOrDefaultAsync(cancellationToken);
         if (role == null)
         {
@@ -53,7 +53,7 @@ public class WorkspaceRoleClaimService : IWorkspaceRoleClaimsService
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task DeleteAsync(string id, CancellationToken cancellationToken = default) 
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default) 
     {
         var workspaceRoleClaimsRepository = _unitOfWork.Repository<WorkspaceRoleClaim>();
         var claim = await workspaceRoleClaimsRepository
@@ -68,7 +68,7 @@ public class WorkspaceRoleClaimService : IWorkspaceRoleClaimsService
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<RoleClaimsDto> GetByIdAsync(string id, CancellationToken 
+    public async Task<RoleClaimsDto> GetByIdAsync(Guid id, CancellationToken 
             cancellationToken = default)
     {
         var workspaceRoleClaimsRepository = _unitOfWork.Repository<WorkspaceRoleClaim>();
@@ -84,7 +84,7 @@ public class WorkspaceRoleClaimService : IWorkspaceRoleClaimsService
     }
     
     public async Task<IEnumerable<RoleClaimsDto>> ListAsync(ListRequest dto,
-        string roleId, CancellationToken cancellationToken = default)
+        Guid roleId, CancellationToken cancellationToken = default)
     {
         var workspaceRoleClaimsRepository = _unitOfWork.Repository<WorkspaceRoleClaim>();
         var roles = await workspaceRoleClaimsRepository

@@ -13,7 +13,7 @@ public interface IWorkspaceService
     Task UpdateAsync(UpdateWorkspaceRequest dto,
         CancellationToken cancellationToken = default);
 
-    Task<WorkspaceDto> GetByIdAsync(string id,
+    Task<WorkspaceDto> GetByIdAsync(Guid id,
         CancellationToken cancellationToken = default);
 
     Task<IEnumerable<WorkspaceDto>> ListAsync(ListRequest dto,
@@ -34,11 +34,11 @@ public interface IWorkspaceService
     Task DeleteUserAsync(DeleteUserRequest dto,
         CancellationToken cancellationToken = default);
 
-    Task UploadPictureAsync(string workspaceId,
+    Task UploadPictureAsync(Guid workspaceId,
         FileUploadRequest dto,
         CancellationToken cancellationToken = default);
 
-    Task DeletePictureAsync(string workspaceId,
+    Task DeletePictureAsync(Guid workspaceId,
         FileDeleteRequest dto,
         CancellationToken cancellationToken = default);
 }

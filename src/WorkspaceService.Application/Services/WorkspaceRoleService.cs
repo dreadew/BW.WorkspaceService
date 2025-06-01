@@ -31,7 +31,7 @@ public class WorkspaceRoleService : IWorkspaceRolesService
     {
         var workspaceRolesRepository = _unitOfWork.Repository<WorkspaceRole>();
         var entity = _mapper.Map<WorkspaceRole>(dto);
-        entity.Id = Guid.NewGuid().ToString();
+        entity.Id = Guid.NewGuid();
         await workspaceRolesRepository.CreateAsync(entity, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
@@ -41,7 +41,7 @@ public class WorkspaceRoleService : IWorkspaceRolesService
     {
         var workspaceRolesRepository = _unitOfWork.Repository<WorkspaceRole>();
         var role = await workspaceRolesRepository
-            .FindMany(x => x.Id == dto.Id)
+            .FindMany(x => x.Id == Guid.Parse(dto.Id))
             .FirstOrDefaultAsync(cancellationToken);
         if (role == null)
         {
@@ -53,13 +53,13 @@ public class WorkspaceRoleService : IWorkspaceRolesService
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task DeleteAsync(string id, CancellationToken cancellationToken =
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken =
         default) => await UpdateActualityInternal(id, false, cancellationToken);
     
-    public async Task RestoreAsync(string id, CancellationToken cancellationToken =
+    public async Task RestoreAsync(Guid id, CancellationToken cancellationToken =
         default) => await UpdateActualityInternal(id, true, cancellationToken);
 
-    public async Task<RoleDto> GetByIdAsync(string id, CancellationToken cancellationToken = default)
+    public async Task<RoleDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var workspaceRolesRepository = _unitOfWork.Repository<WorkspaceRole>();
         var role = await workspaceRolesRepository
@@ -75,7 +75,7 @@ public class WorkspaceRoleService : IWorkspaceRolesService
     }
     
     public async Task<IEnumerable<RoleDto>> ListAsync(ListRequest dto,
-        string workspaceId, CancellationToken cancellationToken = default)
+        Guid workspaceId, CancellationToken cancellationToken = default)
     {
         var workspaceRolesRepository = _unitOfWork.Repository<WorkspaceRole>();
         var roles = await workspaceRolesRepository
@@ -92,7 +92,7 @@ public class WorkspaceRoleService : IWorkspaceRolesService
             .Skip(dto.Offset));
     }
 
-    private async Task UpdateActualityInternal(string id, bool isDeleted,
+    private async Task UpdateActualityInternal(Guid id, bool isDeleted,
         CancellationToken cancellationToken = default)
     {
         var workspaceRolesRepository = _unitOfWork.Repository<WorkspaceRole>();

@@ -35,7 +35,6 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
     {
         var workspaceDirectoryRepository = _unitOfWork.Repository<WorkspaceDirectory>();
         var entity = _mapper.Map<WorkspaceDirectory>(dto);
-        entity.Id = Guid.NewGuid().ToString();
         await workspaceDirectoryRepository.CreateAsync(entity, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
@@ -45,7 +44,7 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
     {
         var workspaceDirectoryRepository = _unitOfWork.Repository<WorkspaceDirectory>();
         var directory = await workspaceDirectoryRepository
-            .FindMany(x => x.Id == dto.Id)
+            .FindMany(x => x.Id == Guid.Parse(dto.Id))
             .FirstOrDefaultAsync(cancellationToken);
         if (directory == null)
         {
@@ -56,15 +55,15 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task DeleteAsync(string id,
+    public async Task DeleteAsync(Guid id,
         CancellationToken cancellationToken = default) => await UpdateActualityInternal
         (id, false, cancellationToken);
 
-    public async Task RestoreAsync(string id,
+    public async Task RestoreAsync(Guid id,
         CancellationToken cancellationToken = default) => await UpdateActualityInternal
         (id, true, cancellationToken);
     
-    public async Task<DirectoryDto> GetByIdAsync(string id,
+    public async Task<DirectoryDto> GetByIdAsync(Guid id,
         CancellationToken cancellationToken = default)
     {
         var workspaceDirectoryRepository = _unitOfWork.Repository<WorkspaceDirectory>();
@@ -82,7 +81,7 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
     }
     
     public async Task<IEnumerable<DirectoryDto>> ListAsync(ListRequest dto,
-        string workspaceId, CancellationToken cancellationToken = default)
+        Guid workspaceId, CancellationToken cancellationToken = default)
     {
         var workspaceDirectoryRepository = _unitOfWork.Repository<WorkspaceDirectory>();
         var directories = await workspaceDirectoryRepository
@@ -100,7 +99,7 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
             .Skip(dto.Offset));
     }
 
-    public async Task UploadArtifactAsync(string directoryId, FileUploadRequest dto, CancellationToken cancellationToken = default)
+    public async Task UploadArtifactAsync(Guid directoryId, FileUploadRequest dto, CancellationToken cancellationToken = default)
     {
         var workspaceDirectoryArtifactRepository = _unitOfWork.Repository<WorkspaceDirectoryArtifact>();
         var workspaceDirectoryRepository = _unitOfWork.Repository<WorkspaceDirectory>();
@@ -112,7 +111,7 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
             throw new NotFoundException("Не найдена папка");
         }
 
-        if (!directory.Workspace.Users.Any(x => x.UserId == dto.FromId))
+        if (!directory.Workspace.Users.Any(x => x.UserId == Guid.Parse(dto.FromId)))
         {
             throw new ServiceException("У вас нет прав", true);
         }
@@ -124,7 +123,6 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
         var res = await _fileService.UploadFileAsync(uploadDto, cancellationToken);
         var artifact = new WorkspaceDirectoryArtifact()
         {
-            Id = Guid.NewGuid().ToString(),
             Name = dto.FileName,
             DirectoryId = directory.Id,
             Path = res.FilePath
@@ -133,14 +131,14 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task DeleteArtifactAsync(string directoryId,
+    public async Task DeleteArtifactAsync(Guid directoryId,
         FileDeleteRequest dto,
         CancellationToken cancellationToken = default)
     {
         var workspaceDirectoryArtifactRepository = _unitOfWork.Repository<WorkspaceDirectoryArtifact>();
         var workspaceDirectoryRepository = _unitOfWork.Repository<WorkspaceDirectory>();
         var artifact = await workspaceDirectoryArtifactRepository
-            .FindMany(x => x.Id == dto.Id)
+            .FindMany(x => x.Id == Guid.Parse(dto.Id))
             .FirstOrDefaultAsync(cancellationToken);
         if (artifact == null)
         {
@@ -155,7 +153,7 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
             throw new NotFoundException("Не найдена папка");
         }
 
-        if (!directory.Workspace.Users.Any(x => x.UserId == dto.FromId))
+        if (!directory.Workspace.Users.Any(x => x.UserId == Guid.Parse(dto.FromId)))
         {
             throw new ServiceException("У вас нет прав", true);
         }
@@ -166,12 +164,12 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
         };
         
         await _fileService.DeleteFileAsync(deleteDto, cancellationToken);
-        await workspaceDirectoryArtifactRepository.DeleteAsync(x => x.Id == dto
-            .Id, cancellationToken);
+        await workspaceDirectoryArtifactRepository
+            .DeleteAsync(x => x.Id == Guid.Parse(dto.Id), cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
-    private async Task UpdateActualityInternal(string id, bool isDeleted,
+    private async Task UpdateActualityInternal(Guid id, bool isDeleted,
         CancellationToken cancellationToken = default)
     {
         var workspaceDirectoryRepository = _unitOfWork.Repository<WorkspaceDirectory>();

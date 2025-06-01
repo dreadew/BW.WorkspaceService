@@ -2,11 +2,11 @@
 
 namespace WorkspaceService.Domain.Entities;
 
-public class WorkspacePosition : IEntity<string>, IAuditable
+public class WorkspacePosition : IEntity<Guid>, IAuditable
 {
-    public string Id { get; set; } = string.Empty;
+    public Guid Id { get; set; } = Guid.NewGuid();
     public string Name { get; set; } = string.Empty;
-    public string WorkspaceId { get; set; } = string.Empty;
+    public Guid WorkspaceId { get; set; } = Guid.Empty;
     public Workspace Workspace { get; set; }
     public bool IsDeleted { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.Now;

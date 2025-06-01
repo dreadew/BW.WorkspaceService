@@ -64,7 +64,7 @@ public class KafkaConsumerService : BackgroundService
             }
             catch (OperationCanceledException ex)
             {
-                break;
+               //break;
             }
         }
         
@@ -108,7 +108,7 @@ public class KafkaConsumerService : BackgroundService
         }
     }
     
-    private async Task HandleWorkspaceRoles(IUnitOfWork unitOfWork, string workspaceId, bool actuality, CancellationToken token = default)
+    private async Task HandleWorkspaceRoles(IUnitOfWork unitOfWork, Guid workspaceId, bool actuality, CancellationToken token = default)
     {
         var workspaceRolesRepository = unitOfWork.Repository<WorkspaceRole>();
         var roles = await workspaceRolesRepository
@@ -121,7 +121,7 @@ public class KafkaConsumerService : BackgroundService
         }
     }
 
-    private async Task HandleWorkspacePositions(IUnitOfWork unitOfWork, string workspaceId, 
+    private async Task HandleWorkspacePositions(IUnitOfWork unitOfWork, Guid workspaceId, 
         bool actuality, CancellationToken token = default)
     {
         var workspacePositionsRepository = unitOfWork.Repository<WorkspacePosition>();
@@ -135,7 +135,7 @@ public class KafkaConsumerService : BackgroundService
         }
     }
 
-    private async Task HandleWorkspaceDirectories(IUnitOfWork unitOfWork, string workspaceId, bool actuality,
+    private async Task HandleWorkspaceDirectories(IUnitOfWork unitOfWork, Guid workspaceId, bool actuality,
         CancellationToken token = default)
     {
         var workspaceDirectoriesRepository = unitOfWork.Repository<WorkspaceDirectory>();

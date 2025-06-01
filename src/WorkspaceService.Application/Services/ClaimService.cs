@@ -21,24 +21,26 @@ public class ClaimService : IClaimsService
     public async Task<bool> CheckUserClaim(string workspaceId, string userId,
         string expectedClaim, CancellationToken token = default)
     {
+        var claimsRepo = _unitOfWork.Repository<WorkspaceRoleClaim>();
         var workspaceRepo = _unitOfWork.Repository<Workspace>();
         var workspace = await workspaceRepo
-            .FindMany(x => x.Id == workspaceId)
+            .FindMany(x => x.Id == Guid.Parse(workspaceId))
             .FirstOrDefaultAsync(token);
         if (workspace == null)
         {
-            throw new ForbiddenException(workspaceId, expectedClaim);
+            throw new ForbiddenException(workspaceId.ToString(), expectedClaim);
         }
 
-        var user = workspace.Users.FirstOrDefault(x => x.UserId == userId);
+        var user = workspace.Users.FirstOrDefault(x => x.UserId == Guid.Parse(userId));
         if (user == null)
         {
-            throw new ForbiddenException(workspaceId, expectedClaim);
+            throw new ForbiddenException(workspaceId.ToString(), expectedClaim);
         }
-
-        if (!user.Role.RoleClaims.Any(x => x.Value == expectedClaim))
+        
+        if (!(await claimsRepo.FindMany(x => x.RoleId == user.RoleId && 
+                                             x.Value == expectedClaim).AnyAsync(token)))
         {
-            throw new ForbiddenException(workspaceId, expectedClaim);
+            throw new ForbiddenException(workspaceId.ToString(), expectedClaim);
         }
 
         return true;

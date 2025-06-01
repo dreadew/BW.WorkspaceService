@@ -18,7 +18,7 @@ public class UnitOfWork : IUnitOfWork
         _dbContext = dbContext;
     }
 
-    public IRepository<TEntity> Repository<TEntity>() where TEntity : class, IEntity<string>
+    public IRepository<TEntity> Repository<TEntity>() where TEntity : class, IEntity<Guid>
     {
         var type = typeof(TEntity);
         if (!_repositories.ContainsKey(type))

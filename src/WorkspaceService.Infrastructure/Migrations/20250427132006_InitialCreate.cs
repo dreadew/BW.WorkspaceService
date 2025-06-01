@@ -21,7 +21,7 @@ namespace WorkspaceService.Infrastructure.Migrations
                 name: "Events",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     EventType = table.Column<int>(type: "integer", nullable: false),
                     Payload = table.Column<string>(type: "text", nullable: false),
                     IsSent = table.Column<bool>(type: "boolean", nullable: false)
@@ -36,7 +36,7 @@ namespace WorkspaceService.Infrastructure.Migrations
                 schema: "workspace",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
                     PicturePath = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
@@ -55,10 +55,10 @@ namespace WorkspaceService.Infrastructure.Migrations
                 schema: "workspace",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    WorkspaceId = table.Column<string>(type: "text", nullable: false),
+                    WorkspaceId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     ChangedBy = table.Column<string>(type: "text", nullable: true)
@@ -80,9 +80,9 @@ namespace WorkspaceService.Infrastructure.Migrations
                 schema: "workspace",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
-                    WorkspaceId = table.Column<string>(type: "text", nullable: false),
+                    WorkspaceId = table.Column<Guid>(type: "uuid", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -105,9 +105,9 @@ namespace WorkspaceService.Infrastructure.Migrations
                 schema: "auth",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
-                    WorkspaceId = table.Column<string>(type: "text", nullable: false),
+                    WorkspaceId = table.Column<Guid>(type: "uuid", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -130,10 +130,10 @@ namespace WorkspaceService.Infrastructure.Migrations
                 schema: "workspace",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
                     Path = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: false),
-                    DirectoryId = table.Column<string>(type: "text", nullable: false),
+                    DirectoryId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     ChangedBy = table.Column<string>(type: "text", nullable: true)
@@ -155,8 +155,8 @@ namespace WorkspaceService.Infrastructure.Migrations
                 schema: "workspace",
                 columns: table => new
                 {
-                    ParentDirectoryId = table.Column<string>(type: "text", nullable: false),
-                    ChildDirectoryId = table.Column<string>(type: "text", nullable: false)
+                    ParentDirectoryId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ChildDirectoryId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -182,10 +182,10 @@ namespace WorkspaceService.Infrastructure.Migrations
                 schema: "auth",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Value = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    RoleId = table.Column<string>(type: "text", nullable: false),
-                    WorkspaceRolesId = table.Column<string>(type: "text", nullable: true)
+                    RoleId = table.Column<Guid>(type: "uuid", nullable: false),
+                    WorkspaceRolesId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -210,12 +210,12 @@ namespace WorkspaceService.Infrastructure.Migrations
                 schema: "workspace",
                 columns: table => new
                 {
-                    WorkspaceId = table.Column<string>(type: "text", nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    RoleId = table.Column<string>(type: "text", nullable: false),
-                    RoleId1 = table.Column<string>(type: "text", nullable: false),
-                    PositionId = table.Column<string>(type: "text", nullable: false),
-                    PositionId1 = table.Column<string>(type: "text", nullable: false)
+                    WorkspaceId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    RoleId = table.Column<Guid>(type: "uuid", nullable: false),
+                    RoleId1 = table.Column<Guid>(type: "uuid", nullable: false),
+                    PositionId = table.Column<Guid>(type: "uuid", nullable: false),
+                    PositionId1 = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {

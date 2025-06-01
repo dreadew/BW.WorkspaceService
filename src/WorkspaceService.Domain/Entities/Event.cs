@@ -3,9 +3,9 @@ using WorkspaceService.Domain.Enums;
 
 namespace WorkspaceService.Domain.Entities;
 
-public class Event : IEntity<string>
+public class Event : IEntity<Guid>
 {
-    public string Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
     public KafkaTopic EventType { get; set; }
     public string Payload { get; set; }
     public bool IsSent { get; set; }

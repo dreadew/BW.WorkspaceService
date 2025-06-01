@@ -10,16 +10,16 @@ public interface IWorkspaceDirectoryService
         CancellationToken cancellationToken = default);
     Task UpdateAsync(UpdateDirectoryRequest dto,
         CancellationToken cancellationToken = default);
-    Task DeleteAsync(string id,
+    Task DeleteAsync(Guid id,
         CancellationToken cancellationToken = default);
-    Task RestoreAsync(string id,
+    Task RestoreAsync(Guid id,
         CancellationToken cancellationToken = default);
-    Task<DirectoryDto> GetByIdAsync(string id,
+    Task<DirectoryDto> GetByIdAsync(Guid id,
         CancellationToken cancellationToken = default);
     Task<IEnumerable<DirectoryDto>> ListAsync(ListRequest dto,
-        string workspaceId, CancellationToken cancellationToken = default);
-    Task UploadArtifactAsync(string directoryId, FileUploadRequest dto,
+        Guid workspaceId, CancellationToken cancellationToken = default);
+    Task UploadArtifactAsync(Guid directoryId, FileUploadRequest dto,
         CancellationToken cancellationToken = default);
-    Task DeleteArtifactAsync(string directoryId, FileDeleteRequest dto,
+    Task DeleteArtifactAsync(Guid directoryId, FileDeleteRequest dto,
         CancellationToken cancellationToken = default);
 }
