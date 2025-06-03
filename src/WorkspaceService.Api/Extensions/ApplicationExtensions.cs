@@ -37,7 +37,7 @@ public static class ApplicationExtensions
     public static WebApplication UseCorsAllowAll(this WebApplication app)
     {
         app.UseCors(b => 
-            b.WithOrigins("http://localhost:8080")
+            b.WithOrigins("http://localhost:8080", "http://100.78.246.62:8080", "http://0.0.0.0:8080")
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials()

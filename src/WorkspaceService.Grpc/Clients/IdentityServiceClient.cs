@@ -89,7 +89,7 @@ public class IdentityServiceClient : IIdentityServiceClient
                     Email = user.Email,
                     PhoneNumber = user.PhoneNumber,
                     PhotoPath = user.PhotoPath,
-                    CreatedAt = user.CreatedAt.ToDateTime(),
+                    CreatedAt = null,
                     ModifiedAt = null
                 };
                 

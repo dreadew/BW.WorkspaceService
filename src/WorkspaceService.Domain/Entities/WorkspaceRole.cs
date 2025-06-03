@@ -8,7 +8,6 @@ public class WorkspaceRole : IEntity<Guid>, IAuditable
     public string Name { get; set; } = string.Empty;
     public Guid WorkspaceId { get; set; } = Guid.Empty;
     public Workspace Workspace { get; set; }
-    
     public List<WorkspaceRoleClaim> RoleClaims { get; set; } = new List<WorkspaceRoleClaim>();
     public bool IsDeleted { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.Now;

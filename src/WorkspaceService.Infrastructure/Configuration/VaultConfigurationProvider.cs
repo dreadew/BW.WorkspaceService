@@ -29,10 +29,10 @@ public class VaultConfigurationProvider : ConfigurationProvider
 
         try
         {
-            var secret = await vaultClient.V1.Secrets.KeyValue.V1.ReadSecretAsync
+            var secret = await vaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync
                 (_options.SecretPath, mountPoint: _options.MountPath);
 
-            foreach (var item in secret.Data)
+            foreach (var item in secret.Data.Data)
             {
                 var itemValue = item.Value.ToString();
                 

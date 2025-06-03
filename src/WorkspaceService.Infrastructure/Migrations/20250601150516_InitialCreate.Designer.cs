@@ -12,7 +12,7 @@ using WorkspaceService.Infrastructure.Data;
 namespace WorkspaceService.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250427132006_InitialCreate")]
+    [Migration("20250601150516_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -25,7 +25,7 @@ namespace WorkspaceService.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("WorkspaceService.Domain.Entities.Events", b =>
+            modelBuilder.Entity("WorkspaceService.Domain.Entities.Event", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -44,6 +44,46 @@ namespace WorkspaceService.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Events");
+                });
+
+            modelBuilder.Entity("WorkspaceService.Domain.Entities.Workspace", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ChangedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("PicturePath")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("workspace", "workspace");
                 });
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceDirectory", b =>
@@ -134,7 +174,7 @@ namespace WorkspaceService.Infrastructure.Migrations
                     b.ToTable("workspace_directory_nesting", "workspace");
                 });
 
-            modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspacePositions", b =>
+            modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspacePosition", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -172,33 +212,7 @@ namespace WorkspaceService.Infrastructure.Migrations
                     b.ToTable("workspace_position", "workspace");
                 });
 
-            modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceRoleClaims", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<Guid?>("WorkspaceRolesId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RoleId");
-
-                    b.HasIndex("WorkspaceRolesId");
-
-                    b.ToTable("workspace_role_claim", "auth");
-                });
-
-            modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceRoles", b =>
+            modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceRole", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -234,7 +248,33 @@ namespace WorkspaceService.Infrastructure.Migrations
                     b.ToTable("workspace_role", "auth");
                 });
 
-            modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceUsers", b =>
+            modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceRoleClaim", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<Guid?>("WorkspaceRoleId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.HasIndex("WorkspaceRoleId");
+
+                    b.ToTable("workspace_role_claim", "auth");
+                });
+
+            modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceUser", b =>
                 {
                     b.Property<Guid>("WorkspaceId")
                         .HasColumnType("uuid");
@@ -245,71 +285,21 @@ namespace WorkspaceService.Infrastructure.Migrations
                     b.Property<Guid>("PositionId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("PositionId1")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("RoleId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("RoleId1")
                         .HasColumnType("uuid");
 
                     b.HasKey("WorkspaceId", "UserId");
 
                     b.HasIndex("PositionId");
 
-                    b.HasIndex("PositionId1");
-
                     b.HasIndex("RoleId");
-
-                    b.HasIndex("RoleId1");
 
                     b.ToTable("workspace_user", "workspace");
                 });
 
-            modelBuilder.Entity("WorkspaceService.Domain.Entities.Workspaces", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("ChangedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
-
-                    b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<string>("PicturePath")
-                        .HasMaxLength(512)
-                        .HasColumnType("character varying(512)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("workspace", "workspace");
-                });
-
             modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceDirectory", b =>
                 {
-                    b.HasOne("WorkspaceService.Domain.Entities.Workspaces", "Workspace")
+                    b.HasOne("WorkspaceService.Domain.Entities.Workspace", "Workspace")
                         .WithMany("Directories")
                         .HasForeignKey("WorkspaceId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -348,9 +338,9 @@ namespace WorkspaceService.Infrastructure.Migrations
                     b.Navigation("ParentDirectoryNavigation");
                 });
 
-            modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspacePositions", b =>
+            modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspacePosition", b =>
                 {
-                    b.HasOne("WorkspaceService.Domain.Entities.Workspaces", "Workspace")
+                    b.HasOne("WorkspaceService.Domain.Entities.Workspace", "Workspace")
                         .WithMany("Positions")
                         .HasForeignKey("WorkspaceId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -359,24 +349,9 @@ namespace WorkspaceService.Infrastructure.Migrations
                     b.Navigation("Workspace");
                 });
 
-            modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceRoleClaims", b =>
+            modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceRole", b =>
                 {
-                    b.HasOne("WorkspaceService.Domain.Entities.WorkspaceRoles", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WorkspaceService.Domain.Entities.WorkspaceRoles", null)
-                        .WithMany("RoleClaims")
-                        .HasForeignKey("WorkspaceRolesId");
-
-                    b.Navigation("Role");
-                });
-
-            modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceRoles", b =>
-                {
-                    b.HasOne("WorkspaceService.Domain.Entities.Workspaces", "Workspace")
+                    b.HasOne("WorkspaceService.Domain.Entities.Workspace", "Workspace")
                         .WithMany("Roles")
                         .HasForeignKey("WorkspaceId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -385,33 +360,36 @@ namespace WorkspaceService.Infrastructure.Migrations
                     b.Navigation("Workspace");
                 });
 
-            modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceUsers", b =>
+            modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceRoleClaim", b =>
                 {
-                    b.HasOne("WorkspaceService.Domain.Entities.WorkspacePositions", null)
-                        .WithMany()
-                        .HasForeignKey("PositionId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("WorkspaceService.Domain.Entities.WorkspacePositions", "Position")
-                        .WithMany()
-                        .HasForeignKey("PositionId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WorkspaceService.Domain.Entities.WorkspaceRoles", null)
+                    b.HasOne("WorkspaceService.Domain.Entities.WorkspaceRole", "Role")
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("WorkspaceService.Domain.Entities.WorkspaceRoles", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleId1")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WorkspaceService.Domain.Entities.Workspaces", null)
+                    b.HasOne("WorkspaceService.Domain.Entities.WorkspaceRole", null)
+                        .WithMany("RoleClaims")
+                        .HasForeignKey("WorkspaceRoleId");
+
+                    b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceUser", b =>
+                {
+                    b.HasOne("WorkspaceService.Domain.Entities.WorkspacePosition", "Position")
+                        .WithMany()
+                        .HasForeignKey("PositionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WorkspaceService.Domain.Entities.WorkspaceRole", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WorkspaceService.Domain.Entities.Workspace", null)
                         .WithMany("Users")
                         .HasForeignKey("WorkspaceId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -420,6 +398,17 @@ namespace WorkspaceService.Infrastructure.Migrations
                     b.Navigation("Position");
 
                     b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("WorkspaceService.Domain.Entities.Workspace", b =>
+                {
+                    b.Navigation("Directories");
+
+                    b.Navigation("Positions");
+
+                    b.Navigation("Roles");
+
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceDirectory", b =>
@@ -431,20 +420,9 @@ namespace WorkspaceService.Infrastructure.Migrations
                     b.Navigation("ParentNesting");
                 });
 
-            modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceRoles", b =>
+            modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceRole", b =>
                 {
                     b.Navigation("RoleClaims");
-                });
-
-            modelBuilder.Entity("WorkspaceService.Domain.Entities.Workspaces", b =>
-                {
-                    b.Navigation("Directories");
-
-                    b.Navigation("Positions");
-
-                    b.Navigation("Roles");
-
-                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }
