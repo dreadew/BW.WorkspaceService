@@ -4,8 +4,8 @@ namespace WorkspaceService.Domain.Entities;
 
 public class WorkspaceRoleClaim : IEntity<Guid>
 {
-    public Guid Id { get; set; }
-    public string Value { get; set; }
-    public Guid RoleId { get; set; }
-    public WorkspaceRole Role { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public string Value { get; set; } = string.Empty;
+    public Guid RoleId { get; set; } = Guid.Empty;
+    public WorkspaceRole Role { get; set; } = new();
 }

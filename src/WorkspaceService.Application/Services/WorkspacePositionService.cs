@@ -5,6 +5,7 @@ using WorkspaceService.Domain.DTOs;
 using WorkspaceService.Domain.DTOs.WorkspacePositions;
 using WorkspaceService.Domain.Entities;
 using WorkspaceService.Domain.Exceptions;
+using WorkspaceService.Domain.Extensions;
 using WorkspaceService.Domain.Interfaces;
 using WorkspaceService.Domain.Services;
 
@@ -48,7 +49,7 @@ public class WorkspacePositionService : IWorkspacePositionsService
         }
         
         _mapper.Map(dto, position);
-        await workspacePositionsRepository.UpdateAsync(position, cancellationToken);
+        workspacePositionsRepository.Update(position, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
@@ -79,6 +80,8 @@ public class WorkspacePositionService : IWorkspacePositionsService
         var workspacePositionsRepository = _unitOfWork.Repository<WorkspacePosition>();
         var positions = await workspacePositionsRepository
             .FindMany(x => x.WorkspaceId == workspaceId)
+            .WhereIf(!dto.IncludeDeleted, d => !d.IsDeleted)
+            .Paging(dto)
             .ToListAsync(cancellationToken);
         if (positions == null)
         {
@@ -104,7 +107,7 @@ public class WorkspacePositionService : IWorkspacePositionsService
         
         position.IsDeleted = isDeleted;
         //await workspacePositionsRepository.DeleteAsync(x => x.Id == id, cancellationToken);
-        await workspacePositionsRepository.UpdateAsync(position, cancellationToken);
+        workspacePositionsRepository.Update(position, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken); 
     }
 }

@@ -97,7 +97,7 @@ public class KafkaConsumerService : BackgroundService
                     token);
                 await HandleWorkspaceDirectories(unitOfWork, workspace.Id, workspace.IsDeleted, 
                     token);
-                await workspaceRepo.UpdateAsync(workspace, token);
+                workspaceRepo.Update(workspace, token);
             }
 
             await unitOfWork.CommitTransactionAsync(token);
@@ -117,7 +117,7 @@ public class KafkaConsumerService : BackgroundService
         foreach (var role in roles)
         {
             role.IsDeleted = actuality;
-            await workspaceRolesRepository.UpdateAsync(role, token);
+            workspaceRolesRepository.Update(role, token);
         }
     }
 
@@ -131,7 +131,7 @@ public class KafkaConsumerService : BackgroundService
         foreach (var position in positions)
         {
             position.IsDeleted = actuality;
-            await workspacePositionsRepository.UpdateAsync(position, token);
+            workspacePositionsRepository.Update(position, token);
         }
     }
 
@@ -145,7 +145,7 @@ public class KafkaConsumerService : BackgroundService
         foreach (var directory in directories)
         {
             directory.IsDeleted = actuality;
-            await workspaceDirectoriesRepository.UpdateAsync(directory, token);
+            workspaceDirectoriesRepository.Update(directory, token);
         }
     }
 }

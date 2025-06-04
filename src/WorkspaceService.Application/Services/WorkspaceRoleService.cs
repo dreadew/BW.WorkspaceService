@@ -6,6 +6,7 @@ using WorkspaceService.Domain.DTOs;
 using WorkspaceService.Domain.DTOs.WorkspaceRoles;
 using WorkspaceService.Domain.Entities;
 using WorkspaceService.Domain.Exceptions;
+using WorkspaceService.Domain.Extensions;
 using WorkspaceService.Domain.Interfaces;
 using WorkspaceService.Domain.Services;
 
@@ -49,7 +50,7 @@ public class WorkspaceRoleService : IWorkspaceRolesService
         }
         
         _mapper.Map(dto, role);
-        await workspaceRolesRepository.UpdateAsync(role, cancellationToken);
+        workspaceRolesRepository.Update(role, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
@@ -80,7 +81,9 @@ public class WorkspaceRoleService : IWorkspaceRolesService
         var workspaceRolesRepository = _unitOfWork.Repository<WorkspaceRole>();
         var roles = await workspaceRolesRepository
             .FindMany(x => x.WorkspaceId == workspaceId)
+            .WhereIf(!dto.IncludeDeleted, d => !d.IsDeleted)
             .Include(x => x.RoleClaims)
+            .Paging(dto)
             .ToListAsync(cancellationToken);
         if (roles == null)
         {
@@ -106,7 +109,7 @@ public class WorkspaceRoleService : IWorkspaceRolesService
         
         role.IsDeleted = isDeleted;
         //await workspaceRolesRepository.DeleteAsync(x => x.Id == id, cancellationToken);
-        await workspaceRolesRepository.UpdateAsync(role, cancellationToken);
+        workspaceRolesRepository.Update(role, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken); 
     }
 }

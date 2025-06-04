@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WorkspaceService.Api.Controllers.Base;
 using WorkspaceService.Domain.DTOs;
 using WorkspaceService.Domain.DTOs.WorkspaceRoleClaims;
 using WorkspaceService.Domain.DTOs.WorkspaceRoles;
@@ -6,19 +7,14 @@ using WorkspaceService.Domain.Services;
 
 namespace WorkspaceService.Api.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
-public class WorkspaceRoleClaimsController : ControllerBase
+public class WorkspaceRoleClaimsController : BaseController<WorkspaceRoleClaimsController>
 {
     private readonly IWorkspaceRoleClaimsService _workspaceRoleClaimsService;
-    private readonly ILogger<WorkspaceRoleController> _logger;
 
     public WorkspaceRoleClaimsController(IWorkspaceRoleClaimsService 
-            workspaceRoleClaimsService,
-        ILogger<WorkspaceRoleController> logger)
+            workspaceRoleClaimsService, ILogger<WorkspaceRoleClaimsController> logger): base(logger)
     {
         _workspaceRoleClaimsService = workspaceRoleClaimsService;
-        _logger = logger;
     }
     
     [HttpGet("{id:guid}")]
@@ -26,6 +22,7 @@ public class WorkspaceRoleClaimsController : ControllerBase
     public async Task<ActionResult<RoleClaimsDto>> GetAsync(Guid id,
         CancellationToken cancellationToken = default)
     {
+        LogRequest(nameof(GetAsync));
         var result = await _workspaceRoleClaimsService.GetByIdAsync(id, cancellationToken);
         return Ok(result);
     }
@@ -37,6 +34,7 @@ public class WorkspaceRoleClaimsController : ControllerBase
         [FromQuery] ListRequest dto,
         CancellationToken cancellationToken = default)
     {
+        LogRequest(nameof(GetListAsync));
         var result = await _workspaceRoleClaimsService.ListAsync(dto, roleId, 
             cancellationToken);
         return Ok(result);
@@ -48,6 +46,7 @@ public class WorkspaceRoleClaimsController : ControllerBase
         CreateRoleClaimsRequest dto,
         CancellationToken cancellationToken = default)
     {
+        LogRequest(nameof(CreateAsync));
         if (!ModelState.IsValid)
         {
             return StatusCode(StatusCodes.Status400BadRequest, ModelState);
@@ -63,6 +62,7 @@ public class WorkspaceRoleClaimsController : ControllerBase
         [FromBody] UpdateRoleClaimsRequest dto,
         CancellationToken cancellationToken = default)
     {
+        LogRequest(nameof(UpdateAsync));
         if (!ModelState.IsValid)
         {
             return StatusCode(StatusCodes.Status400BadRequest, ModelState);
@@ -77,6 +77,7 @@ public class WorkspaceRoleClaimsController : ControllerBase
     public async Task<ActionResult> DeleteAsync(Guid id,
         CancellationToken cancellationToken = default)
     {
+        LogRequest(nameof(DeleteAsync));
         await _workspaceRoleClaimsService.DeleteAsync(id, cancellationToken);
         return Ok();
     }

@@ -7,11 +7,11 @@ public class Workspace : IEntity<Guid>, IAuditable
     public Guid Id { get; set; } = Guid.NewGuid();
     public string Name { get; set; } = string.Empty;
     public string? PicturePath { get; set; }
-    public List<WorkspaceRole> Roles { get; set; } = new List<WorkspaceRole>();
-    public List<WorkspacePosition> Positions { get; set; } = new List<WorkspacePosition>();
-    public List<WorkspaceUser> Users { get; set; } = new List<WorkspaceUser>();
-    public List<WorkspaceDirectory> Directories { get; set; } = new List<WorkspaceDirectory>();
-    public bool IsDeleted { get; set; } = false;
+    public List<WorkspaceRole> Roles { get; set; } = new();
+    public List<WorkspacePosition> Positions { get; set; } = new();
+    public List<WorkspaceUser> Users { get; set; } = new();
+    public List<WorkspaceDirectory> Directories { get; set; } = new();
+    public bool IsDeleted { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.Now;
     public DateTime? ModifiedAt { get; set; }
     public string? ChangedBy { get; set; }

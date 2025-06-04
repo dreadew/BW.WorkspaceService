@@ -46,7 +46,7 @@ app.Services.MigrateUp();
 app.UseCorsAllowAll();
 app.UseSwaggerWhenDevelopment();
 app.UseRequestLogging();
-//app.UseMiddleware<GrpcAuthMiddleware>();
+app.UseMiddleware<GrpcAuthMiddleware>();
 app.MapGrpcService<WorkspaceService.Grpc.Services.WorkspaceService>();
 app.MapControllers();
 

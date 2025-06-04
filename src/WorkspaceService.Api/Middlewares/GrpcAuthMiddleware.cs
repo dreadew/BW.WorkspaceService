@@ -28,13 +28,6 @@ public class GrpcAuthMiddleware
         {
             token = token.Substring("Bearer ".Length).Trim();
         }
-        // else
-        // {
-        //     _logger.LogWarning("Отсутствует заголовок Authorization");
-        //     context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-        //     await context.Response.WriteAsync("Unauthorized: AccessToken is missing");
-        //     return;
-        // }
 
         var (isValid, userId) = await _identityServiceClient.VerifyAsync(token);
 

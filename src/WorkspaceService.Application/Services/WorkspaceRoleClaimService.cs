@@ -6,6 +6,7 @@ using WorkspaceService.Domain.DTOs.WorkspaceRoleClaims;
 using WorkspaceService.Domain.DTOs.WorkspaceRoles;
 using WorkspaceService.Domain.Entities;
 using WorkspaceService.Domain.Exceptions;
+using WorkspaceService.Domain.Extensions;
 using WorkspaceService.Domain.Interfaces;
 using WorkspaceService.Domain.Services;
 
@@ -49,7 +50,7 @@ public class WorkspaceRoleClaimService : IWorkspaceRoleClaimsService
         }
         
         _mapper.Map(dto, role);
-        await workspaceRoleClaimsRepository.UpdateAsync(role, cancellationToken);
+        workspaceRoleClaimsRepository.Update(role, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
@@ -89,6 +90,7 @@ public class WorkspaceRoleClaimService : IWorkspaceRoleClaimsService
         var workspaceRoleClaimsRepository = _unitOfWork.Repository<WorkspaceRoleClaim>();
         var roles = await workspaceRoleClaimsRepository
             .FindMany(x => x.RoleId == roleId)
+            .Paging(dto)
             .ToListAsync(cancellationToken);
         if (roles == null)
         {

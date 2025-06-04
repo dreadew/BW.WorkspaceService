@@ -39,38 +39,22 @@ public class Repository<TEntity> : IRepository<TEntity>
             .ExecuteDeleteAsync(cancellationToken);
     }
 
-    public async Task<bool> UpdateAsync(TEntity entity, 
+    public bool Update(TEntity entity, 
         CancellationToken cancellationToken = default)
     {
-        var exists = await _dbContext.Set<TEntity>()
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == entity.Id, 
-                    cancellationToken)
-            is not null;
-
-        if (!exists)
-        {
-            return false;
-        }
-
-        _dbContext.Entry(entity).State = EntityState.Modified;
+        _dbContext.Update(entity);
         return true;
-    }
-
-    public IQueryable<TEntity> Paging(ListRequest listParams)
-    {
-        return _dbContext.Set<TEntity>()
-            .AsNoTracking()
-            .OrderBy(x => x.Id)
-            .Skip(listParams.Offset)
-            .Take(listParams.Limit);
     }
     
     public IQueryable<TEntity> FindMany(Expression<Func<TEntity, bool>> predicate)
     {
         return _dbContext.Set<TEntity>()
-            .AsNoTracking()
             .Where(predicate)
             .OrderBy(x => x.Id);
+    }
+    
+    public IQueryable<TEntity> GetAll()
+    {
+        return _dbContext.Set<TEntity>();
     }
 }

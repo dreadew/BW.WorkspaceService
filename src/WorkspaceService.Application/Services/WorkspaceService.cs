@@ -11,6 +11,7 @@ using WorkspaceService.Domain.DTOs.WorkspaceUsers;
 using WorkspaceService.Domain.Entities;
 using WorkspaceService.Domain.Enums;
 using WorkspaceService.Domain.Exceptions;
+using WorkspaceService.Domain.Extensions;
 using WorkspaceService.Domain.Interfaces;
 using WorkspaceService.Domain.Services;
 
@@ -167,7 +168,7 @@ public class WorkspaceService : IWorkspaceService
         await _unitOfWork.BeginTransactionAsync(cancellationToken);
         try
         {
-            await workspaceRepository.UpdateAsync(workspace, cancellationToken);
+            workspaceRepository.Update(workspace, cancellationToken);
             if (dto.IsDeleted != null)
             {
                 var actualityDto = new WorkspaceChangedActualityDto
@@ -230,11 +231,13 @@ public class WorkspaceService : IWorkspaceService
     {
         var workspaceRepository = _unitOfWork.Repository<Workspace>();
         var workspaces = await workspaceRepository
-            .Paging(dto)
+            .GetAll()
+            .WhereIf(!dto.IncludeDeleted, d => !d.IsDeleted)
             .Include(x => x.Roles)
                 .ThenInclude(x => x.RoleClaims)
             .Include(x => x.Positions)
             .Include(x => x.Users)
+            .Paging(dto)
             .ToListAsync(cancellationToken);
         if (workspaces == null)
         {
@@ -398,7 +401,7 @@ public class WorkspaceService : IWorkspaceService
         
         var uploadedPath = await _fileService.UploadFileAsync(uploadDto, cancellationToken);
         workspace.PicturePath = uploadedPath.FilePath;
-        await workspaceRepository.UpdateAsync(workspace, cancellationToken);
+        workspaceRepository.Update(workspace, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
@@ -432,7 +435,7 @@ public class WorkspaceService : IWorkspaceService
         
         await _fileService.DeleteFileAsync(deleteDto, cancellationToken);
         workspace.PicturePath = null;
-        await workspaceRepository.UpdateAsync(workspace, cancellationToken);
+        workspaceRepository.Update(workspace, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
@@ -445,7 +448,7 @@ public class WorkspaceService : IWorkspaceService
         foreach (var role in roles)
         {
             role.IsDeleted = actuality;
-            await workspaceRolesRepository.UpdateAsync(role, cancellationToken);
+            workspaceRolesRepository.Update(role, cancellationToken);
         }
     }
 
@@ -459,7 +462,7 @@ public class WorkspaceService : IWorkspaceService
         foreach (var position in positions)
         {
             position.IsDeleted = actuality;
-            await workspacePositionsRepository.UpdateAsync(position, cancellationToken);
+            workspacePositionsRepository.Update(position, cancellationToken);
         }
     }
 
@@ -473,7 +476,7 @@ public class WorkspaceService : IWorkspaceService
         foreach (var directory in directories)
         {
             directory.IsDeleted = actuality;
-            await workspaceDirectoriesRepository.UpdateAsync(directory, cancellationToken);
+            workspaceDirectoriesRepository.Update(directory, cancellationToken);
         }
     }
 
@@ -510,7 +513,7 @@ public class WorkspaceService : IWorkspaceService
             await _unitOfWork.BeginTransactionAsync(cancellationToken);
             //await workspaceRepository.DeleteAsync(x => x.Id == id, cancellationToken);
             await eventsRepository.CreateAsync(newEvent, cancellationToken);
-            await workspaceRepository.UpdateAsync(workspace, cancellationToken);
+            workspaceRepository.Update(workspace, cancellationToken);
             await HandleWorkspaceRoles(workspace.Id, workspace.IsDeleted, cancellationToken);
             await HandleWorkspacePositions(workspace.Id, workspace.IsDeleted, cancellationToken);
             await HandleWorkspaceDirectories(workspace.Id, workspace.IsDeleted, cancellationToken);

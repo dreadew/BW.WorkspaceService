@@ -6,6 +6,7 @@ using WorkspaceService.Domain.DTOs.File;
 using WorkspaceService.Domain.DTOs.WorkspaceDirectory;
 using WorkspaceService.Domain.Entities;
 using WorkspaceService.Domain.Exceptions;
+using WorkspaceService.Domain.Extensions;
 using WorkspaceService.Domain.Interfaces;
 using WorkspaceService.Domain.Services;
 
@@ -51,7 +52,7 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
             throw new NotFoundException("Не удалось найти директорию");
         }
         _mapper.Map(dto, directory);
-        await workspaceDirectoryRepository.UpdateAsync(directory, cancellationToken);
+        workspaceDirectoryRepository.Update(directory, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
@@ -86,9 +87,11 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
         var workspaceDirectoryRepository = _unitOfWork.Repository<WorkspaceDirectory>();
         var directories = await workspaceDirectoryRepository
             .FindMany(x => x.WorkspaceId == workspaceId)
+            .WhereIf(!dto.IncludeDeleted, d => !d.IsDeleted)
             .Include(x => x.ChildNesting)
                 .ThenInclude(x => x.ChildDirectoryNavigation)
             .Include(x => x.Artifacts)
+            .Paging(dto)
             .ToListAsync(cancellationToken);
         if (directories == null)
         {
@@ -183,7 +186,7 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
         
         directory.IsDeleted = isDeleted;
         //await workspaceDirectoryRepository.DeleteAsync(x => x.Id == id, cancellationToken);
-        await workspaceDirectoryRepository.UpdateAsync(directory, cancellationToken);
+        workspaceDirectoryRepository.Update(directory, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken); 
     }
 }

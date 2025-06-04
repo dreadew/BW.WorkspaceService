@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WorkspaceService.Api.Controllers.Base;
 using WorkspaceService.Domain.DTOs;
 using WorkspaceService.Domain.DTOs.File;
 using WorkspaceService.Domain.DTOs.Workspaces;
@@ -7,18 +8,14 @@ using WorkspaceService.Domain.Services;
 
 namespace WorkspaceService.Api.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
-public class WorkspaceController : ControllerBase
+public class WorkspaceController : BaseController<WorkspaceController> 
 {
     private readonly IWorkspaceService _workspaceService;
-    private readonly ILogger<WorkspaceController> _logger;
 
     public WorkspaceController(IWorkspaceService workspaceService,
-        ILogger<WorkspaceController> logger)
+        ILogger<WorkspaceController> logger) : base(logger)
     {
         _workspaceService = workspaceService;
-        _logger = logger;
     }
 
     [HttpPost]
@@ -27,6 +24,7 @@ public class WorkspaceController : ControllerBase
         [FromBody] CreateWorkspaceRequest dto,
         CancellationToken cancellationToken = default)
     {
+        LogRequest(nameof(CreateAsync));
         if (!ModelState.IsValid)
         {
             return StatusCode(StatusCodes.Status400BadRequest, ModelState);
@@ -42,6 +40,7 @@ public class WorkspaceController : ControllerBase
         [FromBody] UpdateWorkspaceRequest dto,
         CancellationToken cancellationToken = default)
     {
+        LogRequest(nameof(UpdateAsync));
         if (!ModelState.IsValid)
         {
             return StatusCode(StatusCodes.Status400BadRequest, ModelState);
@@ -57,6 +56,7 @@ public class WorkspaceController : ControllerBase
         Guid id,
         CancellationToken cancellationToken = default)
     {
+        LogRequest(nameof(GetAsync));
         var result = await _workspaceService.GetByIdAsync(id, cancellationToken);
         return Ok(result);
     }
@@ -67,6 +67,7 @@ public class WorkspaceController : ControllerBase
         [FromQuery] ListRequest dto,
         CancellationToken cancellationToken = default)
     {
+        LogRequest(nameof(ListAsync));
         var result = await _workspaceService.ListAsync(dto, cancellationToken);
         return Ok(result);
     }
@@ -77,6 +78,7 @@ public class WorkspaceController : ControllerBase
         DeleteWorkspaceRequest dto,
         CancellationToken cancellationToken = default)
     {
+        LogRequest(nameof(DeleteAsync));
         await _workspaceService.DeleteAsync(dto, cancellationToken);
         return Ok();
     }
@@ -87,6 +89,7 @@ public class WorkspaceController : ControllerBase
         RestoreWorkspaceRequest dto,
         CancellationToken cancellationToken = default)
     {
+        LogRequest(nameof(RestoreAsync));
         await _workspaceService.RestoreAsync(dto, cancellationToken);
         return Ok();
     }
@@ -97,6 +100,7 @@ public class WorkspaceController : ControllerBase
         [FromBody] InviteUserRequest dto,
         CancellationToken cancellationToken = default)
     {
+        LogRequest(nameof(InviteToWorkspaceAsync));
         if (!ModelState.IsValid)
         {
             return StatusCode(StatusCodes.Status400BadRequest, ModelState);
@@ -112,6 +116,7 @@ public class WorkspaceController : ControllerBase
         [FromBody] UpdateUserRequest dto,
         CancellationToken cancellationToken = default)
     {
+        LogRequest(nameof(UpdateUserAsync));
         if (!ModelState.IsValid)
         {
             return StatusCode(StatusCodes.Status400BadRequest, ModelState);
@@ -127,6 +132,7 @@ public class WorkspaceController : ControllerBase
         [FromRoute] DeleteUserRequest dto,
         CancellationToken cancellationToken = default)
     {
+        LogRequest(nameof(DeleteFromWorkspaceAsync));
         await _workspaceService.DeleteUserAsync(dto, cancellationToken);
         return Ok();
     }
@@ -139,9 +145,10 @@ public class WorkspaceController : ControllerBase
         IFormFile file,
         CancellationToken cancellationToken = default)
     {
+        LogRequest(nameof(UploadPictureAsync));
         if (file.Length == 0)
         {
-            return BadRequest("File is empty");
+            return BadRequest("Файл пустой");
         }
         
         using var memoryStream = new MemoryStream();
@@ -164,6 +171,7 @@ public class WorkspaceController : ControllerBase
         [FromQuery] FileDeleteRequest dto,
         CancellationToken cancellationToken = default)
     {
+        LogRequest(nameof(DeletePictureAsync));
         await _workspaceService.DeletePictureAsync(id, dto, cancellationToken);
         return Ok();
     }

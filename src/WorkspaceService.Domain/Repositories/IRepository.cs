@@ -17,13 +17,12 @@ public interface IRepository<T>
         Expression<Func<T, bool>> predicate,
         CancellationToken cancellationToken = default);
 
-    Task<bool> UpdateAsync(
+    bool Update(
         T entity,
         CancellationToken cancellationToken = default);
-    
-    IQueryable<T> Paging(
-        ListRequest listParams);
 
     IQueryable<T> FindMany(
         Expression<Func<T, bool>> predicate);
+
+    IQueryable<T> GetAll();
 }

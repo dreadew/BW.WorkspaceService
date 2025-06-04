@@ -33,7 +33,7 @@ public class SendMessageJob : IJob
             {
                 await _kafkaProducerService.PublishAsync(newEvent.EventType.ToString(), newEvent.Payload);
                 newEvent.IsSent = true;
-                await eventsRepo.UpdateAsync(newEvent);
+                eventsRepo.Update(newEvent);
                 await _unitOfWork.CommitTransactionAsync();
             }
             catch (Exception ex)

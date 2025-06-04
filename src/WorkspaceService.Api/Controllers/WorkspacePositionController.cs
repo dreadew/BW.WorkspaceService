@@ -1,23 +1,21 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WorkspaceService.Api.Controllers.Base;
 using WorkspaceService.Domain.DTOs;
 using WorkspaceService.Domain.DTOs.WorkspacePositions;
 using WorkspaceService.Domain.DTOs.Workspaces;
+using WorkspaceService.Domain.Entities;
 using WorkspaceService.Domain.Services;
 
 namespace WorkspaceService.Api.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
-public class WorkspacePositionController : ControllerBase
+public class WorkspacePositionController : BaseController<WorkspacePosition> 
 {
     private readonly IWorkspacePositionsService _workspacePositionsService;
-    private readonly ILogger<WorkspaceRoleClaimsController> _logger;
 
     public WorkspacePositionController(IWorkspacePositionsService workspacePositionsService,
-        ILogger<WorkspaceRoleClaimsController> logger)
+        ILogger<WorkspacePosition> logger): base(logger)
     {
         _workspacePositionsService = workspacePositionsService;
-        _logger = logger;
     }
 
     [HttpGet("{id:guid}")]
@@ -25,6 +23,7 @@ public class WorkspacePositionController : ControllerBase
     public async Task<ActionResult<PositionDto>> GetAsync(Guid id,
         CancellationToken cancellationToken = default)
     {
+        LogRequest(nameof(GetAsync));
         var result = await _workspacePositionsService.GetByIdAsync(id, cancellationToken);
         return Ok(result);
     }
@@ -36,6 +35,7 @@ public class WorkspacePositionController : ControllerBase
         [FromQuery] ListRequest dto,
         CancellationToken cancellationToken = default)
     {
+        LogRequest(nameof(ListAsync));
         var result = await _workspacePositionsService.ListAsync(dto, workspaceId, cancellationToken);
         return Ok(result);
     }
@@ -46,6 +46,7 @@ public class WorkspacePositionController : ControllerBase
         [FromBody] CreatePositionRequest dto,
         CancellationToken cancellationToken = default)
     {
+        LogRequest(nameof(CreateAsync));
         if (!ModelState.IsValid)
         {
             return StatusCode(StatusCodes.Status400BadRequest, ModelState);
@@ -61,6 +62,7 @@ public class WorkspacePositionController : ControllerBase
         [FromBody] UpdatePositionRequest dto,
         CancellationToken cancellationToken = default)
     {
+        LogRequest(nameof(UpdateAsync));
         if (!ModelState.IsValid)
         {
             return StatusCode(StatusCodes.Status400BadRequest, ModelState);
@@ -75,6 +77,7 @@ public class WorkspacePositionController : ControllerBase
     public async Task<ActionResult> DeleteAsync(Guid id,
         CancellationToken cancellationToken = default)
     {
+        LogRequest(nameof(DeleteAsync));
         await _workspacePositionsService.DeleteAsync(id, cancellationToken);
         return Ok();
     }
@@ -84,6 +87,7 @@ public class WorkspacePositionController : ControllerBase
     public async Task<ActionResult> RestoreAsync(Guid id,
         CancellationToken cancellationToken = default)
     {
+        LogRequest(nameof(RestoreAsync));
         await _workspacePositionsService.RestoreAsync(id, cancellationToken);
         return Ok();
     }
