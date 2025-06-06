@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WorkspaceService.Api.Controllers.Base;
+using WorkspaceService.Domain.Constants;
 using WorkspaceService.Domain.DTOs;
 using WorkspaceService.Domain.DTOs.File;
 using WorkspaceService.Domain.DTOs.WorkspaceDirectory;
@@ -101,7 +102,7 @@ public class WorkspaceDirectoryController : BaseController<WorkspaceDirectoryCon
         LogRequest(nameof(UploadArtifactAsync));
         if (file.Length == 0)
         {
-            return BadRequest("Файл пустой");
+            return BadRequest(ExceptionResourceKeys.FileIsEmpty);
         }
         
         using var memoryStream = new MemoryStream();

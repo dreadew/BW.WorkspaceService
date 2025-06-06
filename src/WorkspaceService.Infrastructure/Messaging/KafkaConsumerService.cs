@@ -10,7 +10,6 @@ using WorkspaceService.Domain.DTOs.Messaging;
 using WorkspaceService.Domain.Entities;
 using WorkspaceService.Domain.Interfaces;
 using WorkspaceService.Domain.Options;
-using WorkspaceService.Domain.Repositories;
 
 namespace WorkspaceService.Infrastructure.Messaging;
 

@@ -1,5 +1,7 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using WorkspaceService.Domain.Constants;
 using WorkspaceService.Domain.Exceptions;
 
 namespace WorkspaceService.Api.Middlewares;
@@ -8,12 +10,15 @@ public class ExceptionHandlingMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<ExceptionHandlingMiddleware> _logger;
+    private readonly IStringLocalizer _localizer;
 
     public ExceptionHandlingMiddleware(RequestDelegate next,
-        ILogger<ExceptionHandlingMiddleware> logger)
+        ILogger<ExceptionHandlingMiddleware> logger,
+        IStringLocalizer<ExceptionHandlingMiddleware> localizer)
     {
         _next = next;
         _logger = logger;
+        _localizer = localizer;
     }
 
     public async Task InvokeAsync(HttpContext context)
@@ -24,20 +29,24 @@ public class ExceptionHandlingMiddleware
         }
         catch (AlreadyExistsException ex)
         {
-            await HandleExceptionAsync(context, HttpStatusCode.Conflict, ex.Message);
+            await HandleExceptionAsync(context, HttpStatusCode.Conflict, _localizer[ex.Message]);
         }
         catch (NotFoundException ex)
         {
-            await HandleExceptionAsync(context, HttpStatusCode.NotFound, ex.Message);
+            await HandleExceptionAsync(context, HttpStatusCode.NotFound, _localizer[ex.Message]);
         }
         catch (ServiceException ex)
         {
-            await HandleExceptionAsync(context, HttpStatusCode.InternalServerError, ex.Message,
-                ex.visibleToUser);
+            await HandleExceptionAsync(context, HttpStatusCode.InternalServerError, _localizer[ex.Message], ex.visibleToUser);
+        }
+        catch (ForbiddenException ex)
+        {
+            var message = _localizer[ex.ResourceKey, ex.Target, ex.ExpectedClaim];
+            await HandleExceptionAsync(context, HttpStatusCode.Forbidden, message);
         }
         catch (Exception ex)
         {
-            await HandleExceptionAsync(context, HttpStatusCode.InternalServerError, ex.Message);
+            await HandleExceptionAsync(context, HttpStatusCode.InternalServerError, _localizer[ExceptionResourceKeys.UnexpectedError]);
         }
     }
 
@@ -60,7 +69,7 @@ public class ExceptionHandlingMiddleware
         }
         else
         {
-            problemDetails.Detail = "An unexpected error occured. Please try again later.";
+            problemDetails.Detail = _localizer[ExceptionResourceKeys.UnexpectedError];
         }
 
         await context.Response.WriteAsJsonAsync(problemDetails);

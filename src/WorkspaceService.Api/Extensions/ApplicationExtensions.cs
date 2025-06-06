@@ -4,6 +4,7 @@ namespace WorkspaceService.Api.Extensions;
 
 public static class ApplicationExtensions
 {
+    private static readonly string[] SupportedCultures = { "en", "ru" };
     public static WebApplication UseSwaggerWhenDevelopment(this WebApplication app)
     {
         if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
@@ -34,14 +35,35 @@ public static class ApplicationExtensions
         return app;
     }
     
-    public static WebApplication UseCorsAllowAll(this WebApplication app)
+    public static WebApplication UseCorsFromConfig(this WebApplication app)
     {
-        app.UseCors(b => 
-            b.WithOrigins("http://localhost:8080", "http://100.78.246.62:8080", "http://0.0.0.0:8080")
+        var config = app.Configuration;
+        var corsUrls = config["CorsUrls"]?
+                           .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                       ?? Array.Empty<string>();
+
+        app.UseCors(b =>
+            b.WithOrigins(corsUrls)
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials()
         );
+        return app;
+    }
+    
+    public static WebApplication UseLocalizationFromConfig(this WebApplication app)
+    {
+        var config = app.Configuration;
+        var locale = config["Culture"]?.ToLower() ?? "ru";
+        if (!Array.Exists(SupportedCultures, c => c.Equals(locale, StringComparison.OrdinalIgnoreCase)))
+        {
+            locale = "ru";
+        }
+        var localizationOptions = new RequestLocalizationOptions()
+            .SetDefaultCulture(locale)
+            .AddSupportedCultures(SupportedCultures)
+            .AddSupportedUICultures(SupportedCultures);
+        app.UseRequestLocalization(localizationOptions);
         
         return app;
     }

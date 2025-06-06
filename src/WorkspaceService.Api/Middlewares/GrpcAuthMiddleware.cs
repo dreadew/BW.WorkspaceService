@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using WorkspaceService.Domain.Constants;
 using WorkspaceService.Domain.Context;
 using WorkspaceService.Domain.Services;
 using WorkspaceService.Grpc.Services;
@@ -10,11 +11,10 @@ public class GrpcAuthMiddleware
     private readonly RequestDelegate _next;
     private readonly IIdentityServiceClient _identityServiceClient;
     private readonly ILogger<GrpcAuthMiddleware> _logger;
-
-    public GrpcAuthMiddleware(RequestDelegate next, IIdentityServiceClient 
-            identityServiceClient,
+    public GrpcAuthMiddleware(RequestDelegate next, 
+        IIdentityServiceClient identityServiceClient,
         ILogger<GrpcAuthMiddleware> logger)
-    {
+    {    
         _next = next;
         _identityServiceClient = identityServiceClient;
         _logger = logger;
@@ -34,9 +34,7 @@ public class GrpcAuthMiddleware
         if (!isValid || string.IsNullOrEmpty(userId))
         {
             _logger.LogWarning("Неверный AccessToken");
-            context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-            await context.Response.WriteAsync("Unauthorized: Invalid AccessToken");
-            return;
+            await context.Response.WriteAsync(ExceptionResourceKeys.InvalidAccessToken);
         }
 
         CurrentUserContext.CurrentUserId = userId;

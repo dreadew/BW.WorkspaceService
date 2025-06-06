@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="FileIsEmpty" xml:space="preserve">
+    <value>Файл пустой</value>
+  </data>
+  <data name="InvalidAccessTokenResponse" xml:space="preserve">
+    <value>Unauthorized: Invalid AccessToken</value>
+  </data>
+</root>
+

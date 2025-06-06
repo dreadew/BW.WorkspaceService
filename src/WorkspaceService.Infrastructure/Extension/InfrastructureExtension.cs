@@ -47,7 +47,8 @@ public static class InfrastructureExtension
             var dbOptions = provider.GetRequiredService<IOptions<DBOptions>>().Value;
             
             options.UseNpgsql(dbOptions.PostgresConnection)
-                .AddInterceptors(new UpdateAuditableInterceptor());
+                .AddInterceptors(new UpdateAuditableInterceptor())
+                .UseLazyLoadingProxies();
         });
     }
 

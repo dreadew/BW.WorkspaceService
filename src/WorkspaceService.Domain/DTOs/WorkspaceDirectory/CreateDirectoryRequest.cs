@@ -9,4 +9,7 @@ public class CreateDirectoryRequest
 
     [Display(Name = "Идентификатор рабочего пространства")]
     public string WorkspaceId { get; set; }
+
+    [Display(Name = "Родительская директория")]
+    public string? ParentId { get; set; }
 }

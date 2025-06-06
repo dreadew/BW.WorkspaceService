@@ -28,19 +28,19 @@ public class ClaimService : IClaimsService
             .FirstOrDefaultAsync(token);
         if (workspace == null)
         {
-            throw new ForbiddenException(workspaceId.ToString(), expectedClaim);
+            throw new ForbiddenException(workspaceId, expectedClaim);
         }
 
         var user = workspace.Users.FirstOrDefault(x => x.UserId == Guid.Parse(userId));
         if (user == null)
         {
-            throw new ForbiddenException(workspaceId.ToString(), expectedClaim);
+            throw new ForbiddenException(workspaceId, expectedClaim);
         }
         
         if (!(await claimsRepo.FindMany(x => x.RoleId == user.RoleId && 
                                              x.Value == expectedClaim).AnyAsync(token)))
         {
-            throw new ForbiddenException(workspaceId.ToString(), expectedClaim);
+            throw new ForbiddenException(workspaceId, expectedClaim);
         }
 
         return true;

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="ClaimNotFound" xml:space="preserve">
+    <value>Клейм не найден</value>
+  </data>
+  <data name="ClaimsNotFound" xml:space="preserve">
+    <value>Клеймы не найдены</value>
+  </data>
+  <data name="DirectoryNotFound" xml:space="preserve">
+    <value>Директория не найдена</value>
+  </data>
+  <data name="DirectoriesNotFound" xml:space="preserve">
+    <value>Директории не найдены</value>
+  </data>
+  <data name="FolderNotFound" xml:space="preserve">
+    <value>Папка не найдена</value>
+  </data>
+  <data name="ArtifactNotFound" xml:space="preserve">
+    <value>Артефакт не найден</value>
+  </data>
+  <data name="WorkspaceNotFound" xml:space="preserve">
+    <value>Рабочее пространство не найдено</value>
+  </data>
+  <data name="PositionNotFound" xml:space="preserve">
+    <value>Должность не найдена</value>
+  </data>
+  <data name="PositionsNotFound" xml:space="preserve">
+    <value>Должности не найдены</value>
+  </data>
+  <data name="RoleNotFound" xml:space="preserve">
+    <value>Роль не найдена</value>
+  </data>
+  <data name="RolesNotFound" xml:space="preserve">
+    <value>Роли не найдены</value>
+  </data>
+  <data name="UserNotFound" xml:space="preserve">
+    <value>Пользователь не найден</value>
+  </data>
+  <data name="NoAccess" xml:space="preserve">
+    <value>У вас нет доступа</value>
+  </data>
+  <data name="NoRights" xml:space="preserve">
+    <value>У вас нет прав</value>
+  </data>
+  <data name="NoPhoto" xml:space="preserve">
+    <value>У этого рабочего пространства не установлена фотография</value>
+  </data>
+  <data name="Forbidden" xml:space="preserve">
+    <value>Нет доступа</value>
+  </data>
+  <data name="UnexpectedError" xml:space="preserve">
+    <value>Произошла непредвиденная ошибка. Пожалуйста, попробуйте позже.</value>
+  </data>
+  <data name="FileIsEmpty" xml:space="preserve">
+    <value />
+  </data>
+</root>

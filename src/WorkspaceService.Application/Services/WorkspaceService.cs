@@ -2,6 +2,7 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using WorkspaceService.Domain.Constants;
 using WorkspaceService.Domain.Context;
 using WorkspaceService.Domain.DTOs;
 using WorkspaceService.Domain.DTOs.File;
@@ -161,7 +162,7 @@ public class WorkspaceService : IWorkspaceService
             .FirstOrDefaultAsync(cancellationToken);
         if (workspace == null)
         {
-            throw new NotFoundException("Рабочее пространство не найдено");
+            throw new NotFoundException(ExceptionResourceKeys.WorkspaceNotFound);
         }
 
         _mapper.Map(dto, workspace);
@@ -205,14 +206,10 @@ public class WorkspaceService : IWorkspaceService
         var workspaceRepository = _unitOfWork.Repository<Workspace>();
         var workspace = await workspaceRepository
             .FindMany(x => x.Id == id)
-            .Include(x => x.Roles)
-                .ThenInclude(x => x.RoleClaims)
-            .Include(x => x.Positions)
-            .Include(x => x.Users)
             .FirstOrDefaultAsync(cancellationToken);
         if (workspace == null)
         {
-            throw new NotFoundException("Рабочее пространство не найдено");
+            throw new NotFoundException(ExceptionResourceKeys.WorkspaceNotFound);
         }
         
         var users = await _identityService.GetFromArrayAsync(
@@ -233,15 +230,11 @@ public class WorkspaceService : IWorkspaceService
         var workspaces = await workspaceRepository
             .GetAll()
             .WhereIf(!dto.IncludeDeleted, d => !d.IsDeleted)
-            .Include(x => x.Roles)
-                .ThenInclude(x => x.RoleClaims)
-            .Include(x => x.Positions)
-            .Include(x => x.Users)
             .Paging(dto)
             .ToListAsync(cancellationToken);
         if (workspaces == null)
         {
-            throw new NotFoundException("Рабочее пространство не найдено");
+            throw new NotFoundException(ExceptionResourceKeys.WorkspaceNotFound);
         }
         
         var workspacesDto = _mapper.Map<List<WorkspaceDto>>(workspaces);
@@ -279,7 +272,7 @@ public class WorkspaceService : IWorkspaceService
             .FirstOrDefaultAsync(cancellationToken);
         if (workspace == null)
         {
-            throw new NotFoundException("Не удалось найти рабочее пространство");
+            throw new NotFoundException(ExceptionResourceKeys.WorkspaceNotFound);
         }
         
         var defaultPosition = await workspacePositionsRepository
@@ -287,7 +280,7 @@ public class WorkspaceService : IWorkspaceService
             .FirstOrDefaultAsync(cancellationToken);
         if (defaultPosition == null)
         {
-            throw new NotFoundException("Не удалось найти должность пользователя");
+            throw new NotFoundException(ExceptionResourceKeys.PositionNotFound);
         }
 
         var defaultRole = await workspaceRolesRepository
@@ -295,7 +288,7 @@ public class WorkspaceService : IWorkspaceService
             .FirstOrDefaultAsync(cancellationToken);
         if (defaultRole == null)
         {
-            throw new NotFoundException("Не удалось найти роль пользователя");
+            throw new NotFoundException(ExceptionResourceKeys.UserNotFound);
         } 
         
         var entity = new WorkspaceUser()
@@ -322,29 +315,29 @@ public class WorkspaceService : IWorkspaceService
             .FirstOrDefaultAsync(cancellationToken);
         if (workspace == null)
         {
-            throw new NotFoundException("Не удалось найти рабочее пространство");
+            throw new NotFoundException(ExceptionResourceKeys.WorkspaceNotFound);
         }
         
         var position = await workspacePositionsRepository
-            .FindMany(x => x.Id == Guid.Parse(dto.PositionId))
+            .FindMany(x => x.Id == Guid.Parse(dto.PositionId ?? ""))
             .FirstOrDefaultAsync(cancellationToken);
         if (position == null && dto.PositionId != null)
         {
-            throw new NotFoundException("Не удалось найти должность пользователя");
+            throw new NotFoundException(ExceptionResourceKeys.UserNotFound);
         }
 
         var role = await workspaceRolesRepository
-            .FindMany(x => x.Id == Guid.Parse(dto.RoleId))
+            .FindMany(x => x.Id == Guid.Parse(dto.RoleId ?? ""))
             .FirstOrDefaultAsync(cancellationToken);
         if (role == null && dto.RoleId != null)
         {
-            throw new NotFoundException("Не удалось найти роль пользователя");
+            throw new NotFoundException(ExceptionResourceKeys.RoleNotFound);
         }
 
         var user = workspace.Users.FirstOrDefault(x => x.UserId == Guid.Parse(dto.UserId) && x.WorkspaceId == workspace.Id);
         if (user == null)
         {
-            throw new NotFoundException("Не удалось найти пользователя");
+            throw new NotFoundException(ExceptionResourceKeys.UserNotFound);
         }
         
         user.PositionId = position?.Id ?? user.PositionId;
@@ -364,13 +357,13 @@ public class WorkspaceService : IWorkspaceService
             .FirstOrDefaultAsync(cancellationToken);
         if (workspace == null)
         {
-            throw new NotFoundException("Не удалось найти рабочее пространство");
+            throw new NotFoundException(ExceptionResourceKeys.WorkspaceNotFound);
         }
 
         var user = workspace.Users.FirstOrDefault(x => x.UserId == Guid.Parse(dto.UserId));
         if (user == null)
         {
-            throw new NotFoundException("Не удалось найти пользователя");
+            throw new NotFoundException(ExceptionResourceKeys.UserNotFound);
         }
         
         workspace.Users.Remove(user);
@@ -387,12 +380,12 @@ public class WorkspaceService : IWorkspaceService
             .FirstOrDefaultAsync(cancellationToken);
         if (workspace == null)
         {
-            throw new NotFoundException("Не удалось найти рабочее пространство");
+            throw new NotFoundException(ExceptionResourceKeys.WorkspaceNotFound);
         }
 
         if (!workspace.Users.Any(x => x.UserId == Guid.Parse(dto.FromId)))
         {
-            throw new ServiceException("У вас нет доступа", true);
+            throw new ServiceException(ExceptionResourceKeys.NoAccess, true);
         }
 
         var uploadPath = new List<string>() { "workspace", $"{workspace.Id}", "photo" };
@@ -415,7 +408,7 @@ public class WorkspaceService : IWorkspaceService
             .FirstOrDefaultAsync(cancellationToken);
         if (workspace == null)
         {
-            throw new NotFoundException("Рабочее пространство не найдено");
+            throw new NotFoundException(ExceptionResourceKeys.WorkspaceNotFound);
         }
 
         if (!workspace.Users.Any(x => x.UserId == Guid.Parse(dto.FromId)))
@@ -425,7 +418,7 @@ public class WorkspaceService : IWorkspaceService
 
         if (workspace.PicturePath == null)
         {
-            throw new ServiceException("У этого рабочего пространства не установлена фотография", true);
+            throw new ServiceException(ExceptionResourceKeys.NoPhoto, true);
         }
 
         var deleteDto = new FileDeleteDto()
@@ -492,7 +485,7 @@ public class WorkspaceService : IWorkspaceService
             .FirstOrDefaultAsync(cancellationToken);
         if (workspace == null)
         {
-            throw new NotFoundException("Рабочее пространство не найдено");
+            throw new NotFoundException(ExceptionResourceKeys.WorkspaceNotFound);
         }
         
         workspace.IsDeleted = isDeleted;

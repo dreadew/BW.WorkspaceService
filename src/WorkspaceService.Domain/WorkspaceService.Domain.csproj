@@ -10,4 +10,8 @@
     <Compile Remove="DTOs\File\FileDtoWithoutUserId.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
 </Project>

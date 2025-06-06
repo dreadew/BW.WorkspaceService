@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="ClaimNotFound" xml:space="preserve">
+    <value>Claim not found</value>
+  </data>
+  <data name="ClaimsNotFound" xml:space="preserve">
+    <value>Claims not found</value>
+  </data>
+  <data name="DirectoryNotFound" xml:space="preserve">
+    <value>Directory not found</value>
+  </data>
+  <data name="DirectoriesNotFound" xml:space="preserve">
+    <value>Directories not found</value>
+  </data>
+  <data name="FolderNotFound" xml:space="preserve">
+    <value>Folder not found</value>
+  </data>
+  <data name="ArtifactNotFound" xml:space="preserve">
+    <value>Artifact not found</value>
+  </data>
+  <data name="WorkspaceNotFound" xml:space="preserve">
+    <value>Workspace not found</value>
+  </data>
+  <data name="PositionNotFound" xml:space="preserve">
+    <value>Position not found</value>
+  </data>
+  <data name="PositionsNotFound" xml:space="preserve">
+    <value>Positions not found</value>
+  </data>
+  <data name="RoleNotFound" xml:space="preserve">
+    <value>Role not found</value>
+  </data>
+  <data name="RolesNotFound" xml:space="preserve">
+    <value>Roles not found</value>
+  </data>
+  <data name="UserNotFound" xml:space="preserve">
+    <value>User not found</value>
+  </data>
+  <data name="NoAccess" xml:space="preserve">
+    <value>You do not have access</value>
+  </data>
+  <data name="NoRights" xml:space="preserve">
+    <value>You do not have rights</value>
+  </data>
+  <data name="NoPhoto" xml:space="preserve">
+    <value>This workspace does not have a photo set</value>
+  </data>
+  <data name="Forbidden" xml:space="preserve">
+    <value>Forbidden</value>
+  </data>
+  <data name="UnexpectedError" xml:space="preserve">
+    <value>An unexpected error occured. Please try again later.</value>
+  </data>
+</root>

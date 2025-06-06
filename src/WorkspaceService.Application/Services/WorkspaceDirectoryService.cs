@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using WorkspaceService.Domain.Constants;
 using WorkspaceService.Domain.DTOs;
 using WorkspaceService.Domain.DTOs.File;
 using WorkspaceService.Domain.DTOs.WorkspaceDirectory;
@@ -35,8 +36,18 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
         CancellationToken cancellationToken = default)
     {
         var workspaceDirectoryRepository = _unitOfWork.Repository<WorkspaceDirectory>();
+        var workspaceDirectoryNestingRepository = _unitOfWork.Repository<WorkspaceDirectoryNesting>();
         var entity = _mapper.Map<WorkspaceDirectory>(dto);
         await workspaceDirectoryRepository.CreateAsync(entity, cancellationToken);
+        if (!string.IsNullOrEmpty(dto.ParentId) && Guid.TryParse(dto.ParentId, out var parentId))
+        {
+            var nesting = new WorkspaceDirectoryNesting
+            {
+                ParentDirectoryId = parentId,
+                ChildDirectoryId = entity.Id
+            };
+            await workspaceDirectoryNestingRepository.CreateAsync(nesting, cancellationToken);
+        }
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
@@ -49,7 +60,7 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
             .FirstOrDefaultAsync(cancellationToken);
         if (directory == null)
         {
-            throw new NotFoundException("Не удалось найти директорию");
+            throw new NotFoundException(ExceptionResourceKeys.DirectoryNotFound);
         }
         _mapper.Map(dto, directory);
         workspaceDirectoryRepository.Update(directory, cancellationToken);
@@ -70,15 +81,17 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
         var workspaceDirectoryRepository = _unitOfWork.Repository<WorkspaceDirectory>();
         var directory = await workspaceDirectoryRepository
             .FindMany(x => x.Id == id)
-            .Include(x => x.ChildNesting)
-                .ThenInclude(x => x.ChildDirectoryNavigation)
-            .Include(x => x.Artifacts)
             .FirstOrDefaultAsync(cancellationToken);
         if (directory == null)
         {
-            throw new NotFoundException("Не удалось найти директорию");
+            throw new NotFoundException(ExceptionResourceKeys.DirectoryNotFound);
         }
-        return _mapper.Map<DirectoryDto>(directory);
+        var dto = _mapper.Map<DirectoryDto>(directory);
+        dto.Children = directory.ChildNesting?.Select(n => _mapper.Map<DirectoryDto>(n.ChildDirectoryNavigation)).ToList() ?? new();
+        dto.Parent = directory.ParentNesting?.FirstOrDefault() != null
+            ? _mapper.Map<DirectoryDto>(directory.ParentNesting.First().ParentDirectoryNavigation)
+            : null;
+        return dto;
     }
     
     public async Task<IEnumerable<DirectoryDto>> ListAsync(ListRequest dto,
@@ -88,18 +101,24 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
         var directories = await workspaceDirectoryRepository
             .FindMany(x => x.WorkspaceId == workspaceId)
             .WhereIf(!dto.IncludeDeleted, d => !d.IsDeleted)
-            .Include(x => x.ChildNesting)
-                .ThenInclude(x => x.ChildDirectoryNavigation)
-            .Include(x => x.Artifacts)
             .Paging(dto)
             .ToListAsync(cancellationToken);
         if (directories == null)
         {
-            throw new NotFoundException("Не удалось найти директории");
+            throw new NotFoundException(ExceptionResourceKeys.DirectoriesNotFound);
         }
-        return _mapper.Map<IEnumerable<DirectoryDto>>(directories
+        var result = directories
             .Take(dto.Limit)
-            .Skip(dto.Offset));
+            .Skip(dto.Offset)
+            .Select(directory => {
+                var dirDto = _mapper.Map<DirectoryDto>(directory);
+                dirDto.Children = directory.ChildNesting?.Select(n => _mapper.Map<DirectoryDto>(n.ChildDirectoryNavigation)).ToList() ?? new();
+                dirDto.Parent = directory.ParentNesting?.FirstOrDefault() != null
+                    ? _mapper.Map<DirectoryDto>(directory.ParentNesting.First().ParentDirectoryNavigation)
+                    : null;
+                return dirDto;
+            });
+        return result;
     }
 
     public async Task UploadArtifactAsync(Guid directoryId, FileUploadRequest dto, CancellationToken cancellationToken = default)
@@ -111,12 +130,12 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
             .FirstOrDefaultAsync(cancellationToken);
         if (directory == null)
         {
-            throw new NotFoundException("Не найдена папка");
+            throw new NotFoundException(ExceptionResourceKeys.FolderNotFound);
         }
 
         if (!directory.Workspace.Users.Any(x => x.UserId == Guid.Parse(dto.FromId)))
         {
-            throw new ServiceException("У вас нет прав", true);
+            throw new ServiceException(ExceptionResourceKeys.NoRights, true);
         }
 
         var paths = new List<string>() { "workspace", $"{directory.WorkspaceId}", $"{directory.WorkspaceId}" };
@@ -145,7 +164,7 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
             .FirstOrDefaultAsync(cancellationToken);
         if (artifact == null)
         {
-            throw new NotFoundException("Артефакт не найден");
+            throw new NotFoundException(ExceptionResourceKeys.ArtifactNotFound);
         }
         
         var directory = await workspaceDirectoryRepository
@@ -153,12 +172,12 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
             .FirstOrDefaultAsync(cancellationToken);
         if (directory == null)
         {
-            throw new NotFoundException("Не найдена папка");
+            throw new NotFoundException(ExceptionResourceKeys.FolderNotFound);
         }
 
         if (!directory.Workspace.Users.Any(x => x.UserId == Guid.Parse(dto.FromId)))
         {
-            throw new ServiceException("У вас нет прав", true);
+            throw new ServiceException(ExceptionResourceKeys.NoRights, true);
         }
 
         var deleteDto = new FileDeleteDto()
@@ -181,7 +200,7 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
             .FirstOrDefaultAsync(cancellationToken);
         if (directory == null)
         {
-            throw new NotFoundException("Не удалось найти директорию");
+            throw new NotFoundException(ExceptionResourceKeys.DirectoryNotFound);
         }
         
         directory.IsDeleted = isDeleted;

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using WorkspaceService.Domain.Constants;
 using WorkspaceService.Domain.DTOs;
 using WorkspaceService.Domain.DTOs.WorkspacePositions;
 using WorkspaceService.Domain.Entities;
@@ -45,7 +46,7 @@ public class WorkspacePositionService : IWorkspacePositionsService
             .FirstOrDefaultAsync(cancellationToken);
         if (position == null)
         {
-            throw new NotFoundException("Должность не найдена");
+            throw new NotFoundException(ExceptionResourceKeys.PositionNotFound);
         }
         
         _mapper.Map(dto, position);
@@ -68,7 +69,7 @@ public class WorkspacePositionService : IWorkspacePositionsService
             .FirstOrDefaultAsync(cancellationToken);
         if (position == null)
         {
-            throw new NotFoundException("Должность не найдена");
+            throw new NotFoundException(ExceptionResourceKeys.PositionNotFound);
         }
         
         return _mapper.Map<PositionDto>(position);
@@ -85,7 +86,7 @@ public class WorkspacePositionService : IWorkspacePositionsService
             .ToListAsync(cancellationToken);
         if (positions == null)
         {
-            throw new NotFoundException("Должности не найдены");
+            throw new NotFoundException(ExceptionResourceKeys.PositionsNotFound);
         }
         
         return _mapper.Map<IEnumerable<PositionDto>>(positions
@@ -102,7 +103,7 @@ public class WorkspacePositionService : IWorkspacePositionsService
             .FirstOrDefaultAsync(cancellationToken);
         if (position == null)
         {
-            throw new NotFoundException("Должность не найдена");
+            throw new NotFoundException(ExceptionResourceKeys.PositionNotFound);
         }
         
         position.IsDeleted = isDeleted;

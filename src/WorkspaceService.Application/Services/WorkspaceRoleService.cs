@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using WorkspaceService.Domain.Constants;
 using WorkspaceService.Domain.DTOs;
 using WorkspaceService.Domain.DTOs.WorkspaceRoles;
 using WorkspaceService.Domain.Entities;
@@ -46,7 +46,7 @@ public class WorkspaceRoleService : IWorkspaceRolesService
             .FirstOrDefaultAsync(cancellationToken);
         if (role == null)
         {
-            throw new NotFoundException("Роль не найдена");
+            throw new NotFoundException(ExceptionResourceKeys.RoleNotFound);
         }
         
         _mapper.Map(dto, role);
@@ -65,11 +65,10 @@ public class WorkspaceRoleService : IWorkspaceRolesService
         var workspaceRolesRepository = _unitOfWork.Repository<WorkspaceRole>();
         var role = await workspaceRolesRepository
             .FindMany(x => x.Id == id)
-            .Include(x => x.RoleClaims)
             .FirstOrDefaultAsync(cancellationToken);
         if (role == null)
         {
-            throw new NotFoundException("Роль не найдена");
+            throw new NotFoundException(ExceptionResourceKeys.RoleNotFound);
         }
         
         return _mapper.Map<RoleDto>(role);
@@ -82,12 +81,11 @@ public class WorkspaceRoleService : IWorkspaceRolesService
         var roles = await workspaceRolesRepository
             .FindMany(x => x.WorkspaceId == workspaceId)
             .WhereIf(!dto.IncludeDeleted, d => !d.IsDeleted)
-            .Include(x => x.RoleClaims)
             .Paging(dto)
             .ToListAsync(cancellationToken);
         if (roles == null)
         {
-            throw new NotFoundException("Роли не найдены");
+            throw new NotFoundException(ExceptionResourceKeys.RolesNotFound);
         }
         
         return _mapper.Map<IEnumerable<RoleDto>>(roles
@@ -104,7 +102,7 @@ public class WorkspaceRoleService : IWorkspaceRolesService
             .FirstOrDefaultAsync(cancellationToken);
         if (role == null)
         {
-            throw new NotFoundException("Роль не найдена");
+            throw new NotFoundException(ExceptionResourceKeys.RoleNotFound);
         }
         
         role.IsDeleted = isDeleted;

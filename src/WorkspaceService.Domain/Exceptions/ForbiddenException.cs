@@ -1,10 +1,12 @@
+using WorkspaceService.Domain.Constants;
+
 namespace WorkspaceService.Domain.Exceptions;
 
 public class ForbiddenException : Exception
 {
-    private string Target { get; set; }
-    private string ExpectedClaim { get; set; }
-    public new string Message => $"У вас нет возможности '{ExpectedClaim}' для доступа к '{Target}'";
+    public string ResourceKey { get; } = ExceptionResourceKeys.Forbidden;
+    public string Target { get; }
+    public string ExpectedClaim { get; }
 
     public ForbiddenException(string target, string expectedClaim)
     {

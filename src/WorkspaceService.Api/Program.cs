@@ -1,8 +1,10 @@
+using Newtonsoft.Json;
 using Serilog;
 using WorkspaceService.Api.Extensions;
 using WorkspaceService.Api.Middlewares;
 using WorkspaceService.Application.Extension;
 using WorkspaceService.Domain.Constants;
+using WorkspaceService.Domain.Converters;
 using WorkspaceService.Grpc.Extension;
 using WorkspaceService.Infrastructure.Configuration;
 using WorkspaceService.Infrastructure.Data;
@@ -28,13 +30,21 @@ builder.Services.AddGrpcServices(builder.Configuration);
 builder.Services.AddObservability(builder.Configuration, builder.Environment);
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
+builder.Services.AddControllers()
+    .AddNewtonsoftJson(options =>
+    {
+        options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+        options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+        options.SerializerSettings.Converters.Add(new CustomDateTimeConverter());
+        options.SerializerSettings.Converters.Add(new CustomDateOnlyConverter());
+    });
 
 if (!Directory.Exists("logs"))
 {
     Directory.CreateDirectory("logs");
 }
 
-Log.Information("Starting Workspace Service");
+Log.Information("Запуск сервиса рабочих пространств");
 SwaggerExtensions.LogSwaggerConfiguration(builder.Configuration);
 ApiExtensions.LogApiConfiguration(builder.Configuration);
 ObservabilityExtensions.LogObservabilityConfiguration(builder.Configuration);
@@ -43,14 +53,21 @@ var app = builder.Build();
 
 app.Services.MigrateUp();
 
-app.UseCorsAllowAll();
+app.UseLocalizationFromConfig();
+app.UseCorsFromConfig();
+app.UseResponseCompression();
+
 app.UseSwaggerWhenDevelopment();
 app.UseRequestLogging();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 app.UseMiddleware<GrpcAuthMiddleware>();
-app.MapGrpcService<WorkspaceService.Grpc.Services.WorkspaceService>();
+
 app.MapControllers();
 
-Log.Information("Сервис успешно запущен");
 app.UseHealthChecks("/health");
-app.UseResponseCompression();
+
+Log.Information("Сервис успешно запущен");
+
 app.Run();

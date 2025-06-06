@@ -1,9 +1,9 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using WorkspaceService.Domain.Constants;
 using WorkspaceService.Domain.DTOs;
 using WorkspaceService.Domain.DTOs.WorkspaceRoleClaims;
-using WorkspaceService.Domain.DTOs.WorkspaceRoles;
 using WorkspaceService.Domain.Entities;
 using WorkspaceService.Domain.Exceptions;
 using WorkspaceService.Domain.Extensions;
@@ -46,7 +46,7 @@ public class WorkspaceRoleClaimService : IWorkspaceRoleClaimsService
             .FirstOrDefaultAsync(cancellationToken);
         if (role == null)
         {
-            throw new NotFoundException("Клейм не найден");
+            throw new NotFoundException(ExceptionResourceKeys.ClaimNotFound);
         }
         
         _mapper.Map(dto, role);
@@ -62,7 +62,7 @@ public class WorkspaceRoleClaimService : IWorkspaceRoleClaimsService
             .FirstOrDefaultAsync(cancellationToken);
         if (claim == null)
         {
-            throw new NotFoundException("Клейм не найден");
+            throw new NotFoundException(ExceptionResourceKeys.ClaimNotFound);
         }
 
         await workspaceRoleClaimsRepository.DeleteAsync(x => x.Id == id, cancellationToken);
@@ -78,7 +78,7 @@ public class WorkspaceRoleClaimService : IWorkspaceRoleClaimsService
             .FirstOrDefaultAsync(cancellationToken);
         if (role == null)
         {
-            throw new NotFoundException("Клейм не найден");
+            throw new NotFoundException(ExceptionResourceKeys.ClaimNotFound);
         }
         
         return _mapper.Map<RoleClaimsDto>(role);
@@ -94,7 +94,7 @@ public class WorkspaceRoleClaimService : IWorkspaceRoleClaimsService
             .ToListAsync(cancellationToken);
         if (roles == null)
         {
-            throw new NotFoundException("Клеймы не найден");
+            throw new NotFoundException(ExceptionResourceKeys.ClaimsNotFound);
         }
         
         return _mapper.Map<IEnumerable<RoleClaimsDto>>(roles
