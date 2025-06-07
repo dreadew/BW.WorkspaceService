@@ -1,9 +1,8 @@
+using Common.Base.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Quartz;
 using WorkspaceService.Domain.Entities;
-using WorkspaceService.Domain.Interfaces;
-using WorkspaceService.Domain.Services;
 
 namespace WorkspaceService.Infrastructure.Jobs;
 

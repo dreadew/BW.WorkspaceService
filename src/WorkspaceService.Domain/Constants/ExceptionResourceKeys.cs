@@ -1,6 +1,6 @@
 namespace WorkspaceService.Domain.Constants;
 
-public static class ExceptionResourceKeys
+public static partial class ExceptionResourceKeys
 {
     public const string ClaimNotFound = "ClaimNotFound";
     public const string ClaimsNotFound = "ClaimsNotFound";
@@ -14,11 +14,6 @@ public static class ExceptionResourceKeys
     public const string RoleNotFound = "RoleNotFound";
     public const string RolesNotFound = "RolesNotFound";
     public const string UserNotFound = "UserNotFound";
-    public const string NoAccess = "NoAccess";
-    public const string NoRights = "NoRights";
     public const string NoPhoto = "NoPhoto";
-    public const string Forbidden = "Forbidden";
-    public const string UnexpectedError = "UnexpectedError";
-    public const string FileIsEmpty = "FileIsEmpty";
     public const string InvalidAccessToken = "InvalidAccessToken";
 }

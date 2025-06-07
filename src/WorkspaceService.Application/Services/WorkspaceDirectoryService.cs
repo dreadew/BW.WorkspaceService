@@ -1,14 +1,14 @@
 ﻿using AutoMapper;
+using Common.Base.DTO;
+using Common.Base.DTO.File;
+using Common.Base.Exceptions;
+using Common.Base.Extensions;
+using Common.Base.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using WorkspaceService.Domain.Constants;
-using WorkspaceService.Domain.DTOs;
-using WorkspaceService.Domain.DTOs.File;
 using WorkspaceService.Domain.DTOs.WorkspaceDirectory;
 using WorkspaceService.Domain.Entities;
-using WorkspaceService.Domain.Exceptions;
-using WorkspaceService.Domain.Extensions;
-using WorkspaceService.Domain.Interfaces;
 using WorkspaceService.Domain.Services;
 
 namespace WorkspaceService.Application.Services;
@@ -41,10 +41,17 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
         await workspaceDirectoryRepository.CreateAsync(entity, cancellationToken);
         if (!string.IsNullOrEmpty(dto.ParentId) && Guid.TryParse(dto.ParentId, out var parentId))
         {
+            var parentDir = await workspaceDirectoryRepository
+                .FindMany(x => x.Id == parentId)
+                .FirstOrDefaultAsync(cancellationToken);
+            if (parentDir == null)
+            {
+                throw new NotFoundException(ExceptionResourceKeys.DirectoryNotFound);
+            }
             var nesting = new WorkspaceDirectoryNesting
             {
-                ParentDirectoryId = parentId,
-                ChildDirectoryId = entity.Id
+                ParentDirectoryNavigation = parentDir,
+                ChildDirectoryNavigation = entity
             };
             await workspaceDirectoryNestingRepository.CreateAsync(nesting, cancellationToken);
         }
@@ -69,11 +76,11 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
 
     public async Task DeleteAsync(Guid id,
         CancellationToken cancellationToken = default) => await UpdateActualityInternal
-        (id, false, cancellationToken);
+        (id, true, cancellationToken);
 
     public async Task RestoreAsync(Guid id,
         CancellationToken cancellationToken = default) => await UpdateActualityInternal
-        (id, true, cancellationToken);
+        (id, false, cancellationToken);
     
     public async Task<DirectoryDto> GetByIdAsync(Guid id,
         CancellationToken cancellationToken = default)
@@ -133,9 +140,9 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
             throw new NotFoundException(ExceptionResourceKeys.FolderNotFound);
         }
 
-        if (!directory.Workspace.Users.Any(x => x.UserId == Guid.Parse(dto.FromId)))
+        if (!directory.Workspace.Users.Any(x => x.UserId == dto.FromId))
         {
-            throw new ServiceException(ExceptionResourceKeys.NoRights, true);
+            throw new ServiceException(Common.Base.Constants.ExceptionResourceKeys.NoRights, true);
         }
 
         var paths = new List<string>() { "workspace", $"{directory.WorkspaceId}", $"{directory.WorkspaceId}" };
@@ -177,7 +184,7 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
 
         if (!directory.Workspace.Users.Any(x => x.UserId == Guid.Parse(dto.FromId)))
         {
-            throw new ServiceException(ExceptionResourceKeys.NoRights, true);
+            throw new ServiceException(Common.Base.Constants.ExceptionResourceKeys.NoRights, true);
         }
 
         var deleteDto = new FileDeleteDto()

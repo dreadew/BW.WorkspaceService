@@ -28,11 +28,9 @@ public class WorkspaceDirectoryArtifactConfiguration : IEntityTypeConfiguration<
         builder.Property(a => a.CreatedAt)
             .IsRequired();
 
-        builder.Property(a => a.ModifiedAt);
+        builder.Property(a => a.UpdatedAt);
 
-        builder.Property(a => a.ChangedBy);
-
-        builder.HasOne(a => a.Directory)
+        builder.HasOne<WorkspaceDirectory>(a => a.Directory)
             .WithMany(d => d.Artifacts)
             .HasForeignKey(a => a.DirectoryId)
             .OnDelete(DeleteBehavior.Cascade);

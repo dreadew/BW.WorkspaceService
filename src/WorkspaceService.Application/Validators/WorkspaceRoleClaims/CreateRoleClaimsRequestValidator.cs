@@ -1,7 +1,6 @@
-﻿using FluentValidation;
-using WorkspaceService.Domain.Constants;
+﻿using Common.Base.Constants;
+using FluentValidation;
 using WorkspaceService.Domain.DTOs.WorkspaceRoleClaims;
-using WorkspaceService.Domain.DTOs.WorkspaceRoles;
 
 namespace WorkspaceService.Application.Validators.WorkspaceRoleClaims;
 

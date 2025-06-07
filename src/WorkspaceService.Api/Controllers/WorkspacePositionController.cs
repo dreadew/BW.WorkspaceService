@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using WorkspaceService.Api.Controllers.Base;
-using WorkspaceService.Domain.DTOs;
+﻿using Common.AspNetCore.Controllers;
+using Common.Base.DTO;
+using Microsoft.AspNetCore.Mvc;
 using WorkspaceService.Domain.DTOs.WorkspacePositions;
-using WorkspaceService.Domain.DTOs.Workspaces;
 using WorkspaceService.Domain.Entities;
 using WorkspaceService.Domain.Services;
 

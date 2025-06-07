@@ -1,11 +1,10 @@
-using DefaultNamespace;
+using Common.Base.Entities;
 using WorkspaceService.Domain.Enums;
 
 namespace WorkspaceService.Domain.Entities;
 
-public class Event : IEntity<Guid>
+public class Event : BaseEntity
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
     public KafkaTopic EventType { get; set; }
     public string Payload { get; set; } = string.Empty;
     public bool IsSent { get; set; }

@@ -1,4 +1,5 @@
-﻿using Grpc.Core;
+﻿using Common.Base.Services;
+using Grpc.Core;
 using Grpc.Net.Client;
 using IdentityService.Grpc.Protos;
 using Microsoft.Extensions.Configuration;

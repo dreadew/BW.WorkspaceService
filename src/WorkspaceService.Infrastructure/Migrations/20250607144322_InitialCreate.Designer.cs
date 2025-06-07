@@ -12,7 +12,7 @@ using WorkspaceService.Infrastructure.Data;
 namespace WorkspaceService.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250601150516_InitialCreate")]
+    [Migration("20250607144322_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -52,22 +52,19 @@ namespace WorkspaceService.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("ChangedBy")
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
-
-                    b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -77,6 +74,9 @@ namespace WorkspaceService.Infrastructure.Migrations
                     b.Property<string>("PicturePath")
                         .HasMaxLength(512)
                         .HasColumnType("character varying(512)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -92,10 +92,10 @@ namespace WorkspaceService.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("ChangedBy")
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsDeleted")
@@ -103,13 +103,13 @@ namespace WorkspaceService.Infrastructure.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
 
-                    b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("WorkspaceId")
                         .HasColumnType("uuid");
@@ -130,17 +130,11 @@ namespace WorkspaceService.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("ChangedBy")
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("DirectoryId")
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -151,6 +145,9 @@ namespace WorkspaceService.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(1024)
                         .HasColumnType("character varying(1024)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -167,6 +164,9 @@ namespace WorkspaceService.Infrastructure.Migrations
                     b.Property<Guid>("ChildDirectoryId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
                     b.HasKey("ParentDirectoryId", "ChildDirectoryId");
 
                     b.HasIndex("ChildDirectoryId");
@@ -180,10 +180,10 @@ namespace WorkspaceService.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("ChangedBy")
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsDeleted")
@@ -191,13 +191,13 @@ namespace WorkspaceService.Infrastructure.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
 
-                    b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("WorkspaceId")
                         .HasColumnType("uuid");
@@ -218,10 +218,10 @@ namespace WorkspaceService.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("ChangedBy")
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsDeleted")
@@ -229,13 +229,13 @@ namespace WorkspaceService.Infrastructure.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
 
-                    b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("WorkspaceId")
                         .HasColumnType("uuid");
@@ -369,7 +369,7 @@ namespace WorkspaceService.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("WorkspaceService.Domain.Entities.WorkspaceRole", null)
-                        .WithMany("RoleClaims")
+                        .WithMany("Claims")
                         .HasForeignKey("WorkspaceRoleId");
 
                     b.Navigation("Role");
@@ -389,7 +389,7 @@ namespace WorkspaceService.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WorkspaceService.Domain.Entities.Workspace", null)
+                    b.HasOne("WorkspaceService.Domain.Entities.Workspace", "Workspace")
                         .WithMany("Users")
                         .HasForeignKey("WorkspaceId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -398,6 +398,8 @@ namespace WorkspaceService.Infrastructure.Migrations
                     b.Navigation("Position");
 
                     b.Navigation("Role");
+
+                    b.Navigation("Workspace");
                 });
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.Workspace", b =>
@@ -422,7 +424,7 @@ namespace WorkspaceService.Infrastructure.Migrations
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceRole", b =>
                 {
-                    b.Navigation("RoleClaims");
+                    b.Navigation("Claims");
                 });
 #pragma warning restore 612, 618
         }

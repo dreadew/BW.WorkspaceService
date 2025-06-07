@@ -1,20 +1,18 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Common.Base.Constants;
+using Common.Base.Options;
+using Common.Base.Services;
+using Common.Services.Interceptors;
+using Common.Services.Messaging;
+using Common.Services.ServiceExtensions;
+using Common.Services.Services;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Quartz;
-using WorkspaceService.Domain.Constants;
 using WorkspaceService.Domain.Entities;
-using WorkspaceService.Domain.Interfaces;
-using WorkspaceService.Domain.Options;
-using WorkspaceService.Domain.Repositories;
-using WorkspaceService.Domain.Services;
 using WorkspaceService.Infrastructure.Data;
-using WorkspaceService.Infrastructure.Data.Interceptors;
 using WorkspaceService.Infrastructure.Jobs;
-using WorkspaceService.Infrastructure.Messaging;
-using WorkspaceService.Infrastructure.Repositories;
-using WorkspaceService.Infrastructure.Services;
 
 namespace WorkspaceService.Infrastructure.Extension;
 
@@ -23,10 +21,13 @@ public static class InfrastructureExtension
     public static void AddInfrastructure(this IServiceCollection services, 
         IConfiguration configuration)
     {
-        InitSecrets(services, configuration);
+        services.AddVault(configuration);
         InitDb(services, configuration);
         InitRepositories(services);
+        services.AddUnitOfWork<ApplicationDbContext>();
+        services.AddFileService(configuration);
         InitServices(services, configuration);
+        services.AddKafkaProducer(configuration);
         InitMessaging(services, configuration);
         InitJobs(services);
     }
@@ -55,9 +56,6 @@ public static class InfrastructureExtension
     private static void InitMessaging(this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.Configure<KafkaOptions>(
-            configuration.GetSection(KafkaConstants.Section));
-        services.AddSingleton<IKafkaProducerService, KafkaProducerService>();
         //services.AddHostedService<KafkaConsumerService>();
     }
 
@@ -78,19 +76,11 @@ public static class InfrastructureExtension
 
     private static void InitRepositories(this IServiceCollection services)
     {
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
-        services.AddScoped<IRepository<Workspace>, Repository<Workspace>>();
-        services.AddScoped<IRepository<WorkspaceRole>, Repository<WorkspaceRole>>();
-        services.AddScoped<IRepository<WorkspaceRoleClaim>, Repository<WorkspaceRoleClaim>>();
-        services.AddScoped<IRepository<WorkspacePosition>, Repository<WorkspacePosition>>();
-        services.AddScoped<IRepository<WorkspaceDirectory>, Repository<WorkspaceDirectory>>();
-        services.AddScoped<IRepository<WorkspaceDirectoryArtifact>, Repository<WorkspaceDirectoryArtifact>>();
-    }
-
-    private static void InitSecrets(this IServiceCollection services, IConfiguration configuration)
-    {
-        services.Configure<VaultOptions>(
-            configuration.GetSection(VaultConstants.VaultSection));
-        services.AddSingleton<IVaultService, VaultService>();
+        services.AddScoped<IRepository<Workspace>, Repository<ApplicationDbContext, Workspace>>();
+        services.AddScoped<IRepository<WorkspaceRole>, Repository<ApplicationDbContext, WorkspaceRole>>();
+        services.AddScoped<IRepository<WorkspaceRoleClaim>, Repository<ApplicationDbContext, WorkspaceRoleClaim>>();
+        services.AddScoped<IRepository<WorkspacePosition>, Repository<ApplicationDbContext, WorkspacePosition>>();
+        services.AddScoped<IRepository<WorkspaceDirectory>, Repository<ApplicationDbContext, WorkspaceDirectory>>();
+        services.AddScoped<IRepository<WorkspaceDirectoryArtifact>, Repository<ApplicationDbContext, WorkspaceDirectoryArtifact>>();
     }
 }

@@ -1,15 +1,15 @@
 using System.Text.Json;
+using Common.Base.Constants;
+using Common.Base.Options;
+using Common.Base.Services;
 using Confluent.Kafka;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using WorkspaceService.Domain.Constants;
 using WorkspaceService.Domain.DTOs.Messaging;
 using WorkspaceService.Domain.Entities;
-using WorkspaceService.Domain.Interfaces;
-using WorkspaceService.Domain.Options;
 
 namespace WorkspaceService.Infrastructure.Messaging;
 
@@ -83,7 +83,7 @@ public class KafkaConsumerService : BackgroundService
 
         var workspaceRepo = unitOfWork.Repository<Workspace>();
         var workspacesToUpdate = await workspaceRepo
-            .FindMany(x => x.CreatedBy == deserializedMessage.UserId)
+            .FindMany(x => x.CreatedBy == Guid.Parse(deserializedMessage.UserId))
             .ToListAsync(token);
         await unitOfWork.BeginTransactionAsync(token);
         try

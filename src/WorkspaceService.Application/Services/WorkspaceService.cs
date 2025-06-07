@@ -1,19 +1,19 @@
 ﻿using System.Text.Json;
 using AutoMapper;
+using Common.Base.Context;
+using Common.Base.DTO;
+using Common.Base.DTO.File;
+using Common.Base.Exceptions;
+using Common.Base.Extensions;
+using Common.Base.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using WorkspaceService.Domain.Constants;
-using WorkspaceService.Domain.Context;
-using WorkspaceService.Domain.DTOs;
-using WorkspaceService.Domain.DTOs.File;
 using WorkspaceService.Domain.DTOs.Messaging;
 using WorkspaceService.Domain.DTOs.Workspaces;
 using WorkspaceService.Domain.DTOs.WorkspaceUsers;
 using WorkspaceService.Domain.Entities;
 using WorkspaceService.Domain.Enums;
-using WorkspaceService.Domain.Exceptions;
-using WorkspaceService.Domain.Extensions;
-using WorkspaceService.Domain.Interfaces;
 using WorkspaceService.Domain.Services;
 
 namespace WorkspaceService.Application.Services;
@@ -58,82 +58,86 @@ public class WorkspaceService : IWorkspaceService
         try
         {
             var workspace = _mapper.Map<Workspace>(dto);
-            workspace.Id = Guid.NewGuid();
-            workspace.CreatedBy = CurrentUserContext.CurrentUserId;
+            workspace.CreatedBy = Guid.Parse(CurrentUserContext.CurrentUserId);
             
             var positions = new List<WorkspacePosition>(2)
             {
                 new()
                 {
                     Name = "Owner",
-                    WorkspaceId = workspace.Id
+                    Workspace = workspace,
+                    IsDeleted = false
                 },
                 new()
                 {
                     Name = "User",
-                    WorkspaceId = workspace.Id
+                    Workspace = workspace,
+                    IsDeleted = false
                 }
             };
-            var ownerPositionId = positions.First(x => x.Name == "Owner").Id;
+            var ownerPosition = positions.First(x => x.Name == "Owner");
             
             var roles = new List<WorkspaceRole>(2)
             {
                 new()
                 {
-                    WorkspaceId = workspace.Id,
-                    Name = "Admin"
+                    Workspace = workspace,
+                    Name = "Admin",
+                    IsDeleted = false
                 },
                 new()
                 {
-                    WorkspaceId = workspace.Id,
-                    Name = "User"
+                    Workspace = workspace,
+                    Name = "User",
+                    IsDeleted = false
                 },
             };
-            var adminRoleId = roles.First(x => x.Name == "Admin").Id;
-            var userRoleId = roles.First(x => x.Name == "User").Id;
+            var adminRole = roles.First(x => x.Name == "Admin");
+            var userRole = roles.First(x => x.Name == "User");
         
             var roleClaims = new List<WorkspaceRoleClaim>()
                 {
                     new() 
                     {
                         Value = "Workspace.Create",
-                        RoleId = adminRoleId
+                        Role = adminRole
                     },
                     new()
                     {
                         Value = "Workspace.Edit",
-                        RoleId = adminRoleId
+                        Role = adminRole
                     },
                     new() 
                     {
                         Value = "Workspace.View",
-                        RoleId = adminRoleId
+                        Role = adminRole
                     },
                     new()
                     {
                         Value = "Project.Create",
-                        RoleId = adminRoleId
+                        Role = adminRole
                     },
                     new() 
                     {
                         Value = "Workspace.View",
-                        RoleId = userRoleId
+                        Role = userRole 
                     }
                 };
             
             var user = new WorkspaceUser()
             {
                 UserId = Guid.Parse(CurrentUserContext.CurrentUserId),
-                PositionId = positions.First(x => x.Id == ownerPositionId).Id,
-                RoleId = roles.First(x => x.Id == adminRoleId).Id,
-                WorkspaceId = workspace.Id
+                Position = ownerPosition,
+                Role = adminRole,
+                Workspace = workspace
             };
             workspace.Users.Add(user);
 
             var mainDirectory = new WorkspaceDirectory()
             {
                 Name = "home",
-                WorkspaceId = workspace.Id
+                Workspace = workspace,
+                IsDeleted = false
             };
             
             await workspaceRepository.CreateAsync(workspace, cancellationToken);
@@ -294,9 +298,9 @@ public class WorkspaceService : IWorkspaceService
         var entity = new WorkspaceUser()
         {
             UserId = Guid.Parse(dto.UserId),
-            WorkspaceId = workspace.Id,
-            PositionId = defaultPosition.Id,
-            RoleId = defaultRole.Id
+            Workspace = workspace,
+            Position = defaultPosition,
+            Role = defaultRole,
         };
         workspace.Users.Add(entity);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -340,8 +344,8 @@ public class WorkspaceService : IWorkspaceService
             throw new NotFoundException(ExceptionResourceKeys.UserNotFound);
         }
         
-        user.PositionId = position?.Id ?? user.PositionId;
-        user.RoleId = role?.Id ?? user.RoleId;
+        user.Position = position ?? user.Position;
+        user.Role = role ?? user.Role;
         
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
@@ -383,9 +387,9 @@ public class WorkspaceService : IWorkspaceService
             throw new NotFoundException(ExceptionResourceKeys.WorkspaceNotFound);
         }
 
-        if (!workspace.Users.Any(x => x.UserId == Guid.Parse(dto.FromId)))
+        if (!workspace.Users.Any(x => x.UserId == dto.FromId))
         {
-            throw new ServiceException(ExceptionResourceKeys.NoAccess, true);
+            throw new ServiceException(Common.Base.Constants.ExceptionResourceKeys.NoAccess, true);
         }
 
         var uploadPath = new List<string>() { "workspace", $"{workspace.Id}", "photo" };

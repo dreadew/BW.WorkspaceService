@@ -1,4 +1,4 @@
-using WorkspaceService.Domain.DTOs;
+using Common.Base.DTO;
 using WorkspaceService.Domain.DTOs.WorkspaceRoleClaims;
 
 namespace WorkspaceService.Domain.Services;

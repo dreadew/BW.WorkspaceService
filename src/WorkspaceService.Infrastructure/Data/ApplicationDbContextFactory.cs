@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Common.Base.Constants;
+using Common.Services.Configuration;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
-using WorkspaceService.Domain.Constants;
-using WorkspaceService.Infrastructure.Configuration;
 
 namespace WorkspaceService.Infrastructure.Data;
 

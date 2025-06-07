@@ -1,4 +1,6 @@
-﻿namespace WorkspaceService.Domain.DTOs;
+﻿using Common.Base.DTO;
+
+namespace WorkspaceService.Domain.DTOs;
 
 public class ListRequestWithUserId : ListRequest
 {

@@ -1,20 +1,12 @@
-﻿using IdentityService.Grpc.Protos;
+﻿using Common.Base.DTO.Grpc;
+using Common.Base.Services;
+using IdentityService.Grpc.Protos;
 using Microsoft.Extensions.Logging;
-using WorkspaceService.Domain.DTOs.Identity;
-using WorkspaceService.Domain.Services;
 
 namespace WorkspaceService.Grpc.Clients;
 
 public class IdentityServiceClient : IIdentityServiceClient
 {
-    private static readonly AsyncLocal<string?> _currentUserId = new AsyncLocal<string?>();
-
-    public static string? CurrentUserId
-    {
-        get => _currentUserId.Value;
-        set => _currentUserId.Value = value;
-    }
-    
     private readonly UsersService.UsersServiceClient _client;
     private readonly ILogger<IdentityServiceClient> _logger;
 
@@ -32,12 +24,10 @@ public class IdentityServiceClient : IIdentityServiceClient
         {
             var request = new VerifyRequest { AccessToken = accessToken };
             var response = await _client.VerifyAsync(request);
-            CurrentUserId = response.UserId;
             return (response.IsValid, response.UserId);
         }
         catch (Exception ex)
         {
-            CurrentUserId = null;
             _logger.LogError(ex, "Ошибка при вызове gRPC Verify");
             return (false, null);
         }
@@ -59,7 +49,7 @@ public class IdentityServiceClient : IIdentityServiceClient
                 PhoneNumber = user.PhoneNumber,
                 PhotoPath = user.PhotoPath,
                 CreatedAt = user.CreatedAt.ToDateTime(),
-                ModifiedAt = null
+                UpdatedAt = user.UpdatedAt?.ToDateTime() 
             };
             
             return userDto;
@@ -89,8 +79,8 @@ public class IdentityServiceClient : IIdentityServiceClient
                     Email = user.Email,
                     PhoneNumber = user.PhoneNumber,
                     PhotoPath = user.PhotoPath,
-                    CreatedAt = null,
-                    ModifiedAt = null
+                    CreatedAt = user.CreatedAt.ToDateTime(),
+                    UpdatedAt = user.UpdatedAt?.ToDateTime()
                 };
                 
                 users.Add(userDto);

@@ -39,11 +39,11 @@ namespace WorkspaceService.Infrastructure.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
                     PicturePath = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    ChangedBy = table.Column<string>(type: "text", nullable: true),
-                    CreatedBy = table.Column<string>(type: "text", nullable: true)
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -57,11 +57,11 @@ namespace WorkspaceService.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     WorkspaceId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    ChangedBy = table.Column<string>(type: "text", nullable: true)
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -83,10 +83,10 @@ namespace WorkspaceService.Infrastructure.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
                     WorkspaceId = table.Column<Guid>(type: "uuid", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    ChangedBy = table.Column<string>(type: "text", nullable: true)
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -108,10 +108,10 @@ namespace WorkspaceService.Infrastructure.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
                     WorkspaceId = table.Column<Guid>(type: "uuid", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    ChangedBy = table.Column<string>(type: "text", nullable: true)
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -135,8 +135,7 @@ namespace WorkspaceService.Infrastructure.Migrations
                     Path = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: false),
                     DirectoryId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    ChangedBy = table.Column<string>(type: "text", nullable: true)
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -156,7 +155,8 @@ namespace WorkspaceService.Infrastructure.Migrations
                 columns: table => new
                 {
                     ParentDirectoryId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ChildDirectoryId = table.Column<Guid>(type: "uuid", nullable: false)
+                    ChildDirectoryId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {

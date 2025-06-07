@@ -14,5 +14,5 @@ public class WorkspaceWithAdditionalInfoDto
     public List<RoleDto> Roles { get; set; }
     public List<WorkspaceUserDto> Users { get; set; }
     public DateTime CreatedAt { get; set; }
-    public DateTime? ModifiedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
 }

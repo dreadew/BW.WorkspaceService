@@ -1,13 +1,13 @@
 using AutoMapper;
+using Common.Base.DTO;
+using Common.Base.Exceptions;
+using Common.Base.Extensions;
+using Common.Base.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using WorkspaceService.Domain.Constants;
-using WorkspaceService.Domain.DTOs;
 using WorkspaceService.Domain.DTOs.WorkspaceRoleClaims;
 using WorkspaceService.Domain.Entities;
-using WorkspaceService.Domain.Exceptions;
-using WorkspaceService.Domain.Extensions;
-using WorkspaceService.Domain.Interfaces;
 using WorkspaceService.Domain.Services;
 
 namespace WorkspaceService.Application.Services;
@@ -30,9 +30,17 @@ public class WorkspaceRoleClaimService : IWorkspaceRoleClaimsService
     public async Task CreateAsync(CreateRoleClaimsRequest dto,
         CancellationToken cancellationToken = default)
     {
+        var workspaceRoleRepo = _unitOfWork.Repository<WorkspaceRole>();
         var workspaceRoleClaimsRepository = _unitOfWork.Repository<WorkspaceRoleClaim>();
+        var role  = await workspaceRoleRepo
+            .FindMany(x => x.Id == Guid.Parse(dto.RoleId))
+            .FirstOrDefaultAsync(cancellationToken);
+        if (role == null)
+        {
+            throw new NotFoundException(ExceptionResourceKeys.RoleNotFound);
+        }
         var entity = _mapper.Map<WorkspaceRoleClaim>(dto);
-        entity.Id = Guid.NewGuid();
+        entity.Role = role;
         await workspaceRoleClaimsRepository.CreateAsync(entity, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }

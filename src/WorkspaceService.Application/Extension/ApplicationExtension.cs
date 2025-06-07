@@ -1,6 +1,5 @@
-﻿
-
-using System.Globalization;
+﻿using System.Globalization;
+using Common.Base.Utils;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using WorkspaceService.Application.Mapping;
@@ -16,7 +15,6 @@ using WorkspaceService.Domain.DTOs.WorkspaceRoles;
 using WorkspaceService.Domain.DTOs.Workspaces;
 using WorkspaceService.Domain.DTOs.WorkspaceUsers;
 using WorkspaceService.Domain.Services;
-using WorkspaceService.Domain.Utils;
 
 namespace WorkspaceService.Application.Extension;
 
@@ -43,6 +41,7 @@ public static class ApplicationExtension
         services.AddAutoMapper(typeof(WorkspacePositionProfile));
         services.AddAutoMapper(typeof(WorkspaceRoleProfile));
         services.AddAutoMapper(typeof(WorkspaceDirectoryProfile));
+        services.AddAutoMapper(typeof(WorkspaceRoleClaimProfile));
         services.AddAutoMapper(typeof(FileProfile));
     }
 

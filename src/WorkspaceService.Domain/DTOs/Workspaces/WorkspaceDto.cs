@@ -15,5 +15,5 @@ public class WorkspaceDto
     public List<PositionDto> Positions { get; set; }
     public List<WorkspaceUserDto> Users { get; set; }
     public DateTime CreatedAt { get; set; }
-    public DateTime? ModifiedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
 }

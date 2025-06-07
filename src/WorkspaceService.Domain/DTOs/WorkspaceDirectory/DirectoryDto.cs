@@ -10,5 +10,5 @@ public class DirectoryDto
     public List<DirectoryDto> Children { get; set; } = new();
     public List<ArtifactDto> Artifacts { get; set; } = new();
     public DateTime CreatedAt { get; set; }
-    public DateTime ModifiedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
 }

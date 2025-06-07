@@ -1,5 +1,5 @@
-﻿using FluentValidation;
-using WorkspaceService.Domain.Constants;
+﻿using Common.Base.Constants;
+using FluentValidation;
 using WorkspaceService.Domain.DTOs.WorkspaceDirectory;
 
 namespace WorkspaceService.Application.Validators.WorkspaceDirectory;

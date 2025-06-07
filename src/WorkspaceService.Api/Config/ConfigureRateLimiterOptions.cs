@@ -1,14 +1,12 @@
 ﻿using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
-using WorkspaceService.Domain.Constants;
-using WorkspaceService.Domain.Interfaces;
 
 namespace WorkspaceService.Api.Config;
 
 public class ConfigureRateLimiterOptions : IConfigureOptions<RateLimiterOptions>
 {
-    private readonly IOptions<Domain.Options.RateLimiterOptions>  _options;
-    public ConfigureRateLimiterOptions(IOptions<Domain.Options.RateLimiterOptions> options)
+    private readonly IOptions<Common.Base.Options.RateLimiterOptions>  _options;
+    public ConfigureRateLimiterOptions(IOptions<Common.Base.Options.RateLimiterOptions> options)
     {
         _options = options;
     }

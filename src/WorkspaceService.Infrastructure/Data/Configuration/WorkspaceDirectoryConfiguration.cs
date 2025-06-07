@@ -29,11 +29,9 @@ public class WorkspaceDirectoryConfiguration : IEntityTypeConfiguration<Workspac
         builder.Property(d => d.CreatedAt)
             .IsRequired();
 
-        builder.Property(d => d.ModifiedAt);
+        builder.Property(d => d.UpdatedAt);
 
-        builder.Property(d => d.ChangedBy);
-
-        builder.HasOne(d => d.Workspace)
+        builder.HasOne<Workspace>(d => d.Workspace)
             .WithMany(w => w.Directories)
             .HasForeignKey(d => d.WorkspaceId)
             .OnDelete(DeleteBehavior.Cascade);

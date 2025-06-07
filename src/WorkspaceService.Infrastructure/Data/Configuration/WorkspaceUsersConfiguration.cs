@@ -24,14 +24,19 @@ public class WorkspaceUsersConfiguration : IEntityTypeConfiguration<WorkspaceUse
         builder.Property(wu => wu.PositionId)
             .IsRequired();
         
-        builder.HasOne(wu => wu.Role)
+        builder.HasOne<WorkspaceRole>(wu => wu.Role)
             .WithMany()
             .HasForeignKey(wu => wu.RoleId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(wu => wu.Position)
+        builder.HasOne<WorkspacePosition>(wu => wu.Position)
             .WithMany()
             .HasForeignKey(wu => wu.PositionId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne<Workspace>(wu => wu.Workspace)
+            .WithMany(w => w.Users)
+            .HasForeignKey(wu => wu.WorkspaceId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

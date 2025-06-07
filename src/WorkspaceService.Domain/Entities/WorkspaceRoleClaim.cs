@@ -1,10 +1,9 @@
-﻿using DefaultNamespace;
+﻿using Common.Base.Entities;
 
 namespace WorkspaceService.Domain.Entities;
 
-public class WorkspaceRoleClaim : IEntity<Guid>
+public class WorkspaceRoleClaim : BaseEntity
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
     public string Value { get; set; } = string.Empty;
     public Guid RoleId { get; set; } = Guid.Empty;
     public virtual WorkspaceRole Role { get; set; } = new();

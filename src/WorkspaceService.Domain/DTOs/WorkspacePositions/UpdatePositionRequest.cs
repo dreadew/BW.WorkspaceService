@@ -8,8 +8,6 @@ public class UpdatePositionRequest
     public string Id { get; set; }
     [Display(Name="Название")] 
     public string Name { get; set; }
-    [Display(Name="Идентификатор рабочего пространства")] 
-    public string WorkspaceId { get; set; }
     [Display(Name="Признак актуальность")] 
     public bool? IsDeleted { get; set; }
 }

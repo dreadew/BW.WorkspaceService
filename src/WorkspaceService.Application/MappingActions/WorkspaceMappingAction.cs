@@ -1,9 +1,8 @@
 using AutoMapper;
+using Common.Base.Options;
 using Microsoft.Extensions.Options;
-using WorkspaceService.Domain.DTOs.Identity;
 using WorkspaceService.Domain.DTOs.Workspaces;
 using WorkspaceService.Domain.Entities;
-using WorkspaceService.Domain.Options;
 
 namespace WorkspaceService.Application.MappingActions;
 
@@ -20,6 +19,11 @@ public class WorkspaceMappingAction : IMappingAction<Workspace, WorkspaceDto>
             context)
     {
         var endpoint = _options.Value.Endpoint;
+        if (string.IsNullOrEmpty(source.PicturePath))
+        {
+            destination.PictureUrl = "";
+            return;
+        }
         destination.PictureUrl = $"{endpoint}/{source.PicturePath}";
     }
 }

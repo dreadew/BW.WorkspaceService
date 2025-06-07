@@ -29,11 +29,9 @@ public class WorkspacePositionsConfiguration : IEntityTypeConfiguration<Workspac
         builder.Property(p => p.CreatedAt)
             .IsRequired();
 
-        builder.Property(p => p.ModifiedAt);
+        builder.Property(p => p.UpdatedAt);
 
-        builder.Property(p => p.ChangedBy);
-
-        builder.HasOne(p => p.Workspace)
+        builder.HasOne<Workspace>(p => p.Workspace)
             .WithMany(w => w.Positions)
             .HasForeignKey(p => p.WorkspaceId)
             .OnDelete(DeleteBehavior.Cascade);

@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
+using Common.Base.DTO;
+using Common.Base.Exceptions;
+using Common.Base.Extensions;
+using Common.Base.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using WorkspaceService.Domain.Constants;
-using WorkspaceService.Domain.DTOs;
 using WorkspaceService.Domain.DTOs.WorkspacePositions;
 using WorkspaceService.Domain.Entities;
-using WorkspaceService.Domain.Exceptions;
-using WorkspaceService.Domain.Extensions;
-using WorkspaceService.Domain.Interfaces;
 using WorkspaceService.Domain.Services;
 
 namespace WorkspaceService.Application.Services;
@@ -30,9 +30,17 @@ public class WorkspacePositionService : IWorkspacePositionsService
     public async Task CreateAsync(CreatePositionRequest dto,
         CancellationToken cancellationToken = default)
     {
+        var workspaceRepo = _unitOfWork.Repository<Workspace>();
         var workspacePositionsRepository = _unitOfWork.Repository<WorkspacePosition>();
+        var workspace  = await workspaceRepo
+            .FindMany(x => x.Id == Guid.Parse(dto.WorkspaceId))
+            .FirstOrDefaultAsync(cancellationToken);
+        if (workspace == null)
+        {
+            throw new NotFoundException(ExceptionResourceKeys.WorkspaceNotFound);
+        }
         var position = _mapper.Map<WorkspacePosition>(dto);
-        position.Id = Guid.NewGuid();
+        position.Workspace = workspace;
         await workspacePositionsRepository.CreateAsync(position, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
@@ -55,10 +63,10 @@ public class WorkspacePositionService : IWorkspacePositionsService
     }
 
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = 
-            default) => await UpdateActualityInternal(id, false, cancellationToken);
+            default) => await UpdateActualityInternal(id, true, cancellationToken);
     
     public async Task RestoreAsync(Guid id, CancellationToken cancellationToken = 
-        default) => await UpdateActualityInternal(id, true, cancellationToken);
+        default) => await UpdateActualityInternal(id, false, cancellationToken);
 
     public async Task<PositionDto> GetByIdAsync(Guid id,
         CancellationToken cancellationToken = default)

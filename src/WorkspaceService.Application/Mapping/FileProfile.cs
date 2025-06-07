@@ -1,5 +1,5 @@
 using AutoMapper;
-using WorkspaceService.Domain.DTOs.File;
+using Common.Base.DTO.File;
 
 namespace WorkspaceService.Application.Mapping;
 

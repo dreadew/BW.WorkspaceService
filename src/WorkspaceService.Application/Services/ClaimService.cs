@@ -1,8 +1,8 @@
+using Common.Base.Exceptions;
+using Common.Base.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using WorkspaceService.Domain.Entities;
-using WorkspaceService.Domain.Exceptions;
-using WorkspaceService.Domain.Interfaces;
 using WorkspaceService.Domain.Services;
 
 namespace WorkspaceService.Application.Services;

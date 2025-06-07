@@ -11,7 +11,6 @@ public class WorkspaceRoleProfile : Profile
     {
         CreateMap<CreateRoleRequest, WorkspaceRole>();
         CreateMap<UpdateRoleRequest, WorkspaceRole>();
-        CreateMap<WorkspaceRole, RoleDto>()
-            .ForMember(dest => dest.Claims, opt => opt.MapFrom(src => src.RoleClaims));
+        CreateMap<WorkspaceRole, RoleDto>();
     }
 }

@@ -26,7 +26,7 @@ public class WorkspacesConfiguration : IEntityTypeConfiguration<Workspace>
         builder.Property(w => w.CreatedAt)
             .IsRequired();
 
-        builder.Property(w => w.ModifiedAt);
+        builder.Property(w => w.UpdatedAt);
 
         builder.Property(w => w.IsDeleted)
             .HasDefaultValue(false);
@@ -47,7 +47,7 @@ public class WorkspacesConfiguration : IEntityTypeConfiguration<Workspace>
             .OnDelete(DeleteBehavior.Cascade);
         
         builder.HasMany(w => w.Users)
-            .WithOne()
+            .WithOne(w => w.Workspace)
             .HasForeignKey(u => u.WorkspaceId)
             .OnDelete(DeleteBehavior.Cascade);
     }

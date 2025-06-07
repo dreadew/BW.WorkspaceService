@@ -29,11 +29,9 @@ public class WorkspaceRolesConfiguration : IEntityTypeConfiguration<WorkspaceRol
         builder.Property(r => r.CreatedAt)
             .IsRequired();
 
-        builder.Property(r => r.ModifiedAt);
+        builder.Property(r => r.UpdatedAt);
 
-        builder.Property(r => r.ChangedBy);
-
-        builder.HasOne(r => r.Workspace)
+        builder.HasOne<Workspace>(r => r.Workspace)
             .WithMany(w => w.Roles)
             .HasForeignKey(r => r.WorkspaceId)
             .OnDelete(DeleteBehavior.Cascade);

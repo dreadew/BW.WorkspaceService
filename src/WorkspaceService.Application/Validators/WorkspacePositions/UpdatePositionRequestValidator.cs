@@ -1,5 +1,5 @@
-﻿using FluentValidation;
-using WorkspaceService.Domain.Constants;
+﻿using Common.Base.Constants;
+using FluentValidation;
 using WorkspaceService.Domain.DTOs.WorkspacePositions;
 
 namespace WorkspaceService.Application.Validators.WorkspacePositions;
@@ -9,9 +9,6 @@ public class UpdatePositionRequestValidator : AbstractValidator<UpdatePositionRe
     public UpdatePositionRequestValidator()
     {
         RuleFor(x => x.Id)
-            .NotEmpty()
-            .Matches(RegexConstants.Guid);
-        RuleFor(x => x.WorkspaceId)
             .NotEmpty()
             .Matches(RegexConstants.Guid);
         RuleFor(x => x.Name)

@@ -8,6 +8,4 @@ public class InviteUserRequest
     public string Id { get; set; }
     [Display(Name = "Идентификатор пользователя")]
     public string UserId { get; set; }
-    [Display(Name = "Эл. почта")]
-    public string Email { get; set; }
 }

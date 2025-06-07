@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using WorkspaceService.Api.Controllers.Base;
-using WorkspaceService.Domain.DTOs;
-using WorkspaceService.Domain.DTOs.File;
+﻿using Common.AspNetCore.Controllers;
+using Common.Base.Context;
+using Common.Base.DTO;
+using Common.Base.DTO.File;
+using Microsoft.AspNetCore.Mvc;
 using WorkspaceService.Domain.DTOs.Workspaces;
 using WorkspaceService.Domain.DTOs.WorkspaceUsers;
 using WorkspaceService.Domain.Services;
@@ -75,7 +76,7 @@ public class WorkspaceController : BaseController<WorkspaceController>
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> DeleteAsync(
-        DeleteWorkspaceRequest dto,
+        [FromQuery] DeleteWorkspaceRequest dto,
         CancellationToken cancellationToken = default)
     {
         LogRequest(nameof(DeleteAsync));
@@ -141,7 +142,6 @@ public class WorkspaceController : BaseController<WorkspaceController>
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> UploadPictureAsync(
         Guid id,
-        [FromQuery] string fromId,
         IFormFile file,
         CancellationToken cancellationToken = default)
     {
@@ -155,7 +155,7 @@ public class WorkspaceController : BaseController<WorkspaceController>
         await file.CopyToAsync(memoryStream, cancellationToken);
         var fileDto = new FileUploadRequest()
         {
-            FromId = fromId,
+            FromId = Guid.Parse(CurrentUserContext.CurrentUserId),
             Content = memoryStream.ToArray(),
             FileName = file.FileName,
             ContentType = file.ContentType

@@ -1,12 +1,12 @@
+using Common.AspNetCore.Middlewares;
+using Common.Base.Constants;
+using Common.Base.Converters;
+using Common.Services.Configuration;
 using Newtonsoft.Json;
 using Serilog;
 using WorkspaceService.Api.Extensions;
-using WorkspaceService.Api.Middlewares;
 using WorkspaceService.Application.Extension;
-using WorkspaceService.Domain.Constants;
-using WorkspaceService.Domain.Converters;
 using WorkspaceService.Grpc.Extension;
-using WorkspaceService.Infrastructure.Configuration;
 using WorkspaceService.Infrastructure.Data;
 using WorkspaceService.Infrastructure.Extension;
 
@@ -22,6 +22,7 @@ builder.Configuration.AddVaultConfiguration(options =>
 {
     builder.Configuration.GetSection(VaultConstants.VaultSection).Bind(options);
 });
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 builder.Services.AddHealthChecks();
 builder.Services.AddResponseCompression();
 builder.Services.AddSwaggerDocumentation();
@@ -65,6 +66,7 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseMiddleware<GrpcAuthMiddleware>();
 
 app.MapControllers();
+app.MapGrpcService<WorkspaceService.Grpc.Services.WorkspaceService>();
 
 app.UseHealthChecks("/health");
 

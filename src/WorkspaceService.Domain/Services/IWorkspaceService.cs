@@ -1,5 +1,5 @@
-﻿using WorkspaceService.Domain.DTOs;
-using WorkspaceService.Domain.DTOs.File;
+﻿using Common.Base.DTO;
+using Common.Base.DTO.File;
 using WorkspaceService.Domain.DTOs.Workspaces;
 using WorkspaceService.Domain.DTOs.WorkspaceUsers;
 

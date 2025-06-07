@@ -1,6 +1,6 @@
+using Common.Base.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using WorkspaceService.Domain.Exceptions;
 
 namespace WorkspaceService.Api.Filters;
 
@@ -99,8 +99,7 @@ public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
             Instance = context.HttpContext.Request.Path
         };
 
-        // Only show details if allowed
-        if (exception.visibleToUser)
+        if (exception.VisibleToUser)
         {
             details.Detail = exception.Message;
         } 
@@ -109,7 +108,6 @@ public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
             details.Detail = "An unexpected error occurred. Please try again later.";
         }
 
-        // Add traceId for better debugging
         details.Extensions["traceId"] = context.HttpContext.TraceIdentifier;
 
         context.Result = new ObjectResult(details)
@@ -130,7 +128,6 @@ public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
             Instance = context.HttpContext.Request.Path
         };
 
-        // Only show exception details in development
         if (_environment.IsDevelopment())
         {
             details.Detail = context.Exception.ToString();
@@ -140,7 +137,6 @@ public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
             details.Detail = "An unexpected error occurred. Please try again later.";
         }
 
-        // Add traceId for better debugging
         details.Extensions["traceId"] = context.HttpContext.TraceIdentifier;
 
         context.Result = new ObjectResult(details)

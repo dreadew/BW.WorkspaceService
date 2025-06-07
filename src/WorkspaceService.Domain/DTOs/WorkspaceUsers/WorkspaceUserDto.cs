@@ -1,4 +1,4 @@
-﻿using WorkspaceService.Domain.DTOs.Identity;
+﻿using Common.Base.DTO.Grpc;
 using WorkspaceService.Domain.DTOs.WorkspacePositions;
 using WorkspaceService.Domain.DTOs.WorkspaceRoles;
 

@@ -11,7 +11,7 @@ public class WorkspaceDirectoryProfile : Profile
     {
         CreateMap<WorkspaceDirectory, DirectoryDto>()
             .ForMember(dest => dest.Artifacts, opt => opt.MapFrom(src => src.Artifacts));
-        CreateMap<CreateWorkspaceRequest, WorkspaceDirectory>();
-        CreateMap<UpdateWorkspaceRequest, WorkspaceDirectory>();
+        CreateMap<CreateDirectoryRequest, WorkspaceDirectory>();
+        CreateMap<UpdateDirectoryRequest, WorkspaceDirectory>();
     }
 }
