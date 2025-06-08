@@ -11,7 +11,7 @@ public class CreateRoleRequestValidator : AbstractValidator<CreateRoleRequest>
         RuleFor(x => x.Name)
             .NotEmpty()
             .MinimumLength(3)
-            .Matches(RegexConstants.EnglishLettersAndNumbers);
+            .Matches(RegexConstants.DefaultLettersAndNumbers);
         RuleFor(x => x.WorkspaceId)
             .NotEmpty()
             .Matches(RegexConstants.Guid);

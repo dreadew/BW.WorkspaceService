@@ -156,6 +156,8 @@ namespace WorkspaceService.Infrastructure.Migrations
                 {
                     ParentDirectoryId = table.Column<Guid>(type: "uuid", nullable: false),
                     ChildDirectoryId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ParentDirectoryNavigationId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ChildDirectoryNavigationId = table.Column<Guid>(type: "uuid", nullable: false),
                     Id = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
@@ -169,8 +171,22 @@ namespace WorkspaceService.Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
+                        name: "FK_workspace_directory_nesting_workspace_directory_ChildDirec~1",
+                        column: x => x.ChildDirectoryNavigationId,
+                        principalSchema: "workspace",
+                        principalTable: "workspace_directory",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_workspace_directory_nesting_workspace_directory_ParentDirec~",
                         column: x => x.ParentDirectoryId,
+                        principalSchema: "workspace",
+                        principalTable: "workspace_directory",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_workspace_directory_nesting_workspace_directory_ParentDire~1",
+                        column: x => x.ParentDirectoryNavigationId,
                         principalSchema: "workspace",
                         principalTable: "workspace_directory",
                         principalColumn: "Id",
@@ -184,8 +200,7 @@ namespace WorkspaceService.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Value = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    RoleId = table.Column<Guid>(type: "uuid", nullable: false),
-                    WorkspaceRoleId = table.Column<Guid>(type: "uuid", nullable: true)
+                    RoleId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -197,12 +212,6 @@ namespace WorkspaceService.Infrastructure.Migrations
                         principalTable: "workspace_role",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_workspace_role_claim_workspace_role_WorkspaceRoleId",
-                        column: x => x.WorkspaceRoleId,
-                        principalSchema: "auth",
-                        principalTable: "workspace_role",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -274,6 +283,18 @@ namespace WorkspaceService.Infrastructure.Migrations
                 column: "ChildDirectoryId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_workspace_directory_nesting_ChildDirectoryNavigationId",
+                schema: "workspace",
+                table: "workspace_directory_nesting",
+                column: "ChildDirectoryNavigationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_workspace_directory_nesting_ParentDirectoryNavigationId",
+                schema: "workspace",
+                table: "workspace_directory_nesting",
+                column: "ParentDirectoryNavigationId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_workspace_position_Name_WorkspaceId",
                 schema: "workspace",
                 table: "workspace_position",
@@ -298,12 +319,6 @@ namespace WorkspaceService.Infrastructure.Migrations
                 schema: "auth",
                 table: "workspace_role_claim",
                 column: "RoleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_workspace_role_claim_WorkspaceRoleId",
-                schema: "auth",
-                table: "workspace_role_claim",
-                column: "WorkspaceRoleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_workspace_user_PositionId",

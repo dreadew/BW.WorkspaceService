@@ -9,6 +9,10 @@
   <ItemGroup>
     <PackageReference Include="Hexaend.Common.AspNetCore" Version="1.0.0" />
     <PackageReference Include="Hexaend.Common.Services" Version="1.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.2">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="4.0.0" />
     <PackageReference Include="Serilog.Filters.Expressions" Version="2.1.0" />

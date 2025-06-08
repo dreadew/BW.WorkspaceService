@@ -40,7 +40,7 @@ public class WorkspacePositionService : IWorkspacePositionsService
             throw new NotFoundException(ExceptionResourceKeys.WorkspaceNotFound);
         }
         var position = _mapper.Map<WorkspacePosition>(dto);
-        position.Workspace = workspace;
+        workspace.Positions.Add(position);
         await workspacePositionsRepository.CreateAsync(position, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }

@@ -30,7 +30,7 @@ public class WorkspaceDirectoryArtifactConfiguration : IEntityTypeConfiguration<
 
         builder.Property(a => a.UpdatedAt);
 
-        builder.HasOne<WorkspaceDirectory>(a => a.Directory)
+        builder.HasOne<WorkspaceDirectory>()
             .WithMany(d => d.Artifacts)
             .HasForeignKey(a => a.DirectoryId)
             .OnDelete(DeleteBehavior.Cascade);

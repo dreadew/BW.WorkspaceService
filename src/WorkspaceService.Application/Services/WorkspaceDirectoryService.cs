@@ -38,6 +38,14 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
         var workspaceDirectoryRepository = _unitOfWork.Repository<WorkspaceDirectory>();
         var workspaceDirectoryNestingRepository = _unitOfWork.Repository<WorkspaceDirectoryNesting>();
         var entity = _mapper.Map<WorkspaceDirectory>(dto);
+        var workspace = await _unitOfWork.Repository<Workspace>()
+            .FindMany(x => x.Id == Guid.Parse(dto.WorkspaceId))
+            .FirstOrDefaultAsync(cancellationToken);
+        if (workspace == null)
+        {
+            throw new NotFoundException(ExceptionResourceKeys.WorkspaceNotFound);
+        }
+        workspace.Directories.Add(entity);
         await workspaceDirectoryRepository.CreateAsync(entity, cancellationToken);
         if (!string.IsNullOrEmpty(dto.ParentId) && Guid.TryParse(dto.ParentId, out var parentId))
         {
@@ -94,7 +102,8 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
             throw new NotFoundException(ExceptionResourceKeys.DirectoryNotFound);
         }
         var dto = _mapper.Map<DirectoryDto>(directory);
-        dto.Children = directory.ChildNesting?.Select(n => _mapper.Map<DirectoryDto>(n.ChildDirectoryNavigation)).ToList() ?? new();
+        dto.Children = directory.ChildNesting?
+            .Select(n => _mapper.Map<DirectoryDto>(n.ChildDirectoryNavigation)).ToList() ?? new();
         dto.Parent = directory.ParentNesting?.FirstOrDefault() != null
             ? _mapper.Map<DirectoryDto>(directory.ParentNesting.First().ParentDirectoryNavigation)
             : null;
@@ -130,6 +139,7 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
 
     public async Task UploadArtifactAsync(Guid directoryId, FileUploadRequest dto, CancellationToken cancellationToken = default)
     {
+        var workspaceRepo = _unitOfWork.Repository<Workspace>();
         var workspaceDirectoryArtifactRepository = _unitOfWork.Repository<WorkspaceDirectoryArtifact>();
         var workspaceDirectoryRepository = _unitOfWork.Repository<WorkspaceDirectory>();
         var directory = await workspaceDirectoryRepository
@@ -139,8 +149,16 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
         {
             throw new NotFoundException(ExceptionResourceKeys.FolderNotFound);
         }
-
-        if (!directory.Workspace.Users.Any(x => x.UserId == dto.FromId))
+        
+        var workspace = await workspaceRepo
+            .FindMany(x => x.Id == directory.WorkspaceId)
+            .FirstOrDefaultAsync(cancellationToken);
+        if (workspace == null)
+        {
+            throw new NotFoundException(ExceptionResourceKeys.WorkspaceNotFound);
+        }
+        
+        if (!workspace.Users.Any(x => x.UserId == dto.FromId))
         {
             throw new ServiceException(Common.Base.Constants.ExceptionResourceKeys.NoRights, true);
         }
@@ -156,6 +174,7 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
             DirectoryId = directory.Id,
             Path = res.FilePath
         }; 
+        directory.Artifacts.Add(artifact);
         await workspaceDirectoryArtifactRepository.CreateAsync(artifact, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
@@ -164,6 +183,7 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
         FileDeleteRequest dto,
         CancellationToken cancellationToken = default)
     {
+        var workspaceRepo = _unitOfWork.Repository<Workspace>();
         var workspaceDirectoryArtifactRepository = _unitOfWork.Repository<WorkspaceDirectoryArtifact>();
         var workspaceDirectoryRepository = _unitOfWork.Repository<WorkspaceDirectory>();
         var artifact = await workspaceDirectoryArtifactRepository
@@ -175,14 +195,22 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
         }
         
         var directory = await workspaceDirectoryRepository
-            .FindMany(x => x.Id == directoryId)
+            .FindMany(x => x.Id == artifact.DirectoryId)
             .FirstOrDefaultAsync(cancellationToken);
         if (directory == null)
         {
             throw new NotFoundException(ExceptionResourceKeys.FolderNotFound);
         }
+        
+        var workspace = await workspaceRepo
+            .FindMany(x => x.Id == directory.WorkspaceId)
+            .FirstOrDefaultAsync(cancellationToken);
+        if (workspace == null)
+        {
+            throw new NotFoundException(ExceptionResourceKeys.WorkspaceNotFound);
+        }
 
-        if (!directory.Workspace.Users.Any(x => x.UserId == Guid.Parse(dto.FromId)))
+        if (!workspace.Users.Any(x => x.UserId == Guid.Parse(dto.FromId)))
         {
             throw new ServiceException(Common.Base.Constants.ExceptionResourceKeys.NoRights, true);
         }

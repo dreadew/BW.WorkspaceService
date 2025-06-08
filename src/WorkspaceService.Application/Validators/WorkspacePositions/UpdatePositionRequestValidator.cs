@@ -12,7 +12,7 @@ public class UpdatePositionRequestValidator : AbstractValidator<UpdatePositionRe
             .NotEmpty()
             .Matches(RegexConstants.Guid);
         RuleFor(x => x.Name)
-            .Matches(RegexConstants.EnglishLettersAndSpace)
+            .Matches(RegexConstants.DefaultLettersAndNumbers)
             .When(x => !string.IsNullOrWhiteSpace(x.Name));
     }
 }

@@ -31,13 +31,13 @@ public class WorkspaceDirectoryConfiguration : IEntityTypeConfiguration<Workspac
 
         builder.Property(d => d.UpdatedAt);
 
-        builder.HasOne<Workspace>(d => d.Workspace)
+        builder.HasOne<Workspace>()
             .WithMany(w => w.Directories)
             .HasForeignKey(d => d.WorkspaceId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(d => d.Artifacts)
-            .WithOne(a => a.Directory)
+            .WithOne()
             .HasForeignKey(a => a.DirectoryId)
             .OnDelete(DeleteBehavior.Cascade);
     }

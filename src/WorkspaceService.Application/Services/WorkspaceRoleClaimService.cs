@@ -40,7 +40,7 @@ public class WorkspaceRoleClaimService : IWorkspaceRoleClaimsService
             throw new NotFoundException(ExceptionResourceKeys.RoleNotFound);
         }
         var entity = _mapper.Map<WorkspaceRoleClaim>(dto);
-        entity.Role = role;
+        role.Claims.Add(entity);
         await workspaceRoleClaimsRepository.CreateAsync(entity, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }

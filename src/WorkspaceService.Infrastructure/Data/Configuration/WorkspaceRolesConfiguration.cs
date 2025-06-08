@@ -31,7 +31,7 @@ public class WorkspaceRolesConfiguration : IEntityTypeConfiguration<WorkspaceRol
 
         builder.Property(r => r.UpdatedAt);
 
-        builder.HasOne<Workspace>(r => r.Workspace)
+        builder.HasOne<Workspace>()
             .WithMany(w => w.Roles)
             .HasForeignKey(r => r.WorkspaceId)
             .OnDelete(DeleteBehavior.Cascade);

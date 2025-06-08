@@ -31,7 +31,7 @@ public class WorkspacePositionsConfiguration : IEntityTypeConfiguration<Workspac
 
         builder.Property(p => p.UpdatedAt);
 
-        builder.HasOne<Workspace>(p => p.Workspace)
+        builder.HasOne<Workspace>()
             .WithMany(w => w.Positions)
             .HasForeignKey(p => p.WorkspaceId)
             .OnDelete(DeleteBehavior.Cascade);

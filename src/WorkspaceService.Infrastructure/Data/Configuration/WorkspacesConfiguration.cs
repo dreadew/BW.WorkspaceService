@@ -32,22 +32,22 @@ public class WorkspacesConfiguration : IEntityTypeConfiguration<Workspace>
             .HasDefaultValue(false);
         
         builder.HasMany(w => w.Roles)
-            .WithOne(r => r.Workspace)
+            .WithOne()
             .HasForeignKey(r => r.WorkspaceId)
             .OnDelete(DeleteBehavior.Cascade);
         
         builder.HasMany(w => w.Positions)
-            .WithOne(p => p.Workspace)
+            .WithOne()
             .HasForeignKey(p => p.WorkspaceId)
             .OnDelete(DeleteBehavior.Cascade);
         
         builder.HasMany(w => w.Directories)
-            .WithOne(d => d.Workspace)
+            .WithOne()
             .HasForeignKey(d => d.WorkspaceId)
             .OnDelete(DeleteBehavior.Cascade);
         
         builder.HasMany(w => w.Users)
-            .WithOne(w => w.Workspace)
+            .WithOne()
             .HasForeignKey(u => u.WorkspaceId)
             .OnDelete(DeleteBehavior.Cascade);
     }

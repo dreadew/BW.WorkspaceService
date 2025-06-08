@@ -11,6 +11,6 @@ public class CreateWorkspaceRequestValidator : AbstractValidator<CreateWorkspace
         RuleFor(x => x.Name)
             .NotEmpty()
             .MinimumLength(4)
-            .Matches(RegexConstants.EnglishLetters);
+            .Matches(RegexConstants.DefaultLettersAndNumbers);
     }
 }

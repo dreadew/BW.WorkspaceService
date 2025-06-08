@@ -34,7 +34,7 @@ public class WorkspaceUsersConfiguration : IEntityTypeConfiguration<WorkspaceUse
             .HasForeignKey(wu => wu.PositionId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne<Workspace>(wu => wu.Workspace)
+        builder.HasOne<Workspace>()
             .WithMany(w => w.Users)
             .HasForeignKey(wu => wu.WorkspaceId)
             .OnDelete(DeleteBehavior.Cascade);

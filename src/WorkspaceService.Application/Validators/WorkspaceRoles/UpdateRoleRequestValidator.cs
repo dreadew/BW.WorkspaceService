@@ -13,7 +13,7 @@ public class UpdateRoleRequestValidator : AbstractValidator<UpdateRoleRequest>
             .Matches(RegexConstants.Guid);
         RuleFor(x => x.Name)
             .MinimumLength(3)
-            .Matches(RegexConstants.EnglishLettersAndNumbers)
+            .Matches(RegexConstants.DefaultLettersAndNumbers)
             .When(x => !string.IsNullOrWhiteSpace(x.Name));
     }
 }

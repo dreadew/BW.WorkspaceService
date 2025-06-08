@@ -21,8 +21,8 @@ public class WorkspaceRoleClaimsConfiguration : IEntityTypeConfiguration<Workspa
         builder.Property(rc => rc.RoleId)
             .IsRequired();
 
-        builder.HasOne<WorkspaceRole>(rc => rc.Role)
-            .WithMany()
+        builder.HasOne<WorkspaceRole>()
+            .WithMany(r => r.Claims)
             .HasForeignKey(rc => rc.RoleId)
             .OnDelete(DeleteBehavior.Cascade);
     }

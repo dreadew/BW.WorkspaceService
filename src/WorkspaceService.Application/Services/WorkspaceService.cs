@@ -65,85 +65,96 @@ public class WorkspaceService : IWorkspaceService
                 new()
                 {
                     Name = "Owner",
-                    Workspace = workspace,
                     IsDeleted = false
                 },
                 new()
                 {
                     Name = "User",
-                    Workspace = workspace,
                     IsDeleted = false
                 }
             };
+            workspace.Positions.AddRange(positions);
             var ownerPosition = positions.First(x => x.Name == "Owner");
             
             var roles = new List<WorkspaceRole>(2)
             {
                 new()
                 {
-                    Workspace = workspace,
                     Name = "Admin",
                     IsDeleted = false
                 },
                 new()
                 {
-                    Workspace = workspace,
                     Name = "User",
                     IsDeleted = false
                 },
             };
+            workspace.Roles.AddRange(roles);
             var adminRole = roles.First(x => x.Name == "Admin");
             var userRole = roles.First(x => x.Name == "User");
         
-            var roleClaims = new List<WorkspaceRoleClaim>()
+            var adminRoleClaims = new List<WorkspaceRoleClaim>()
                 {
                     new() 
                     {
                         Value = "Workspace.Create",
-                        Role = adminRole
                     },
                     new()
                     {
                         Value = "Workspace.Edit",
-                        Role = adminRole
                     },
                     new() 
                     {
                         Value = "Workspace.View",
-                        Role = adminRole
                     },
                     new()
                     {
                         Value = "Project.Create",
-                        Role = adminRole
                     },
-                    new() 
-                    {
-                        Value = "Workspace.View",
-                        Role = userRole 
-                    }
                 };
+            adminRole.Claims.AddRange(adminRoleClaims);
+            
+            var userRoleClaims = new List<WorkspaceRoleClaim>()
+            {
+                new() 
+                {
+                    Value = "Workspace.Create",
+                },
+                new()
+                {
+                    Value = "Workspace.Edit",
+                },
+                new() 
+                {
+                    Value = "Workspace.View",
+                },
+                new()
+                {
+                    Value = "Project.Create",
+                },
+            };
+            userRole.Claims.AddRange(userRoleClaims);
             
             var user = new WorkspaceUser()
             {
                 UserId = Guid.Parse(CurrentUserContext.CurrentUserId),
                 Position = ownerPosition,
                 Role = adminRole,
-                Workspace = workspace
             };
             workspace.Users.Add(user);
 
             var mainDirectory = new WorkspaceDirectory()
             {
                 Name = "home",
-                Workspace = workspace,
                 IsDeleted = false
             };
+            workspace.Directories.Add(mainDirectory);
             
             await workspaceRepository.CreateAsync(workspace, cancellationToken);
             await positionRepository.CreateManyAsync(positions, cancellationToken);
             await roleRepository.CreateManyAsync(roles, cancellationToken);
-            await roleClaimsRepository.CreateManyAsync(roleClaims, cancellationToken);
+            await roleClaimsRepository.CreateManyAsync(adminRoleClaims, cancellationToken);
+            await roleClaimsRepository.CreateManyAsync(userRoleClaims, cancellationToken);
             await workspaceDirectoryRepository.CreateAsync(mainDirectory, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             await _unitOfWork.CommitTransactionAsync(cancellationToken);
@@ -257,11 +268,11 @@ public class WorkspaceService : IWorkspaceService
 
     public async Task DeleteAsync(DeleteWorkspaceRequest dto,
         CancellationToken cancellationToken = default) => await UpdateActualityInternal
-        (dto.WorkspaceId, CurrentUserContext.CurrentUserId, false, cancellationToken);
+        (dto.WorkspaceId, CurrentUserContext.CurrentUserId, true, cancellationToken);
     
     public async Task RestoreAsync(RestoreWorkspaceRequest dto,
         CancellationToken cancellationToken = default) => await UpdateActualityInternal
-        (dto.WorkspaceId, CurrentUserContext.CurrentUserId, true, cancellationToken);
+        (dto.WorkspaceId, CurrentUserContext.CurrentUserId, false, cancellationToken);
     
     public async Task InviteUserAsync(InviteUserRequest dto,
         CancellationToken cancellationToken = default)
@@ -298,7 +309,6 @@ public class WorkspaceService : IWorkspaceService
         var entity = new WorkspaceUser()
         {
             UserId = Guid.Parse(dto.UserId),
-            Workspace = workspace,
             Position = defaultPosition,
             Role = defaultRole,
         };
@@ -327,7 +337,7 @@ public class WorkspaceService : IWorkspaceService
             .FirstOrDefaultAsync(cancellationToken);
         if (position == null && dto.PositionId != null)
         {
-            throw new NotFoundException(ExceptionResourceKeys.UserNotFound);
+            throw new NotFoundException(ExceptionResourceKeys.PositionNotFound);
         }
 
         var role = await workspaceRolesRepository
@@ -338,7 +348,9 @@ public class WorkspaceService : IWorkspaceService
             throw new NotFoundException(ExceptionResourceKeys.RoleNotFound);
         }
 
-        var user = workspace.Users.FirstOrDefault(x => x.UserId == Guid.Parse(dto.UserId) && x.WorkspaceId == workspace.Id);
+        var user = workspace.Users
+            .FirstOrDefault(x => x.UserId == Guid.Parse(dto.UserId)
+                                 && x.WorkspaceId == workspace.Id);
         if (user == null)
         {
             throw new NotFoundException(ExceptionResourceKeys.UserNotFound);

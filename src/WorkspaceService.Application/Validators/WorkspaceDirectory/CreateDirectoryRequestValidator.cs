@@ -13,6 +13,6 @@ public class CreateDirectoryRequestValidator : AbstractValidator<CreateDirectory
             .Matches(RegexConstants.Guid);
         RuleFor(x => x.Name)
             .NotEmpty()
-            .Matches(RegexConstants.EnglishLettersAndSpace);
+            .Matches(RegexConstants.DefaultLettersAndNumbers);
     }
 }

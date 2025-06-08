@@ -13,6 +13,6 @@ public class CreatePositionRequestValidator : AbstractValidator<CreatePositionRe
             .Matches(RegexConstants.Guid);
         RuleFor(x => x.Name)
             .NotEmpty()
-            .Matches(RegexConstants.EnglishLettersAndSpace);
+            .Matches(RegexConstants.DefaultLettersAndNumbers);
     }
 }

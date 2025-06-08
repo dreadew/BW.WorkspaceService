@@ -13,7 +13,7 @@ public class UpdateWorkspaceRequestValidator : AbstractValidator<UpdateWorkspace
             .Matches(RegexConstants.Guid);
         RuleFor(x => x.Name)
             .MinimumLength(4)
-            .Matches(RegexConstants.EnglishLetters)
+            .Matches(RegexConstants.DefaultLettersAndNumbers)
             .When(x => !string.IsNullOrWhiteSpace(x.Name));
     }
 }
