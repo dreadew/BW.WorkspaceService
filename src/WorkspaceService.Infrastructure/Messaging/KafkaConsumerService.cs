@@ -42,7 +42,7 @@ public class KafkaConsumerService : BackgroundService
         {
             try
             {
-                var consumeResult = consumer.Consume(cancellationToken);
+                var consumeResult = await Task.Run(() => consumer.Consume(cancellationToken), cancellationToken);
                 var message = consumeResult.Message.Value;
                 var topic = consumeResult.Topic;
                 
@@ -57,17 +57,17 @@ public class KafkaConsumerService : BackgroundService
                 {
                     case KafkaConstants.UserChangedActualityTopic:
                         await HandleUserChangedActualityAsync(message, cancellationToken);
-                        consumer.Commit(consumeResult);
+                        await Task.Run(() => consumer.Commit(consumeResult), cancellationToken);
                         break;
                 }
             }
-            catch (OperationCanceledException ex)
+            catch (OperationCanceledException)
             {
-               //break;
+                break;
             }
         }
         
-        consumer.Close();
+        await Task.Run(() => consumer.Close(), cancellationToken);
     }
 
     private async Task HandleUserChangedActualityAsync(string message, CancellationToken token = default)

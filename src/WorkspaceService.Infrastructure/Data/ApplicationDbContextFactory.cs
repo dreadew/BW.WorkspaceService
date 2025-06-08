@@ -24,7 +24,7 @@ public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<Applicati
             })
             .Build();
         
-        optionsBuilder.UseNpgsql(extendedConfiguration[DBConstants.DefaultConnectionString]);
+        optionsBuilder.UseNpgsql(extendedConfiguration[DbConstants.DefaultConnectionString]);
         return new ApplicationDbContext(optionsBuilder.Options);
     }
 }

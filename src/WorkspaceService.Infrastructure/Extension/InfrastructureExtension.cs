@@ -13,6 +13,7 @@ using Quartz;
 using WorkspaceService.Domain.Entities;
 using WorkspaceService.Infrastructure.Data;
 using WorkspaceService.Infrastructure.Jobs;
+using WorkspaceService.Infrastructure.Messaging;
 
 namespace WorkspaceService.Infrastructure.Extension;
 
@@ -41,7 +42,7 @@ public static class InfrastructureExtension
 
     private static void InitDb(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<DBOptions>(configuration.GetSection(DBConstants.Section));
+        services.Configure<DBOptions>(configuration.GetSection(DbConstants.Section));
         services.AddSingleton<UpdateAuditableInterceptor>();
         services.AddDbContextFactory<ApplicationDbContext>((provider, options) =>
         {
@@ -56,7 +57,9 @@ public static class InfrastructureExtension
     private static void InitMessaging(this IServiceCollection services,
         IConfiguration configuration)
     {
-        //services.AddHostedService<KafkaConsumerService>();
+        services.Configure<KafkaOptions>(
+            configuration.GetSection(KafkaConstants.Section));
+        services.AddHostedService<KafkaConsumerService>();
     }
 
     private static void InitJobs(this IServiceCollection services)
