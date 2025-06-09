@@ -11,7 +11,7 @@ public class UpdateUserRequestValidator : AbstractValidator<UpdateUserRequest>
         RuleFor(x => x.UserId)
             .NotEmpty()
             .Matches(RegexConstants.Guid);
-        RuleFor(x => x.WorkspaceId)
+        RuleFor(x => x.Id)
             .NotEmpty()
             .Matches(RegexConstants.Guid);
     }

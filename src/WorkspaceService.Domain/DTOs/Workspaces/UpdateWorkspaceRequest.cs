@@ -1,12 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Common.Base.DTO.Entity;
 
 namespace WorkspaceService.Domain.DTOs.Workspaces;
 
-public class UpdateWorkspaceRequest
+public class UpdateWorkspaceRequest : BaseDto
 {
-    [Display(Name = "Идентификатор")]
-    public string Id { get; set; }
-
     [Display(Name = "Название")] 
     public string Name { get; set; }
 

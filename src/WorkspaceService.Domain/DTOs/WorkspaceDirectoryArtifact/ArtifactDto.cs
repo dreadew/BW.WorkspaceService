@@ -1,8 +1,9 @@
-﻿namespace WorkspaceService.Domain.DTOs.WorkspaceDirectoryArtifact;
+﻿using Common.Base.DTO.Entity;
 
-public class ArtifactDto
+namespace WorkspaceService.Domain.DTOs.WorkspaceDirectoryArtifact;
+
+public class ArtifactDto : BaseDto
 {
-    public string Id { get; set; }
     public string Name { get; set; }
     public string Path { get; set; }
     public DateTime CreatedAt { get; set; }

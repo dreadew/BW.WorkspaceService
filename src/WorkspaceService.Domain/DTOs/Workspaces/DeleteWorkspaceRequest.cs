@@ -1,9 +1,5 @@
-using System.ComponentModel.DataAnnotations;
+using Common.Base.DTO.Entity;
 
 namespace WorkspaceService.Domain.DTOs.Workspaces;
 
-public class DeleteWorkspaceRequest
-{
-    [Display(Name = "Идентификатор рабочего пространства")]
-    public string WorkspaceId { get; set; }
-}
+public class DeleteWorkspaceRequest : BaseDto { }

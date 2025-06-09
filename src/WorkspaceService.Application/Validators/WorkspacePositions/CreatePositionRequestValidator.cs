@@ -8,7 +8,7 @@ public class CreatePositionRequestValidator : AbstractValidator<CreatePositionRe
 {
     public CreatePositionRequestValidator()
     {
-        RuleFor(x => x.WorkspaceId)
+        RuleFor(x => x.Id)
             .NotEmpty()
             .Matches(RegexConstants.Guid);
         RuleFor(x => x.Name)

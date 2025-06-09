@@ -1,9 +1,5 @@
-﻿namespace WorkspaceService.Domain.DTOs.WorkspacePositions;
+﻿using Common.Base.DTO.Entity;
 
-public class PositionDto
-{
-    public string Id { get; set; }
-    public string Name { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime? UpdatedAt { get; set; }
-}
+namespace WorkspaceService.Domain.DTOs.WorkspacePositions;
+
+public class PositionDto : BaseConstantDto { }

@@ -232,7 +232,7 @@ public class WorkspaceService : IWorkspaceService
         var workspaceDto = _mapper.Map<WorkspaceDto>(workspace);
         foreach (var user in workspaceDto.Users)
         {
-            user.User = users.FirstOrDefault(x => x.Id == user.UserId);
+            user.User = users.FirstOrDefault(x => x.Id == user.Id);
         }
         
         return workspaceDto;
@@ -256,10 +256,10 @@ public class WorkspaceService : IWorkspaceService
         foreach (var workspace in workspacesDto)
         {
             var users = await _identityService.GetFromArrayAsync(
-                workspace.Users.Select(x => x.UserId).ToList(), cancellationToken);
+                workspace.Users.Select(x => x.Id).ToList(), cancellationToken);
             foreach (var user in workspace.Users)
             {
-                user.User = users.FirstOrDefault(x => x.Id == user.UserId);
+                user.User = users.FirstOrDefault(x => x.Id == user.Id);
             }
         }
         
@@ -268,11 +268,11 @@ public class WorkspaceService : IWorkspaceService
 
     public async Task DeleteAsync(DeleteWorkspaceRequest dto,
         CancellationToken cancellationToken = default) => await UpdateActualityInternal
-        (dto.WorkspaceId, CurrentUserContext.CurrentUserId, true, cancellationToken);
+        (dto.Id, CurrentUserContext.CurrentUserId, true, cancellationToken);
     
     public async Task RestoreAsync(RestoreWorkspaceRequest dto,
         CancellationToken cancellationToken = default) => await UpdateActualityInternal
-        (dto.WorkspaceId, CurrentUserContext.CurrentUserId, false, cancellationToken);
+        (dto.Id, CurrentUserContext.CurrentUserId, false, cancellationToken);
     
     public async Task InviteUserAsync(InviteUserRequest dto,
         CancellationToken cancellationToken = default)
@@ -319,13 +319,13 @@ public class WorkspaceService : IWorkspaceService
     public async Task UpdateUserAsync(UpdateUserRequest dto,
         CancellationToken cancellationToken = default)
     {
-        await _claimsService.CheckUserClaim(dto.WorkspaceId, CurrentUserContext.CurrentUserId, "Workspace.Edit", 
+        await _claimsService.CheckUserClaim(dto.Id, CurrentUserContext.CurrentUserId, "Workspace.Edit", 
             cancellationToken);
         var workspaceRepository = _unitOfWork.Repository<Workspace>();
         var workspacePositionsRepository = _unitOfWork.Repository<WorkspacePosition>();
         var workspaceRolesRepository = _unitOfWork.Repository<WorkspaceRole>();
         var workspace = await workspaceRepository
-            .FindMany(x => x.Id == Guid.Parse(dto.WorkspaceId))
+            .FindMany(x => x.Id == Guid.Parse(dto.Id))
             .FirstOrDefaultAsync(cancellationToken);
         if (workspace == null)
         {
@@ -365,7 +365,7 @@ public class WorkspaceService : IWorkspaceService
     public async Task DeleteUserAsync(DeleteUserRequest dto,
         CancellationToken cancellationToken = default)
     {
-        await _claimsService.CheckUserClaim(dto.WorkspaceId, CurrentUserContext.CurrentUserId, "Workspace.Edit", 
+        await _claimsService.CheckUserClaim(dto.Id, CurrentUserContext.CurrentUserId, "Workspace.Edit", 
             cancellationToken);
         var workspaceRepository = _unitOfWork.Repository<Workspace>();
         var workspace = await workspaceRepository

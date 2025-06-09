@@ -8,7 +8,7 @@ public class CreateRoleClaimsRequestValidator : AbstractValidator<CreateRoleClai
 {
     public CreateRoleClaimsRequestValidator()
     {
-        RuleFor(x => x.RoleId)
+        RuleFor(x => x.Id)
             .NotEmpty()
             .Matches(RegexConstants.Guid);
         RuleFor(x => x.Value)

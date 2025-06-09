@@ -1,11 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Common.Base.DTO.Entity;
 
 namespace WorkspaceService.Domain.DTOs.WorkspacePositions;
 
-public class UpdatePositionRequest
+public class UpdatePositionRequest : BaseDto
 {
-    [Display(Name="Идентификатор должности")] 
-    public string Id { get; set; }
     [Display(Name="Название")] 
     public string Name { get; set; }
     [Display(Name="Признак актуальность")] 

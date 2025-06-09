@@ -1,11 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Common.Base.DTO.Entity;
 
 namespace WorkspaceService.Domain.DTOs.WorkspaceRoles;
 
-public class UpdateRoleRequest
+public class UpdateRoleRequest : BaseDto
 {
-    [Display(Name = "Идентификатор роли")]
-    public string Id { get; set; }
     [Display(Name = "Название")] 
     public string Name { get; set; }
     [Display(Name = "Признак актуальность")]

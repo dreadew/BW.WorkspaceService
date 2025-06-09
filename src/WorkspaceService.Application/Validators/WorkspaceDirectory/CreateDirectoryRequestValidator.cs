@@ -8,7 +8,7 @@ public class CreateDirectoryRequestValidator : AbstractValidator<CreateDirectory
 {
     public CreateDirectoryRequestValidator()
     {
-        RuleFor(x => x.WorkspaceId)
+        RuleFor(x => x.Id)
             .NotEmpty()
             .Matches(RegexConstants.Guid);
         RuleFor(x => x.Name)

@@ -9,7 +9,7 @@ public class DeleteUserRequestValidator : AbstractValidator<DeleteUserRequest>
     {
         RuleFor(x => x.UserId)
             .NotEmpty();
-        RuleFor(x => x.WorkspaceId)
+        RuleFor(x => x.Id)
             .NotEmpty();
     }
 }

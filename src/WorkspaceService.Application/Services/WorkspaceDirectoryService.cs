@@ -39,7 +39,7 @@ public class WorkspaceDirectoryService : IWorkspaceDirectoryService
         var workspaceDirectoryNestingRepository = _unitOfWork.Repository<WorkspaceDirectoryNesting>();
         var entity = _mapper.Map<WorkspaceDirectory>(dto);
         var workspace = await _unitOfWork.Repository<Workspace>()
-            .FindMany(x => x.Id == Guid.Parse(dto.WorkspaceId))
+            .FindMany(x => x.Id == Guid.Parse(dto.Id))
             .FirstOrDefaultAsync(cancellationToken);
         if (workspace == null)
         {

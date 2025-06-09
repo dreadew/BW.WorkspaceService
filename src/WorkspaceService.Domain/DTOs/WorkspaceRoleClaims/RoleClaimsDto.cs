@@ -1,7 +1,8 @@
-﻿namespace WorkspaceService.Domain.DTOs.WorkspaceRoleClaims;
+﻿using Common.Base.DTO.Entity;
 
-public class RoleClaimsDto
+namespace WorkspaceService.Domain.DTOs.WorkspaceRoleClaims;
+
+public class RoleClaimsDto : BaseDto
 {
-    public string Id { get; set; }
     public string Value { get; set; }
 } 

@@ -1,11 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Common.Base.DTO.Entity;
 
 namespace WorkspaceService.Domain.DTOs.WorkspaceUsers;
 
-public class InviteUserRequest
+public class InviteUserRequest : BaseDto
 {
-    [Display(Name = "Идентификатор рабочего пространства")]
-    public string Id { get; set; }
     [Display(Name = "Идентификатор пользователя")]
     public string UserId { get; set; }
 }

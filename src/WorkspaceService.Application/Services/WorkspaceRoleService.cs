@@ -33,7 +33,7 @@ public class WorkspaceRoleService : IWorkspaceRolesService
         var workspaceRepo = _unitOfWork.Repository<Workspace>();
         var workspaceRolesRepository = _unitOfWork.Repository<WorkspaceRole>();
         var workspace  = await workspaceRepo
-            .FindMany(x => x.Id == Guid.Parse(dto.WorkspaceId))
+            .FindMany(x => x.Id == Guid.Parse(dto.Id))
             .FirstOrDefaultAsync(cancellationToken);
         if (workspace == null)
         {

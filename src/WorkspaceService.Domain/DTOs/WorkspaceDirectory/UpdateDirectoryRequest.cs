@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Common.Base.DTO.Entity;
 
 namespace WorkspaceService.Domain.DTOs.WorkspaceDirectory;
 
-public class UpdateDirectoryRequest
+public class UpdateDirectoryRequest : BaseDto
 {
-    [Display(Name="Идентификатор папки")] public string Id { get; set; }
     [Display(Name="Название")] public string? Name { get; set; }
 }

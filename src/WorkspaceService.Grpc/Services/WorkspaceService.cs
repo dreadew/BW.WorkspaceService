@@ -29,7 +29,7 @@ public class WorkspaceService : Protos.WorkspaceService.WorkspaceServiceBase
         }
         
         var user = workspace.Users
-            .FirstOrDefault(x => x.UserId == request.UserId);
+            .FirstOrDefault(x => x.Id == request.UserId);
         if (user == null)
         {
             throw new RpcException(new Status(StatusCode.NotFound, "User not found"));

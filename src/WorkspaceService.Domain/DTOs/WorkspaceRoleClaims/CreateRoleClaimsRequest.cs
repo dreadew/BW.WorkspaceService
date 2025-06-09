@@ -1,12 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Common.Base.DTO.Entity;
 
 namespace WorkspaceService.Domain.DTOs.WorkspaceRoleClaims;
 
-public class CreateRoleClaimsRequest
+public class CreateRoleClaimsRequest : BaseDto
 {
     [Display(Name = "Значение")] 
     public string Value { get; set; }
-
-    [Display(Name = "Идентификатор роли")]
-    public string RoleId { get; set; }
 }

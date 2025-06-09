@@ -1,11 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Common.Base.DTO.Entity;
 
 namespace WorkspaceService.Domain.DTOs.WorkspacePositions;
 
-public class CreatePositionRequest{
+public class CreatePositionRequest : BaseDto 
+{
     [Display(Name="Название")] 
     public string Name { get; set; }
-
-    [Display(Name = "Идентификатор рабочего пространства")]
-    public string WorkspaceId { get; set; }
 }

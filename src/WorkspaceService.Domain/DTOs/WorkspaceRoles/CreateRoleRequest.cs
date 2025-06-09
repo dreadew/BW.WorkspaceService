@@ -1,12 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Common.Base.DTO.Entity;
 
 namespace WorkspaceService.Domain.DTOs.WorkspaceRoles;
 
-public class CreateRoleRequest
+public class CreateRoleRequest : BaseDto
 {
     [Display(Name = "Название")] 
     public string Name { get; set; }
-
-    [Display(Name = "Идентификатор рабочего пространства")]
-    public string WorkspaceId { get; set; }
 }

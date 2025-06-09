@@ -33,7 +33,7 @@ public class WorkspacePositionService : IWorkspacePositionsService
         var workspaceRepo = _unitOfWork.Repository<Workspace>();
         var workspacePositionsRepository = _unitOfWork.Repository<WorkspacePosition>();
         var workspace  = await workspaceRepo
-            .FindMany(x => x.Id == Guid.Parse(dto.WorkspaceId))
+            .FindMany(x => x.Id == Guid.Parse(dto.Id))
             .FirstOrDefaultAsync(cancellationToken);
         if (workspace == null)
         {
