@@ -13,7 +13,6 @@ public class ApplicationDbContext : DbContext
     public DbSet<WorkspacePosition> Positions { get; set; } = null!;
     public DbSet<WorkspaceUser> Users { get; set; } = null!;
     public DbSet<WorkspaceDirectory> Directories { get; set; } = null!;
-    public DbSet<WorkspaceDirectoryNesting> Nesting { get; set; } = null!;
     public DbSet<WorkspaceDirectoryArtifact> Artifacts { get; set; } = null!;
     public DbSet<Event> Events { get; set; } = null!;
 

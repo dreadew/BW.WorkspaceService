@@ -3,11 +3,11 @@ using Common.Base.DTO.Entity;
 
 namespace WorkspaceService.Domain.DTOs.WorkspaceDirectory;
 
-public class CreateDirectoryRequest : BaseDto
+public class CreateDirectoryRequest : BaseRequestDtoWithName
 {
-    [Display(Name = "Название")]
-    public string Name { get; set; }
-
     [Display(Name = "Родительская директория")]
     public string? ParentId { get; set; }
+    
+    [Display(Name = "Идентификатор создателя")]
+    public string FromId { get; set; } = string.Empty;
 }

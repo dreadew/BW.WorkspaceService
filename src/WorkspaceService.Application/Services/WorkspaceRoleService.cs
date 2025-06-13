@@ -82,23 +82,20 @@ public class WorkspaceRoleService : IWorkspaceRolesService
         return _mapper.Map<RoleDto>(role);
     }
     
-    public async Task<IEnumerable<RoleDto>> ListAsync(ListRequest dto,
+    public async Task<(List<RoleDto>, long)> ListAsync(ListRequest dto,
         Guid workspaceId, CancellationToken cancellationToken = default)
     {
         var workspaceRolesRepository = _unitOfWork.Repository<WorkspaceRole>();
-        var roles = await workspaceRolesRepository
-            .FindMany(x => x.WorkspaceId == workspaceId)
-            .WhereIf(!dto.IncludeDeleted, d => !d.IsDeleted)
-            .Paging(dto)
-            .ToListAsync(cancellationToken);
+        var roles = workspaceRolesRepository.FindMany(x => x.WorkspaceId == workspaceId).WhereIf(!dto.IncludeDeleted, d => !d.IsDeleted);
         if (roles == null)
         {
             throw new NotFoundException(ExceptionResourceKeys.RolesNotFound);
         }
+
+        var count = roles.Count();
         
-        return _mapper.Map<IEnumerable<RoleDto>>(roles
-            .Take(dto.Limit)
-            .Skip(dto.Offset));
+        return (_mapper.Map<List<RoleDto>>(await roles.Paging(dto)
+            .ToListAsync(cancellationToken)), count);
     }
 
     private async Task UpdateActualityInternal(Guid id, bool isDeleted,

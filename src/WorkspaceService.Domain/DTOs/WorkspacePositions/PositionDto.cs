@@ -2,4 +2,4 @@
 
 namespace WorkspaceService.Domain.DTOs.WorkspacePositions;
 
-public class PositionDto : BaseConstantDto { }
+public class PositionDto : BaseSoftDeletableDtoWithName { }

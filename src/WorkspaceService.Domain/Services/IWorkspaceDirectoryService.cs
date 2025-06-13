@@ -1,4 +1,5 @@
 ﻿using Common.Base.DTO;
+using Common.Base.DTO.Entity;
 using Common.Base.DTO.File;
 using WorkspaceService.Domain.DTOs.WorkspaceDirectory;
 
@@ -6,9 +7,9 @@ namespace WorkspaceService.Domain.Services;
 
 public interface IWorkspaceDirectoryService
 {
-    Task CreateAsync(CreateDirectoryRequest dto,
+    Task CreateAsync(BaseDirectoryRequest dto,
         CancellationToken cancellationToken = default);
-    Task UpdateAsync(UpdateDirectoryRequest dto,
+    Task UpdateAsync(BaseDirectoryRequest dto,
         CancellationToken cancellationToken = default);
     Task DeleteAsync(Guid id,
         CancellationToken cancellationToken = default);
@@ -16,7 +17,7 @@ public interface IWorkspaceDirectoryService
         CancellationToken cancellationToken = default);
     Task<DirectoryDto> GetByIdAsync(Guid id,
         CancellationToken cancellationToken = default);
-    Task<IEnumerable<DirectoryDto>> ListAsync(ListRequest dto,
+    Task<List<DirectoryDto>> ListAsync(ListRequest dto,
         Guid workspaceId, CancellationToken cancellationToken = default);
     Task UploadArtifactAsync(Guid directoryId, FileUploadRequest dto,
         CancellationToken cancellationToken = default);

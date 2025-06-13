@@ -3,10 +3,8 @@ using Common.Base.DTO.Entity;
 
 namespace WorkspaceService.Domain.DTOs.WorkspaceRoles;
 
-public class UpdateRoleRequest : BaseDto
+public class UpdateRoleRequest : BaseRequestDtoWithName
 {
-    [Display(Name = "Название")] 
-    public string Name { get; set; }
     [Display(Name = "Признак актуальность")]
     public bool? IsDeleted { get; set; }
 }

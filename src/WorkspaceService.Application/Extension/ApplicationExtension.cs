@@ -1,19 +1,25 @@
 ﻿using System.Globalization;
+using AutoMapper;
+using Common.Base.DTO.Entity;
+using Common.Base.Services;
 using Common.Base.Utils;
+using Common.Services.Extensions;
+using Common.Services.MappingActions;
+using Common.Services.Mappings;
+using Common.Services.Validators;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using WorkspaceService.Application.Mapping;
 using WorkspaceService.Application.Services;
-using WorkspaceService.Application.Validators.WorkspaceDirectory;
 using WorkspaceService.Application.Validators.WorkspacePositions;
 using WorkspaceService.Application.Validators.WorkspaceRoles;
 using WorkspaceService.Application.Validators.Workspaces;
 using WorkspaceService.Application.Validators.WorkspaceUsers;
-using WorkspaceService.Domain.DTOs.WorkspaceDirectory;
 using WorkspaceService.Domain.DTOs.WorkspacePositions;
 using WorkspaceService.Domain.DTOs.WorkspaceRoles;
 using WorkspaceService.Domain.DTOs.Workspaces;
 using WorkspaceService.Domain.DTOs.WorkspaceUsers;
+using WorkspaceService.Domain.Entities;
 using WorkspaceService.Domain.Services;
 
 namespace WorkspaceService.Application.Extension;
@@ -29,6 +35,7 @@ public static class ApplicationExtension
         InitMappers(services);
         InitValidators(services);
         InitServices(services);
+        services.AddBaseDirectoryServices();
     }
 
     /// <summary>
@@ -40,7 +47,6 @@ public static class ApplicationExtension
         services.AddAutoMapper(typeof(WorkspaceProfile));
         services.AddAutoMapper(typeof(WorkspacePositionProfile));
         services.AddAutoMapper(typeof(WorkspaceRoleProfile));
-        services.AddAutoMapper(typeof(WorkspaceDirectoryProfile));
         services.AddAutoMapper(typeof(WorkspaceRoleClaimProfile));
         services.AddAutoMapper(typeof(FileProfile));
     }
@@ -54,8 +60,6 @@ public static class ApplicationExtension
         ValidatorOptions.Global.LanguageManager.Culture = new CultureInfo("ru");
         ValidatorOptions.Global.DisplayNameResolver = (type, memberInfo, expression) =>
             memberInfo != null ? ValidationHelper.GetDisplayName(type, memberInfo.Name) : null;
-        services.AddScoped<IValidator<CreateDirectoryRequest>, CreateDirectoryRequestValidator>();
-        services.AddScoped<IValidator<UpdateDirectoryRequest>, UpdateDirectoryRequestValidator>();
         services.AddScoped<IValidator<CreatePositionRequest>, CreatePositionRequestValidator>();
         services.AddScoped<IValidator<UpdatePositionRequest>, UpdatePositionRequestValidator>();
         services.AddScoped<IValidator<CreateRoleRequest>, CreateRoleRequestValidator>();
@@ -76,7 +80,6 @@ public static class ApplicationExtension
         services.AddScoped<IWorkspaceService, Services.WorkspaceService>();
         services.AddScoped<IWorkspacePositionsService, WorkspacePositionService>();
         services.AddScoped<IWorkspaceRolesService, WorkspaceRoleService>();
-        services.AddScoped<IWorkspaceDirectoryService, WorkspaceDirectoryService>();
         services.AddScoped<IWorkspaceRoleClaimsService, WorkspaceRoleClaimService>();
         services.AddScoped<IClaimsService, ClaimService>();
     }

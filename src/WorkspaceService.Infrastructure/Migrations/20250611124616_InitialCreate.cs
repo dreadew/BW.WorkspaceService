@@ -37,13 +37,13 @@ namespace WorkspaceService.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    PicturePath = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
+                    Path = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -56,21 +56,29 @@ namespace WorkspaceService.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    WorkspaceId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    ObjectId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ParentId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_workspace_directory", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_workspace_directory_workspace_WorkspaceId",
-                        column: x => x.WorkspaceId,
+                        name: "FK_workspace_directory_workspace_ObjectId",
+                        column: x => x.ObjectId,
                         principalSchema: "workspace",
                         principalTable: "workspace",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_workspace_directory_workspace_directory_ParentId",
+                        column: x => x.ParentId,
+                        principalSchema: "workspace",
+                        principalTable: "workspace_directory",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -131,11 +139,11 @@ namespace WorkspaceService.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    Path = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: false),
-                    DirectoryId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    DirectoryId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Path = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -143,50 +151,6 @@ namespace WorkspaceService.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_workspace_directory_artifact_workspace_directory_DirectoryId",
                         column: x => x.DirectoryId,
-                        principalSchema: "workspace",
-                        principalTable: "workspace_directory",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "workspace_directory_nesting",
-                schema: "workspace",
-                columns: table => new
-                {
-                    ParentDirectoryId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ChildDirectoryId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ParentDirectoryNavigationId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ChildDirectoryNavigationId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Id = table.Column<Guid>(type: "uuid", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_workspace_directory_nesting", x => new { x.ParentDirectoryId, x.ChildDirectoryId });
-                    table.ForeignKey(
-                        name: "FK_workspace_directory_nesting_workspace_directory_ChildDirect~",
-                        column: x => x.ChildDirectoryId,
-                        principalSchema: "workspace",
-                        principalTable: "workspace_directory",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_workspace_directory_nesting_workspace_directory_ChildDirec~1",
-                        column: x => x.ChildDirectoryNavigationId,
-                        principalSchema: "workspace",
-                        principalTable: "workspace_directory",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_workspace_directory_nesting_workspace_directory_ParentDirec~",
-                        column: x => x.ParentDirectoryId,
-                        principalSchema: "workspace",
-                        principalTable: "workspace_directory",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_workspace_directory_nesting_workspace_directory_ParentDire~1",
-                        column: x => x.ParentDirectoryNavigationId,
                         principalSchema: "workspace",
                         principalTable: "workspace_directory",
                         principalColumn: "Id",
@@ -258,41 +222,29 @@ namespace WorkspaceService.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_workspace_directory_Name_WorkspaceId",
+                name: "IX_workspace_directory_Name_ObjectId",
                 schema: "workspace",
                 table: "workspace_directory",
-                columns: new[] { "Name", "WorkspaceId" },
+                columns: new[] { "Name", "ObjectId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_workspace_directory_WorkspaceId",
+                name: "IX_workspace_directory_ObjectId",
                 schema: "workspace",
                 table: "workspace_directory",
-                column: "WorkspaceId");
+                column: "ObjectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_workspace_directory_ParentId",
+                schema: "workspace",
+                table: "workspace_directory",
+                column: "ParentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_workspace_directory_artifact_DirectoryId",
                 schema: "workspace",
                 table: "workspace_directory_artifact",
                 column: "DirectoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_workspace_directory_nesting_ChildDirectoryId",
-                schema: "workspace",
-                table: "workspace_directory_nesting",
-                column: "ChildDirectoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_workspace_directory_nesting_ChildDirectoryNavigationId",
-                schema: "workspace",
-                table: "workspace_directory_nesting",
-                column: "ChildDirectoryNavigationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_workspace_directory_nesting_ParentDirectoryNavigationId",
-                schema: "workspace",
-                table: "workspace_directory_nesting",
-                column: "ParentDirectoryNavigationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_workspace_position_Name_WorkspaceId",
@@ -341,10 +293,6 @@ namespace WorkspaceService.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "workspace_directory_artifact",
-                schema: "workspace");
-
-            migrationBuilder.DropTable(
-                name: "workspace_directory_nesting",
                 schema: "workspace");
 
             migrationBuilder.DropTable(

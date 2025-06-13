@@ -40,8 +40,8 @@ public class WorkspacePositionService : IWorkspacePositionsService
             throw new NotFoundException(ExceptionResourceKeys.WorkspaceNotFound);
         }
         var position = _mapper.Map<WorkspacePosition>(dto);
-        workspace.Positions.Add(position);
         await workspacePositionsRepository.CreateAsync(position, cancellationToken);
+        workspace.Positions.Add(position);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
@@ -83,23 +83,20 @@ public class WorkspacePositionService : IWorkspacePositionsService
         return _mapper.Map<PositionDto>(position);
     }
     
-    public async Task<IEnumerable<PositionDto>> ListAsync(ListRequest dto, Guid workspaceId,
+    public async Task<(List<PositionDto>, long)> ListAsync(ListRequest dto, Guid workspaceId,
         CancellationToken cancellationToken = default)
     {
         var workspacePositionsRepository = _unitOfWork.Repository<WorkspacePosition>();
-        var positions = await workspacePositionsRepository
-            .FindMany(x => x.WorkspaceId == workspaceId)
-            .WhereIf(!dto.IncludeDeleted, d => !d.IsDeleted)
-            .Paging(dto)
-            .ToListAsync(cancellationToken);
+        var positions = workspacePositionsRepository.FindMany(x => x.WorkspaceId == workspaceId).WhereIf(!dto.IncludeDeleted, d => !d.IsDeleted);
         if (positions == null)
         {
             throw new NotFoundException(ExceptionResourceKeys.PositionsNotFound);
         }
+
+        var count = positions.Count();
         
-        return _mapper.Map<IEnumerable<PositionDto>>(positions
-            .Take(dto.Limit)
-            .Skip(dto.Offset));
+        return (_mapper.Map<List<PositionDto>>(await positions.Paging(dto)
+            .ToListAsync(cancellationToken)), count);
     }
 
     private async Task UpdateActualityInternal(Guid id, bool isDeleted,

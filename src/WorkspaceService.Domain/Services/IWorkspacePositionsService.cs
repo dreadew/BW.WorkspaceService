@@ -13,6 +13,6 @@ public interface IWorkspacePositionsService
     Task RestoreAsync(Guid id, CancellationToken cancellationToken = default);
     Task<PositionDto> GetByIdAsync(Guid id,
         CancellationToken cancellationToken = default);
-    Task<IEnumerable<PositionDto>> ListAsync(ListRequest dto, Guid workspaceId,
+    Task<(List<PositionDto>, long)> ListAsync(ListRequest dto, Guid workspaceId,
         CancellationToken cancellationToken = default);
 }

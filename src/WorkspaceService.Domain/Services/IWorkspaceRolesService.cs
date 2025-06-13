@@ -17,6 +17,6 @@ public interface IWorkspaceRolesService
     
     Task<RoleDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
-    Task<IEnumerable<RoleDto>> ListAsync(ListRequest dto,
+    Task<(List<RoleDto>, long)> ListAsync(ListRequest dto,
         Guid workspaceId, CancellationToken cancellationToken = default);
 }

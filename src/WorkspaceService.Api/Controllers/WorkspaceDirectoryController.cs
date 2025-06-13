@@ -2,21 +2,25 @@
 using Common.Base.Constants;
 using Common.Base.Context;
 using Common.Base.DTO;
+using Common.Base.DTO.Entity;
 using Common.Base.DTO.File;
+using Common.Base.Services;
 using Microsoft.AspNetCore.Mvc;
 using WorkspaceService.Domain.DTOs.WorkspaceDirectory;
+using WorkspaceService.Domain.Entities;
 using WorkspaceService.Domain.Services;
 
 namespace WorkspaceService.Api.Controllers;
 
 public class WorkspaceDirectoryController : BaseController<WorkspaceDirectoryController> 
 {
-    private readonly IWorkspaceDirectoryService _workspaceDirectoryService;
+    private readonly IBaseResourceDirectoryService<Workspace, WorkspaceDirectory, WorkspaceDirectoryArtifact, WorkspaceUser> _directoryService;
 
-    public WorkspaceDirectoryController(IWorkspaceDirectoryService workspaceDirectoryService,
+    public WorkspaceDirectoryController(
+        IBaseResourceDirectoryService<Workspace, WorkspaceDirectory, WorkspaceDirectoryArtifact, WorkspaceUser> directoryService,
         ILogger<WorkspaceDirectoryController> logger) : base(logger)
     {
-        _workspaceDirectoryService = workspaceDirectoryService;
+        _directoryService = directoryService;
     }
 
     [HttpGet("{id:guid}")]
@@ -25,26 +29,26 @@ public class WorkspaceDirectoryController : BaseController<WorkspaceDirectoryCon
         CancellationToken cancellationToken = default)
     {
         LogRequest(nameof(GetAsync));
-        var result = await _workspaceDirectoryService.GetByIdAsync(id, cancellationToken);
+        var result = await _directoryService.GetByIdAsync(id, cancellationToken);
         return Ok(result);
     }
 
     [HttpGet("{workspaceId:guid}/list")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<DirectoryDto>>> ListAsync(
+    public async Task<ActionResult<List<DirectoryDto>>> ListAsync(
         Guid workspaceId,
         [FromQuery] ListRequest dto,
         CancellationToken cancellationToken = default)
     {
         LogRequest(nameof(ListAsync));
-        var result = await _workspaceDirectoryService.ListAsync(dto, workspaceId,
+        var result = await _directoryService.ListAsync(dto, workspaceId,
             cancellationToken);
         return Ok(result);
     }
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult> CreateAsync([FromBody] CreateDirectoryRequest dto,
+    public async Task<ActionResult> CreateAsync([FromBody] BaseDirectoryRequest dto,
         CancellationToken cancellationToken = default)
     {
         LogRequest(nameof(CreateAsync));
@@ -53,13 +57,13 @@ public class WorkspaceDirectoryController : BaseController<WorkspaceDirectoryCon
             return StatusCode(StatusCodes.Status400BadRequest, ModelState);
         }
         
-        await _workspaceDirectoryService.CreateAsync(dto, cancellationToken);
+        await _directoryService.CreateAsync(dto, cancellationToken);
         return Ok();
     }
 
     [HttpPatch]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult> UpdateAsync([FromBody] UpdateDirectoryRequest dto,
+    public async Task<ActionResult> UpdateAsync([FromBody] BaseDirectoryRequest dto,
         CancellationToken cancellationToken = default)
     {
         LogRequest(nameof(UpdateAsync));
@@ -68,7 +72,7 @@ public class WorkspaceDirectoryController : BaseController<WorkspaceDirectoryCon
             return StatusCode(StatusCodes.Status400BadRequest, ModelState);
         }
         
-        await _workspaceDirectoryService.UpdateAsync(dto, cancellationToken);
+        await _directoryService.UpdateAsync(dto, cancellationToken);
         return Ok();
     }
 
@@ -78,7 +82,7 @@ public class WorkspaceDirectoryController : BaseController<WorkspaceDirectoryCon
         CancellationToken cancellationToken = default)
     {
         LogRequest(nameof(DeleteAsync));
-        await _workspaceDirectoryService.DeleteAsync(id, cancellationToken);
+        await _directoryService.DeleteAsync(id, cancellationToken);
         return Ok();
     }
     
@@ -88,7 +92,7 @@ public class WorkspaceDirectoryController : BaseController<WorkspaceDirectoryCon
         CancellationToken cancellationToken = default)
     {
         LogRequest(nameof(RestoreAsync));
-        await _workspaceDirectoryService.RestoreAsync(id, cancellationToken);
+        await _directoryService.RestoreAsync(id, cancellationToken);
         return Ok();
     }
 
@@ -109,13 +113,12 @@ public class WorkspaceDirectoryController : BaseController<WorkspaceDirectoryCon
         await file.CopyToAsync(memoryStream, cancellationToken);
         var fileDto = new FileUploadRequest()
         {
-            FromId = Guid.Parse(CurrentUserContext.CurrentUserId), 
             Content = memoryStream.ToArray(),
             FileName = file.FileName,
             ContentType = file.ContentType
         };
-        
-        await _workspaceDirectoryService.UploadArtifactAsync(id, fileDto, cancellationToken);
+
+        await _directoryService.UploadArtifactAsync(id, fileDto, cancellationToken);
         return Ok();
     }
 
@@ -127,7 +130,7 @@ public class WorkspaceDirectoryController : BaseController<WorkspaceDirectoryCon
         CancellationToken cancellationToken = default)
     {
         LogRequest(nameof(DeleteArtifactAsync));
-        await _workspaceDirectoryService.DeleteArtifactAsync(id, dto, cancellationToken);
+        await _directoryService.DeleteArtifactAsync(id, dto, cancellationToken);
         return Ok();
     }
 }

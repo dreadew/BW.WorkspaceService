@@ -20,7 +20,7 @@ public class WorkspacesConfiguration : IEntityTypeConfiguration<Workspace>
         builder.HasIndex(w => w.Name)
             .IsUnique();
 
-        builder.Property(w => w.PicturePath)
+        builder.Property(w => w.Path)
             .HasMaxLength(512);
 
         builder.Property(w => w.CreatedAt)
@@ -43,7 +43,7 @@ public class WorkspacesConfiguration : IEntityTypeConfiguration<Workspace>
         
         builder.HasMany(w => w.Directories)
             .WithOne()
-            .HasForeignKey(d => d.WorkspaceId)
+            .HasForeignKey(d => d.ObjectId)
             .OnDelete(DeleteBehavior.Cascade);
         
         builder.HasMany(w => w.Users)

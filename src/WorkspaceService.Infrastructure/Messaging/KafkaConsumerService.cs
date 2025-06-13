@@ -139,7 +139,7 @@ public class KafkaConsumerService : BackgroundService
     {
         var workspaceDirectoriesRepository = unitOfWork.Repository<WorkspaceDirectory>();
         var directories = await  workspaceDirectoriesRepository
-            .FindMany(x => x.WorkspaceId == workspaceId)
+            .FindMany(x => x.ObjectId == workspaceId)
             .ToListAsync(token);
         foreach (var directory in directories)
         {

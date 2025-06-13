@@ -1,5 +1,6 @@
 ﻿using Common.AspNetCore.Controllers;
 using Common.Base.DTO;
+using Common.Base.Responses;
 using Microsoft.AspNetCore.Mvc;
 using WorkspaceService.Domain.DTOs.WorkspacePositions;
 using WorkspaceService.Domain.Entities;
@@ -29,14 +30,14 @@ public class WorkspacePositionController : BaseController<WorkspacePosition>
 
     [HttpGet("{workspaceId:guid}/list")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<PositionDto>>> ListAsync(    
+    public async Task<ActionResult<ListResponse<PositionDto>>> ListAsync(    
         Guid workspaceId,
         [FromQuery] ListRequest dto,
         CancellationToken cancellationToken = default)
     {
         LogRequest(nameof(ListAsync));
         var result = await _workspacePositionsService.ListAsync(dto, workspaceId, cancellationToken);
-        return Ok(result);
+        return Ok(new ListResponse<PositionDto>(result));
     }
 
     [HttpPost]

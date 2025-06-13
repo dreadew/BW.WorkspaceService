@@ -5,12 +5,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="14.0.0" />
-    <PackageReference Include="FluentValidation" Version="11.11.0" />
+    <PackageReference Include="Hexaend.Common.Services" Version="1.0.0" />
     <PackageReference Include="Hexaend.Common.Base" Version="1.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.2" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.2" />
   </ItemGroup>
 
   <PropertyGroup>

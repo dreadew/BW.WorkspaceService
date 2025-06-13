@@ -1,5 +1,6 @@
 ﻿using Common.AspNetCore.Controllers;
 using Common.Base.DTO;
+using Common.Base.Responses;
 using Microsoft.AspNetCore.Mvc;
 using WorkspaceService.Domain.DTOs.WorkspaceRoleClaims;
 using WorkspaceService.Domain.DTOs.WorkspaceRoles;
@@ -29,7 +30,7 @@ public class WorkspaceRoleClaimsController : BaseController<WorkspaceRoleClaimsC
 
     [HttpGet("{roleId:guid}/list")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<RoleDto>>> GetListAsync(
+    public async Task<ActionResult<ListResponse<RoleClaimsDto>>> GetListAsync(
         Guid roleId,
         [FromQuery] ListRequest dto,
         CancellationToken cancellationToken = default)
@@ -37,7 +38,7 @@ public class WorkspaceRoleClaimsController : BaseController<WorkspaceRoleClaimsC
         LogRequest(nameof(GetListAsync));
         var result = await _workspaceRoleClaimsService.ListAsync(dto, roleId, 
             cancellationToken);
-        return Ok(result);
+        return Ok(new ListResponse<RoleClaimsDto>(result));
     }
 
     [HttpPost]

@@ -12,7 +12,7 @@ using WorkspaceService.Infrastructure.Data;
 namespace WorkspaceService.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250608122209_InitialCreate")]
+    [Migration("20250611124616_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -71,7 +71,8 @@ namespace WorkspaceService.Infrastructure.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
-                    b.Property<string>("PicturePath")
+                    b.Property<string>("Path")
+                        .IsRequired()
                         .HasMaxLength(512)
                         .HasColumnType("character varying(512)");
 
@@ -108,17 +109,22 @@ namespace WorkspaceService.Infrastructure.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
+                    b.Property<Guid>("ObjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ParentId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("WorkspaceId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("WorkspaceId");
+                    b.HasIndex("ObjectId");
 
-                    b.HasIndex("Name", "WorkspaceId")
+                    b.HasIndex("ParentId");
+
+                    b.HasIndex("Name", "ObjectId")
                         .IsUnique();
 
                     b.ToTable("workspace_directory", "workspace");
@@ -154,34 +160,6 @@ namespace WorkspaceService.Infrastructure.Migrations
                     b.HasIndex("DirectoryId");
 
                     b.ToTable("workspace_directory_artifact", "workspace");
-                });
-
-            modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceDirectoryNesting", b =>
-                {
-                    b.Property<Guid>("ParentDirectoryId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ChildDirectoryId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ChildDirectoryNavigationId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ParentDirectoryNavigationId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("ParentDirectoryId", "ChildDirectoryId");
-
-                    b.HasIndex("ChildDirectoryId");
-
-                    b.HasIndex("ChildDirectoryNavigationId");
-
-                    b.HasIndex("ParentDirectoryNavigationId");
-
-                    b.ToTable("workspace_directory_nesting", "workspace");
                 });
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspacePosition", b =>
@@ -306,51 +284,27 @@ namespace WorkspaceService.Infrastructure.Migrations
                 {
                     b.HasOne("WorkspaceService.Domain.Entities.Workspace", null)
                         .WithMany("Directories")
-                        .HasForeignKey("WorkspaceId")
+                        .HasForeignKey("ObjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("WorkspaceService.Domain.Entities.WorkspaceDirectory", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Parent");
                 });
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceDirectoryArtifact", b =>
                 {
-                    b.HasOne("WorkspaceService.Domain.Entities.WorkspaceDirectory", null)
+                    b.HasOne("WorkspaceService.Domain.Entities.WorkspaceDirectory", "Directory")
                         .WithMany("Artifacts")
                         .HasForeignKey("DirectoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
 
-            modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceDirectoryNesting", b =>
-                {
-                    b.HasOne("WorkspaceService.Domain.Entities.WorkspaceDirectory", null)
-                        .WithMany("ParentNesting")
-                        .HasForeignKey("ChildDirectoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WorkspaceService.Domain.Entities.WorkspaceDirectory", "ChildDirectoryNavigation")
-                        .WithMany()
-                        .HasForeignKey("ChildDirectoryNavigationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_workspace_directory_nesting_workspace_directory_ChildDirec~1");
-
-                    b.HasOne("WorkspaceService.Domain.Entities.WorkspaceDirectory", null)
-                        .WithMany("ChildNesting")
-                        .HasForeignKey("ParentDirectoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WorkspaceService.Domain.Entities.WorkspaceDirectory", "ParentDirectoryNavigation")
-                        .WithMany()
-                        .HasForeignKey("ParentDirectoryNavigationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_workspace_directory_nesting_workspace_directory_ParentDire~1");
-
-                    b.Navigation("ChildDirectoryNavigation");
-
-                    b.Navigation("ParentDirectoryNavigation");
+                    b.Navigation("Directory");
                 });
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspacePosition", b =>
@@ -420,9 +374,7 @@ namespace WorkspaceService.Infrastructure.Migrations
                 {
                     b.Navigation("Artifacts");
 
-                    b.Navigation("ChildNesting");
-
-                    b.Navigation("ParentNesting");
+                    b.Navigation("Children");
                 });
 
             modelBuilder.Entity("WorkspaceService.Domain.Entities.WorkspaceRole", b =>

@@ -2,10 +2,10 @@
 
 namespace WorkspaceService.Domain.Entities;
 
-public class Workspace : BaseSoftDeletableEntity
+public class Workspace 
+    : BaseSoftDeletableEntityWithName, ISavable, IResourceStorage<WorkspaceDirectory, WorkspaceDirectoryArtifact, WorkspaceUser>
 {
-    public string Name { get; set; } = string.Empty;
-    public string? PicturePath { get; set; }
+    public string Path { get; set; } = string.Empty;
     public virtual List<WorkspaceRole> Roles { get; set; } = new();
     public virtual List<WorkspacePosition> Positions { get; set; } = new();
     public virtual List<WorkspaceUser> Users { get; set; } = new();

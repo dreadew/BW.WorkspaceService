@@ -6,9 +6,8 @@ using WorkspaceService.Domain.DTOs.WorkspaceUsers;
 
 namespace WorkspaceService.Domain.DTOs.Workspaces;
 
-public class WorkspaceWithAdditionalInfoDto : BaseSoftDeletableDto
+public class WorkspaceWithAdditionalInfoDto : BaseSoftDeletableDtoWithName
 {
-    public string Name { get; set; }
     public List<DirectoryDto> Directories { get; set; }
     public List<PositionDto> Positions { get; set; }
     public List<RoleDto> Roles { get; set; }

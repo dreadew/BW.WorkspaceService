@@ -238,19 +238,21 @@ public class WorkspaceService : IWorkspaceService
         return workspaceDto;
     }
 
-    public async Task<IEnumerable<WorkspaceDto>> ListAsync(ListRequest dto,
+    public async Task<(List<WorkspaceDto>, long)> ListAsync(ListRequest dto,
         CancellationToken cancellationToken = default)
     {
         var workspaceRepository = _unitOfWork.Repository<Workspace>();
-        var workspaces = await workspaceRepository
-            .GetAll()
-            .WhereIf(!dto.IncludeDeleted, d => !d.IsDeleted)
-            .Paging(dto)
-            .ToListAsync(cancellationToken);
-        if (workspaces == null)
+        var workspacesQuery = workspaceRepository.GetAll()
+            .Where(x => x.Users.Any(u => u.UserId == Guid.Parse(CurrentUserContext.CurrentUserId)))
+            .WhereIf(!dto.IncludeDeleted, d => !d.IsDeleted);
+        if (workspacesQuery == null)
         {
             throw new NotFoundException(ExceptionResourceKeys.WorkspaceNotFound);
         }
+
+        var count = workspacesQuery.Count();
+        var workspaces = await workspacesQuery.Paging(dto)
+            .ToListAsync(cancellationToken);
         
         var workspacesDto = _mapper.Map<List<WorkspaceDto>>(workspaces);
         foreach (var workspace in workspacesDto)
@@ -263,7 +265,7 @@ public class WorkspaceService : IWorkspaceService
             }
         }
         
-        return workspacesDto;
+        return (workspacesDto, count);
     }
 
     public async Task DeleteAsync(DeleteWorkspaceRequest dto,
@@ -399,7 +401,7 @@ public class WorkspaceService : IWorkspaceService
             throw new NotFoundException(ExceptionResourceKeys.WorkspaceNotFound);
         }
 
-        if (!workspace.Users.Any(x => x.UserId == dto.FromId))
+        if (!workspace.Users.Any(x => x.UserId == Guid.Parse(CurrentUserContext.CurrentUserId)))
         {
             throw new ServiceException(Common.Base.Constants.ExceptionResourceKeys.NoAccess, true);
         }
@@ -409,7 +411,7 @@ public class WorkspaceService : IWorkspaceService
         uploadDto.Paths = uploadPath;
         
         var uploadedPath = await _fileService.UploadFileAsync(uploadDto, cancellationToken);
-        workspace.PicturePath = uploadedPath.FilePath;
+        workspace.Path = uploadedPath.FilePath;
         workspaceRepository.Update(workspace, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
@@ -427,23 +429,23 @@ public class WorkspaceService : IWorkspaceService
             throw new NotFoundException(ExceptionResourceKeys.WorkspaceNotFound);
         }
 
-        if (!workspace.Users.Any(x => x.UserId == Guid.Parse(dto.FromId)))
+        if (!workspace.Users.Any(x => x.UserId == Guid.Parse(CurrentUserContext.CurrentUserId)))
         {
             throw new ServiceException("У вас нет прав", true);
         }
 
-        if (workspace.PicturePath == null)
+        if (workspace.Path == null)
         {
             throw new ServiceException(ExceptionResourceKeys.NoPhoto, true);
         }
 
         var deleteDto = new FileDeleteDto()
         {
-            FileName = workspace.PicturePath
+            FileName = workspace.Path
         };
         
         await _fileService.DeleteFileAsync(deleteDto, cancellationToken);
-        workspace.PicturePath = null;
+        workspace.Path = string.Empty;
         workspaceRepository.Update(workspace, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
@@ -480,7 +482,7 @@ public class WorkspaceService : IWorkspaceService
     {
         var workspaceDirectoriesRepository = _unitOfWork.Repository<WorkspaceDirectory>();
         var directories = await  workspaceDirectoriesRepository
-            .FindMany(x => x.WorkspaceId == workspaceId)
+            .FindMany(x => x.ObjectId == workspaceId)
             .ToListAsync(cancellationToken);
         foreach (var directory in directories)
         {

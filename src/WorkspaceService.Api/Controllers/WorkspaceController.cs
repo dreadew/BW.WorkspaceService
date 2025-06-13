@@ -2,6 +2,7 @@
 using Common.Base.Context;
 using Common.Base.DTO;
 using Common.Base.DTO.File;
+using Common.Base.Responses;
 using Microsoft.AspNetCore.Mvc;
 using WorkspaceService.Domain.DTOs.Workspaces;
 using WorkspaceService.Domain.DTOs.WorkspaceUsers;
@@ -64,13 +65,13 @@ public class WorkspaceController : BaseController<WorkspaceController>
 
     [HttpGet("list")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<WorkspaceDto>>> ListAsync(
+    public async Task<ActionResult<ListResponse<WorkspaceDto>>> ListAsync(
         [FromQuery] ListRequest dto,
         CancellationToken cancellationToken = default)
     {
         LogRequest(nameof(ListAsync));
         var result = await _workspaceService.ListAsync(dto, cancellationToken);
-        return Ok(result);
+        return Ok(new ListResponse<WorkspaceDto>(result));
     }
 
     [HttpDelete("{id:guid}")]
@@ -87,7 +88,7 @@ public class WorkspaceController : BaseController<WorkspaceController>
     [HttpPost("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> RestoreAsync(
-        RestoreWorkspaceRequest dto,
+        [FromQuery] RestoreWorkspaceRequest dto,
         CancellationToken cancellationToken = default)
     {
         LogRequest(nameof(RestoreAsync));
@@ -155,7 +156,6 @@ public class WorkspaceController : BaseController<WorkspaceController>
         await file.CopyToAsync(memoryStream, cancellationToken);
         var fileDto = new FileUploadRequest()
         {
-            FromId = Guid.Parse(CurrentUserContext.CurrentUserId),
             Content = memoryStream.ToArray(),
             FileName = file.FileName,
             ContentType = file.ContentType

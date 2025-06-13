@@ -9,7 +9,10 @@ public class WorkspacePositionProfile : Profile
     public WorkspacePositionProfile()
     {
         CreateMap<WorkspacePosition, PositionDto>();
-        CreateMap<CreatePositionRequest, WorkspacePosition>();
+        CreateMap<CreatePositionRequest, WorkspacePosition>()
+            .ForMember(dest => dest.Id, opt => opt.Ignore())
+            .ForMember(dest => dest.WorkspaceId, 
+                opt => opt.MapFrom(src => src.Id));
         CreateMap<UpdatePositionRequest, WorkspacePosition>();
     }
 }

@@ -49,16 +49,16 @@ public class WorkspaceRoleClaimService : IWorkspaceRoleClaimsService
         CancellationToken cancellationToken = default)
     {
         var workspaceRoleClaimsRepository = _unitOfWork.Repository<WorkspaceRoleClaim>();
-        var role = await workspaceRoleClaimsRepository
+        var claim = await workspaceRoleClaimsRepository
             .FindMany(x => x.Id == Guid.Parse(dto.Id))
             .FirstOrDefaultAsync(cancellationToken);
-        if (role == null)
+        if (claim == null)
         {
             throw new NotFoundException(ExceptionResourceKeys.ClaimNotFound);
         }
         
-        _mapper.Map(dto, role);
-        workspaceRoleClaimsRepository.Update(role, cancellationToken);
+        _mapper.Map(dto, claim);
+        workspaceRoleClaimsRepository.Update(claim, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
@@ -81,32 +81,30 @@ public class WorkspaceRoleClaimService : IWorkspaceRoleClaimsService
             cancellationToken = default)
     {
         var workspaceRoleClaimsRepository = _unitOfWork.Repository<WorkspaceRoleClaim>();
-        var role = await workspaceRoleClaimsRepository
+        var claim = await workspaceRoleClaimsRepository
             .FindMany(x => x.Id == id)
             .FirstOrDefaultAsync(cancellationToken);
-        if (role == null)
+        if (claim == null)
         {
             throw new NotFoundException(ExceptionResourceKeys.ClaimNotFound);
         }
         
-        return _mapper.Map<RoleClaimsDto>(role);
+        return _mapper.Map<RoleClaimsDto>(claim);
     }
     
-    public async Task<IEnumerable<RoleClaimsDto>> ListAsync(ListRequest dto,
+    public async Task<(List<RoleClaimsDto>, long)> ListAsync(ListRequest dto,
         Guid roleId, CancellationToken cancellationToken = default)
     {
         var workspaceRoleClaimsRepository = _unitOfWork.Repository<WorkspaceRoleClaim>();
-        var roles = await workspaceRoleClaimsRepository
-            .FindMany(x => x.RoleId == roleId)
-            .Paging(dto)
-            .ToListAsync(cancellationToken);
-        if (roles == null)
+        var claims = workspaceRoleClaimsRepository.FindMany(x => x.RoleId == roleId);
+        if (claims == null)
         {
             throw new NotFoundException(ExceptionResourceKeys.ClaimsNotFound);
         }
+
+        var count = claims.Count();
         
-        return _mapper.Map<IEnumerable<RoleClaimsDto>>(roles
-            .Take(dto.Limit)
-            .Skip(dto.Offset));
+        return (_mapper.Map<List<RoleClaimsDto>>(await claims.Paging(dto)
+            .ToListAsync(cancellationToken)), count);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
-using WorkspaceService.Application.MappingActions;
+using Common.Base.DTO.Entity;
+using Common.Services.MappingActions;
 using WorkspaceService.Domain.DTOs.Workspaces;
 using WorkspaceService.Domain.DTOs.WorkspaceUsers;
 using WorkspaceService.Domain.Entities;
@@ -11,13 +12,17 @@ public class WorkspaceProfile : Profile
     public WorkspaceProfile()
     {
         CreateMap<Workspace, WorkspaceDto>()
-            .ForMember(dest => dest.Roles, opt => opt.MapFrom(src => src.Roles))
-            .ForMember(dest => dest.Positions, opt => opt.MapFrom(src => src.Positions))
-            .ForMember(dest => dest.Directories, opt => opt.MapFrom(src => src.Directories))
             .ForMember(dest => dest.Users, opt => opt.MapFrom(src => src.Users))
-            .AfterMap<WorkspaceMappingAction>();
+            .AfterMap<AddPathAction<Workspace, WorkspaceDto>>();
         CreateMap<CreateWorkspaceRequest, Workspace>();
         CreateMap<UpdateWorkspaceRequest, Workspace>();
-        CreateMap<WorkspaceUser, WorkspaceUserDto>();
+        CreateMap<WorkspaceUser, WorkspaceUserDto>()
+            .ForMember(dest => dest.Id,
+                opt => opt.MapFrom(src => src.UserId));
+        CreateMap<BaseDirectoryRequest, WorkspaceDirectory>()
+            .ForMember(dest => dest.Id, 
+                opt => opt.Ignore());
+        CreateMap<WorkspaceDirectoryArtifact, BaseArtifactDto>()
+            .AfterMap<AddPathAction<WorkspaceDirectoryArtifact, BaseArtifactDto>>();
     }
 }

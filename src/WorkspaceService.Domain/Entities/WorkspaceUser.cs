@@ -1,6 +1,8 @@
-﻿namespace WorkspaceService.Domain.Entities;
+﻿using Common.Base.Entities;
 
-public class WorkspaceUser
+namespace WorkspaceService.Domain.Entities;
+
+public class WorkspaceUser : IUser
 {
     public Guid WorkspaceId { get; set; } = Guid.Empty;
     public Guid UserId { get; set; } = Guid.Empty;

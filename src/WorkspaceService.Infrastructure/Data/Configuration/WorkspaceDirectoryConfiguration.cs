@@ -17,10 +17,10 @@ public class WorkspaceDirectoryConfiguration : IEntityTypeConfiguration<Workspac
         builder.Property(d => d.Name)
             .IsRequired()
             .HasMaxLength(256);
-        builder.HasIndex(d => new { d.Name, d.WorkspaceId })
+        builder.HasIndex(d => new { d.Name, d.ObjectId })
             .IsUnique();
 
-        builder.Property(d => d.WorkspaceId)
+        builder.Property(d => d.ObjectId)
             .IsRequired();
 
         builder.Property(d => d.IsDeleted)
@@ -33,11 +33,15 @@ public class WorkspaceDirectoryConfiguration : IEntityTypeConfiguration<Workspac
 
         builder.HasOne<Workspace>()
             .WithMany(w => w.Directories)
-            .HasForeignKey(d => d.WorkspaceId)
+            .HasForeignKey(d => d.ObjectId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasMany(d => d.Artifacts)
-            .WithOne()
+        builder.HasOne<WorkspaceDirectory>(x => x.Parent)
+            .WithMany(x => x.Children)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany<WorkspaceDirectoryArtifact>(d => d.Artifacts)
+            .WithOne(x => x.Directory)
             .HasForeignKey(a => a.DirectoryId)
             .OnDelete(DeleteBehavior.Cascade);
     }
